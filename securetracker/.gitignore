@@ -1,0 +1,15 @@
+# Ignore venv internals only
+Lib/
+Include/
+Scripts/
+pyvenv.cfg
+
+# React dependencies
+reactapp/node_modules/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Env
+.env
