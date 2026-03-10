@@ -1,154 +1,171 @@
-# Secure Tracker API
+# Secure Tracker - Vehicle Asset Tracking System
 
-A secure vehicle tracking application with Multi-Factor Authentication (MFA).
+A secure web-based vehicle tracking application with Multi-Factor Authentication (MFA).
 
 ## Features
 
 - **Multi-Factor Authentication (MFA)**
-  - TOTP (Time-based OTP)
+  - Password-based authentication
+  - TOTP (Time-based One-Time Password)
   - SMS OTP
-  - Email OTP
-  - Face ID
-  - Fingerprint (Biometric)
-  - Active Directory Integration
+  - Biometric authentication (Face ID, Fingerprint)
+  - Active Directory integration
 
-- **Vehicle Asset Management**
-  - Asset onboarding (cars, bikes, trucks, etc.)
+- **Asset Management**
+  - Onboard vehicle assets (cars, bikes, trucks)
+  - Asset tracking and monitoring
   - Organization-based access control
-  - Real-time tracking
 
-- **RESTful API**
-  - JWT-based authentication
-  - Role-based access control
-  - PostgreSQL database
+- **Live Tracking**
+  - Real-time location tracking
+  - Historical tracking data
+  - Interactive map view
 
-## Requirements
+- **Role-Based Access Control**
+  - Admin, Manager, User roles
+  - Organization-based permissions
 
-- Python 3.9+
-- PostgreSQL 14+
-- Node.js 18+ (for React frontend)
+## Tech Stack
 
-## Setup
+### Backend
+- Python (FastAPI)
+- JWT Authentication
+- SQLite Database
 
-### 1. Database Setup
-
-Create a PostgreSQL database:
-
-```sql
-CREATE DATABASE securetracker;
-```
-
-### 2. Environment Variables
-
-Copy `.env.example` to `.env` and update the values:
-
-```bash
-cp .env.example .env
-```
-
-Required environment variables:
-- `DATABASE_URL` - PostgreSQL connection string
-- `SECRET_KEY` - JWT secret key (min 32 characters)
-
-### 3. Install Python Dependencies
-
-```bash
-cd securetracker
-pip install -r requirements.txt
-```
-
-### 4. Initialize Database
-
-```bash
-python -c "from app.database.db_connection import init_db; init_db()"
-```
-
-### 5. Run the API Server
-
-```bash
-cd securetracker/api
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-The API will be available at `http://localhost:8000`
-
-### 6. API Documentation
-
-FastAPI provides automatic API documentation:
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
-
-## API Endpoints
-
-### Authentication
-- `POST /auth/login` - Login with credentials
-- `POST /auth/refresh` - Refresh access token
-- `POST /auth/mfa/init` - Initialize MFA
-- `POST /auth/mfa/verify` - Verify MFA code
-- `POST /auth/mfa/send` - Send MFA code
-- `POST /auth/logout` - Logout
-- `POST /auth/password/change` - Change password
-
-### Users
-- `GET /users/` - Get all users
-- `GET /users/{user_id}` - Get user by ID
-- `POST /users/` - Create user
-- `PUT /users/{user_id}` - Update user
-- `DELETE /users/{user_id}` - Delete user
-- `GET /users/me` - Get current user
-
-### Assets
-- `GET /assets/` - Get all assets
-- `GET /assets/{asset_id}` - Get asset by ID
-- `POST /assets/` - Create asset
-- `PUT /assets/{asset_id}` - Update asset
-- `DELETE /assets/{asset_id}` - Delete asset
-
-### Tracking
-- `GET /tracking/asset/{asset_id}` - Get tracking data
-- `GET /tracking/asset/{asset_id}/latest` - Get latest tracking
-- `POST /tracking/` - Create tracking data
-- `GET /tracking/history/{asset_id}` - Get tracking history
-
-### Roles
-- `GET /roles/` - Get available roles
-- `GET /roles/permissions` - Get available permissions
-- `GET /roles/user/{user_id}` - Get user's role
-- `PUT /roles/user/{user_id}` - Update user's role
-
-## MFA Configuration
-
-### TOTP (Google Authenticator, Authy)
-1. Call `POST /auth/mfa/init` with `mfa_type: "totp"`
-2. Scan the QR code with your authenticator app
-3. Call `POST /auth/mfa/verify` with the code
-
-### SMS OTP
-1. Call `POST /auth/mfa/init` with `mfa_type: "sms"` and phone number
-2. Call `POST /auth/mfa/verify` with the received code
-
-### Email OTP
-1. Call `POST /auth/mfa/init` with `mfa_type: "email"`
-2. Call `POST /auth/mfa/verify` with the received code
+### Frontend
+- React 19
+- React Router
+- Axios
+- Leaflet (Maps)
 
 ## Project Structure
 
 ```
 securetracker/
-├── api/
+├── api/                    # Python FastAPI backend
 │   └── app/
-│       ├── config/         # Configuration
-│       ├── database/        # Database operations
-│       ├── models/          # SQLAlchemy models
-│       ├── routers/         # API endpoints
-│       ├── security/        # Auth & security
-│       ├── services/        # Business logic
-│       └── utils/           # Utilities
-├── reactapp/               # React frontend
-├── requirements.txt       # Python dependencies
-└── .env.example           # Environment template
+│       ├── config/         # Configuration files
+│       ├── database/       # Database layer
+│       ├── models/         # Data models
+│       ├── routers/        # API routes
+│       ├── security/       # Auth & security
+│       ├── services/       # Business logic
+│       └── utils/          # Utilities
+├── reactapp/              # React frontend
+│   └── src/
+│       ├── components/     # UI components
+│       ├── context/       # React Context
+│       ├── pages/         # Page components
+│       ├── routes/        # Routing
+│       └── services/     # API services
+└── requirements.txt       # Python dependencies
 ```
+
+## Setup Instructions
+
+### Prerequisites
+
+- Python 3.8+
+- Node.js 18+
+- npm or yarn
+
+### Backend Setup
+
+1. Navigate to the project directory:
+   ```bash
+   cd securetracker
+   ```
+
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   ```
+
+3. Activate the virtual environment:
+   - Windows: `venv\Scripts\activate`
+   - Linux/Mac: `source venv/bin/activate`
+
+4. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. Run the backend server:
+   ```bash
+   cd api
+   python -m uvicorn app.main:app --reload
+   ```
+
+   The API will be available at `http://localhost:8000`
+
+### Frontend Setup
+
+1. Navigate to the React app directory:
+   ```bash
+   cd securetracker/reactapp
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm start
+   ```
+
+   The app will be available at `http://localhost:3000`
+
+## API Endpoints
+
+### Authentication
+- `POST /api/v1/auth/login` - User login
+- `POST /api/v1/auth/signup` - User registration
+- `POST /api/v1/auth/verify-mfa` - Verify MFA code
+- `POST /api/v1/auth/logout` - User logout
+- `GET /api/v1/auth/me` - Get current user
+
+### Assets
+- `GET /api/v1/assets/` - Get all assets
+- `POST /api/v1/assets/` - Create new asset
+- `GET /api/v1/assets/{id}` - Get asset by ID
+- `PUT /api/v1/assets/{id}` - Update asset
+- `DELETE /api/v1/assets/{id}` - Delete asset
+
+### Tracking
+- `GET /api/v1/tracking/locations` - Get all latest locations
+- `GET /api/v1/tracking/asset/{id}` - Get tracking history for asset
+
+## Environment Variables
+
+### Backend (.env)
+```
+DATABASE_URL=sqlite:///./securetracker.db
+SECRET_KEY=your-secret-key
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+### Frontend (.env)
+```
+REACT_APP_API_URL=http://localhost:8000/api/v1
+```
+
+## Default Users
+
+After initial setup, you can create a user through the signup endpoint or use the default admin credentials (to be configured).
+
+## Security Features
+
+- JWT token-based authentication
+- Password hashing with bcrypt
+- MFA support for enhanced security
+- Role-based access control
+- CORS configuration
+- Input validation
 
 ## License
 
-MIT
+MIT License
+
