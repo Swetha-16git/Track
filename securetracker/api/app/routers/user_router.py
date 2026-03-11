@@ -5,17 +5,17 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 import logging
-
+ 
 from app.database.db_connection import get_db
 from app.services.user_service import user_service
 from app.security.permissions import get_current_user, require_admin, require_manager
 from app.models.user_model import User
-
+ 
 logger = logging.getLogger(__name__)
-
+ 
 router = APIRouter()
-
-
+ 
+ 
 @router.get("/")
 async def get_users(
     skip: int = 0,
@@ -42,8 +42,8 @@ async def get_users(
             for u in users
         ]
     }
-
-
+ 
+ 
 @router.get("/{user_id}")
 async def get_user(
     user_id: int,
@@ -52,13 +52,13 @@ async def get_user(
 ):
     """Get user by ID"""
     user = user_service.get_user_by_id(db, user_id)
-    
+   
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-    
+   
     return {
         "success": True,
         "user": {
@@ -77,8 +77,8 @@ async def get_user(
             "last_login": user.last_login.isoformat() if user.last_login else None
         }
     }
-
-
+ 
+ 
 @router.post("/")
 async def create_user(
     user_data: dict,
@@ -87,16 +87,16 @@ async def create_user(
 ):
     """Create new user (admin only)"""
     success, response = user_service.create_user(db, user_data)
-    
+   
     if not success:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=response.get("message")
         )
-    
+   
     return response
-
-
+ 
+ 
 @router.put("/{user_id}")
 async def update_user(
     user_id: int,
@@ -110,17 +110,17 @@ async def update_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to update this user"
         )
-
+ 
     success, response = user_service.update_user(db, user_id, user_data)
-
+ 
     if not success:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=response.get("message")
         )
-
+ 
     return response
-
+ 
 @router.delete("/{user_id}")
 async def delete_user(
     user_id: int,
@@ -129,12 +129,14 @@ async def delete_user(
 ):
     """Delete user (admin only)"""
     success, response = user_service.delete_user(db, user_id)
-    
+   
     if not success:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=response.get("message")
         )
-    
+   
     return response
-
+ 
+ 
+ 
