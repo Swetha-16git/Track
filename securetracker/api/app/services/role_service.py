@@ -4,7 +4,7 @@ Role Service
 from typing import List, Optional, Dict
 import logging
  
-from app.config.constants import ROLE_ADMIN, ROLE_MANAGER, ROLE_USER, ROLE_VIEWER
+from app.config.constants import ROLE_ADMIN, ROLE_MANAGER, ROLE_VIEWER
  
 logger = logging.getLogger(__name__)
  
@@ -33,14 +33,6 @@ class RoleService:
                 "users:read", "assets:read", "assets:write",
                 "tracking:read", "tracking:write",
                 "roles:read"
-            ]
-        },
-        ROLE_USER: {
-            "name": "User",
-            "description": "Standard user access",
-            "permissions": [
-                "assets:read", "assets:write",
-                "tracking:read", "tracking:write"
             ]
         },
         ROLE_VIEWER: {
