@@ -7,14 +7,13 @@ from datetime import datetime
 import enum
 
 from app.database.db_connection import Base
-from app.config.constants import ROLE_USER, ROLE_ADMIN, ROLE_MANAGER, ROLE_VIEWER
+from app.config.constants import ROLE_ADMIN, ROLE_MANAGER, ROLE_VIEWER
 
 
 class UserRole(enum.Enum):
     """User role enumeration"""
     admin = ROLE_ADMIN
     manager = ROLE_MANAGER
-    user = ROLE_USER
     viewer = ROLE_VIEWER
 
 
@@ -30,7 +29,7 @@ class User(Base):
     phone = Column(String(20))
     
     # Role-based access
-    role = Column(Enum(UserRole), default=UserRole.user, nullable=False)
+    role = Column(Enum(UserRole), default=UserRole.viewer, nullable=False)
     
     # Organization
     organisation_id = Column(Integer, ForeignKey("organisations.id"), nullable=True)
