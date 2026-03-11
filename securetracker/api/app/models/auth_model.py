@@ -22,7 +22,6 @@ class UserRole(str, Enum):
     """User roles"""
     ADMIN = "admin"
     MANAGER = "manager"
-    USER = "user"
     VIEWER = "viewer"
 
 

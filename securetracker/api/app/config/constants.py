@@ -10,7 +10,6 @@ API_PREFIX = "/api/v1"
 # User Roles
 ROLE_ADMIN = "admin"
 ROLE_MANAGER = "manager"
-ROLE_USER = "user"
 ROLE_VIEWER = "viewer"
 
 # MFA Methods
