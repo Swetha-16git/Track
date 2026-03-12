@@ -99,7 +99,6 @@ class Settings(BaseSettings):
     # ========================
     ADMIN_ROLE: str = "admin"
     MANAGER_ROLE: str = "manager"
-    USER_ROLE: str = "user"
     VIEWER_ROLE: str = "viewer"
 
     class Config:
