@@ -1,70 +1,266 @@
+/* Sidebar.css */
+
+/* ===== Theme tokens (easy to tweak) ===== */
+:root {
+  --sb-bg: #ffffff;
+  --sb-border: #eef1f6;
+  --sb-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+  --sb-muted: #7a8899;
+  --sb-text: #1f2a37;
+
+  --sb-hover-bg: #f3f6fb;        /* light blue-gray hover like your image */
+  --sb-active-bg: #eef6ff;       /* subtle active row tint */
+  --sb-active-text: #0b5cab;     /* deep blue label in active */
+  --sb-icon-bg: transparent;
+
+  --sb-active-icon-bg: #ffcc47;  /* yellow icon badge in image */
+  --sb-active-icon-shadow: 0 8px 16px rgba(255, 204, 71, 0.35);
+
+  --sb-radius: 16px;
+  --sb-item-radius: 12px;
+
+  --sb-width-open: 260px;
+  --sb-width-closed: 76px;
+}
+
+/* ===== Sidebar container ===== */
 .sidebar {
-  width: 260px;
-  background: #fff;
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-  transition: width 0.3s;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
+  box-shadow: var(--sb-shadow);
+
+  display: flex;
+  flex-direction: column;
+
   overflow: hidden;
+  transition: width 220ms ease, transform 220ms ease;
+}
+
+/* Expanded/Collapsed widths */
+.sidebar.open {
+  width: var(--sb-width-open);
 }
 
 .sidebar.closed {
-  width: 70px;
+  width: var(--sb-width-closed);
 }
 
+/* ===== Header ===== */
 .sidebar-header {
-  padding: 20px;
-  border-bottom: 1px solid #eee;
+  padding: 16px 14px;
+  border-bottom: 1px solid var(--sb-border);
 }
 
-.sidebar-toggle {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #666;
-}
-
-.sidebar-nav {
-  padding: 16px 0;
-}
-
-.nav-item {
+.org-info {
   display: flex;
   align-items: center;
-  padding: 12px 20px;
-  color: #666;
-  cursor: pointer;
-  transition: all 0.2s;
+  gap: 10px;
+
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #fafbfe;
+}
+
+.org-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+
+  display: grid;
+  place-items: center;
+
+  background: #f1f5fb;
+  color: var(--sb-active-text);
+  font-size: 18px;
+}
+
+.org-name {
+  font-weight: 600;
+  color: var(--sb-text);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Hide org name when collapsed */
+.sidebar.closed .org-name {
+  display: none;
+}
+
+/* Center org icon when collapsed */
+.sidebar.closed .org-info {
+  justify-content: center;
+  padding: 10px;
+}
+
+/* ===== Nav ===== */
+.sidebar-nav {
+  flex: 1;
+  padding: 10px 10px 14px;
+  overflow-y: auto;
+}
+
+/* optional scrollbar styling */
+.sidebar-nav::-webkit-scrollbar {
+  width: 8px;
+}
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: #dfe6f2;
+  border-radius: 999px;
+}
+.sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+/* ===== Nav link ===== */
+.nav-link {
+  display: flex;
+  align-items: center;
   gap: 12px;
+
+  padding: 10px 12px;
+  border-radius: var(--sb-item-radius);
+  text-decoration: none;
+
+  color: var(--sb-muted);
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
-.nav-item:hover {
-  background: #f8f9fa;
-  color: #007bff;
+/* Hover like screenshot */
+.nav-link:hover {
+  background: var(--sb-hover-bg);
+  color: #2b3a4a;
 }
 
-.nav-item.active {
-  background: #e7f3ff;
-  color: #007bff;
-  border-left: 3px solid #007bff;
+/* Active state */
+.nav-link.active {
+  background: var(--sb-active-bg);
+  color: var(--sb-active-text);
+  font-weight: 600;
 }
 
+/* Icon style */
 .nav-icon {
-  font-size: 20px;
-  min-width: 24px;
-  text-align: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 14px;
+
+  display: grid;
+  place-items: center;
+
+  background: var(--sb-icon-bg);
+  font-size: 18px;
+  line-height: 1;
 }
 
+/* Active icon gets yellow pill like screenshot */
+.nav-link.active .nav-icon {
+  background: var(--sb-active-icon-bg);
+  box-shadow: var(--sb-active-icon-shadow);
+  color: #1d2939;
+}
+
+/* Labels */
 .nav-label {
   font-size: 14px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Collapse behavior: center icons, hide labels */
+.sidebar.closed .nav-link {
+  justify-content: center;
+  padding: 10px;
 }
 
 .sidebar.closed .nav-label {
   display: none;
 }
 
-.sidebar.closed .nav-item {
-  justify-content: center;
-  padding: 12px;
+/* ===== Footer (user info) ===== */
+.sidebar-footer {
+  border-top: 1px solid var(--sb-border);
+  padding: 14px;
+  background: #ffffff;
 }
 
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #fafbfe;
+}
+
+.user-avatar-small {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+
+  display: grid;
+  place-items: center;
+
+  background: #eaf2ff;
+  color: var(--sb-active-text);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--sb-text);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 12px;
+  color: var(--sb-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Hide user details when collapsed */
+.sidebar.closed .user-details {
+  display: none;
+}
+
+.sidebar.closed .user-info {
+  justify-content: center;
+  padding: 10px;
+}
+
+/* ===== Optional: nicer click feel ===== */
+.nav-link:active {
+  transform: translateY(1px);
+}
+
+/* ===== Responsive (optional) =====
+   If you want sidebar to overlay on small screens, you can adapt later.
+*/
