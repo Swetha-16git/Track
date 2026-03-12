@@ -1,0 +1,155 @@
+/* Page background */
+.mfa-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6f6fdc, #7b68ee);
+  font-family: "Rubik", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Card */
+.mfa-box {
+  width: 420px;
+  padding: 32px;
+  color: #ffffff;
+}
+
+/* Header */
+.mfa-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.mfa-header p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 24px;
+}
+
+/* MFA method buttons */
+.mfa-methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.mfa-method-btn {
+  flex: 1 1 48%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.mfa-method-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.mfa-method-btn.selected {
+  background: #ffffff;
+  color: #5a4fcf;
+}
+
+/* Icons */
+.method-icon {
+  font-size: 16px;
+}
+
+/* Content */
+.mfa-content {
+  margin-bottom: 20px;
+}
+
+/* Description */
+.mfa-description {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+/* Forms */
+.mfa-form .form-group {
+  margin-bottom: 16px;
+}
+
+.mfa-form label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.mfa-form input {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+}
+
+/* Action button */
+.mfa-action-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #ffffff;
+  color: #5a4fcf;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.mfa-action-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Biometric section */
+.biometric-form {
+  text-align: center;
+}
+
+.biometric-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.biometric-btn {
+  margin-top: 8px;
+}
+
+/* Error */
+.error-message {
+  background: #ffdddd;
+  color: #a30000;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-top: 16px;
+}
+
+/* Footer */
+.mfa-footer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+}
