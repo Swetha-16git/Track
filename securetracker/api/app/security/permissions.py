@@ -8,7 +8,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import logging
  
 from app.security.jwt_handler import verify_token
-from app.config.constants import ROLE_ADMIN, ROLE_MANAGER, ROLE_USER, ROLE_VIEWER
+from app.config.constants import ROLE_ADMIN, ROLE_MANAGER, ROLE_VIEWER
  
 logger = logging.getLogger(__name__)
  
@@ -21,9 +21,8 @@ class PermissionChecker:
    
     # Role hierarchy - higher roles have access to lower role permissions
     ROLE_HIERARCHY = {
-        ROLE_ADMIN: [ROLE_ADMIN, ROLE_MANAGER, ROLE_USER, ROLE_VIEWER],
-        ROLE_MANAGER: [ROLE_MANAGER, ROLE_USER, ROLE_VIEWER],
-        ROLE_USER: [ROLE_USER, ROLE_VIEWER],
+        ROLE_ADMIN: [ROLE_ADMIN, ROLE_MANAGER, ROLE_VIEWER],
+        ROLE_MANAGER: [ROLE_MANAGER, ROLE_VIEWER],
         ROLE_VIEWER: [ROLE_VIEWER],
     }
    
@@ -50,10 +49,6 @@ class PermissionChecker:
                 "users:read", "assets:read", "assets:write",
                 "tracking:read", "tracking:write",
                 "roles:read"
-            ],
-            ROLE_USER: [
-                "assets:read", "assets:write",
-                "tracking:read", "tracking:write"
             ],
             ROLE_VIEWER: [
                 "assets:read",
@@ -130,13 +125,14 @@ def require_permissions(required_permissions: List[str]):
 # Pre-defined role dependencies
 require_admin = require_roles([ROLE_ADMIN])
 require_manager = require_roles([ROLE_ADMIN, ROLE_MANAGER])
-require_user = require_roles([ROLE_ADMIN, ROLE_MANAGER, ROLE_USER])
+require_user = require_roles([ROLE_ADMIN, ROLE_MANAGER, ROLE_VIEWER])
  
 # Pre-defined permission dependencies
 require_assets_read = require_permissions(["assets:read"])
 require_assets_write = require_permissions(["assets:write"])
 require_tracking_read = require_permissions(["tracking:read"])
 require_tracking_write = require_permissions(["tracking:write"])
+ 
  
  
  

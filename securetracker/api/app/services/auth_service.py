@@ -23,7 +23,7 @@ from app.security.mfa_handler import mfa_handler
 from app.security.ad_auth import ad_authenticator
 from app.config.constants import (
     MSG_LOGIN_SUCCESS, MSG_LOGIN_FAILED, MSG_MFA_REQUIRED,
-    MSG_MFA_SUCCESS, MSG_MFA_FAILED, ROLE_USER
+    MSG_MFA_SUCCESS, MSG_MFA_FAILED, ROLE_VIEWER
 )
  
 logger = logging.getLogger(__name__)
@@ -124,7 +124,7 @@ class AuthService:
                         _safe_set(user, "full_name", ad_profile.get("full_name"))
                         _safe_set(user, "ad_username", request.username)
                         _safe_set(user, "is_active", True)
-                        _set_role_safely(user, ROLE_USER)
+                        _set_role_safely(user, ROLE_VIEWER)
  
                         db.add(user)
                         db.commit()
@@ -301,7 +301,7 @@ class AuthService:
             _safe_set(user, "organisation_id", organisation.id if organisation else None)
             _safe_set(user, "is_active", True)
             _safe_set(user, "is_verified", False)
-            _set_role_safely(user, ROLE_USER)
+            _set_role_safely(user, ROLE_VIEWER)
  
             db.add(user)
             db.commit()

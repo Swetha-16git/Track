@@ -13,7 +13,7 @@ const Dashboard = () => {
 
   // Mock data for dashboard
   const stats = {
-    totalAssets: 156,
+    totalAssets: 153,
     activeAssets: 142,
     trackedToday: 89,
     alerts: 5,
