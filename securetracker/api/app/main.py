@@ -7,23 +7,27 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-import logging
 import time
 from datetime import datetime
 
 from app.config.settings import settings
 from app.config.constants import APP_NAME, APP_VERSION, API_PREFIX
 from app.database.db_connection import engine, Base
-from app.routers import auth_router, user_router, asset_router, tracking_router, role_router
-from app.routers.asset_router import router as asset_router #M
+from app.routers import (
+    auth_router,
+    user_router,
+    asset_router,
+    tracking_router,
+    role_router,
+)
 from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
 
+# ✅ LIFESPAN EVENTS
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan events"""
     logger.info(f"Starting {APP_NAME} v{APP_VERSION}")
 
     try:
@@ -37,6 +41,7 @@ async def lifespan(app: FastAPI):
     logger.info(f"Shutting down {APP_NAME}")
 
 
+# ✅ FASTAPI APP
 app = FastAPI(
     title=APP_NAME,
     version=APP_VERSION,
@@ -44,22 +49,20 @@ app = FastAPI(
     docs_url=f"{API_PREFIX}/docs",
     redoc_url=f"{API_PREFIX}/redoc",
     openapi_url=f"{API_PREFIX}/openapi.json",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
-
+# ✅ CORS
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=settings.CORS_ORIGINS,
-    allow_origins=["http://localhost:3000"],#M
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(router, prefix="/api/assets") #M
 
 
-
+# ✅ REQUEST LOGGING
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
@@ -71,14 +74,14 @@ async def log_requests(request: Request, call_next):
     response.headers["X-App-Version"] = APP_VERSION
 
     logger.info(
-        f"{request.method} {request.url.path} - "
-        f"Status: {response.status_code} - "
-        f"Time: {process_time:.3f}s"
+        f"{request.method} {request.url.path} "
+        f"- {response.status_code} "
+        f"- {process_time:.3f}s"
     )
-
     return response
 
 
+# ✅ GLOBAL EXCEPTION HANDLER
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Unhandled exception: {exc}", exc_info=True)
@@ -86,23 +89,24 @@ async def global_exception_handler(request: Request, exc: Exception):
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
             "error": "Internal Server Error",
-            "message": "An unexpected error occurred. Please try again later.",
-            "timestamp": datetime.utcnow().isoformat()
-        }
+            "message": "An unexpected error occurred",
+            "timestamp": datetime.utcnow().isoformat(),
+        },
     )
 
 
+# ✅ ROOT ENDPOINT
 @app.get("/", tags=["Root"])
 async def root():
     return {
         "name": APP_NAME,
         "version": APP_VERSION,
         "status": "running",
-        "docs": f"{API_PREFIX}/docs"
+        "docs": f"{API_PREFIX}/docs",
     }
 
 
-# ✅ ✅ INCLUDE ROUTERS (PREFIX ONLY HERE)
+# ✅ ✅ ROUTER REGISTRATION (ONLY PLACE)
 app.include_router(auth_router.router, prefix=f"{API_PREFIX}/auth", tags=["Authentication"])
 app.include_router(user_router.router, prefix=f"{API_PREFIX}/users", tags=["Users"])
 app.include_router(asset_router.router, prefix=f"{API_PREFIX}/assets", tags=["Assets"])
@@ -110,12 +114,14 @@ app.include_router(tracking_router.router, prefix=f"{API_PREFIX}/tracking", tags
 app.include_router(role_router.router, prefix=f"{API_PREFIX}/roles", tags=["Roles"])
 
 
+# ✅ LOCAL RUN
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
-        "main:app",
+        "app.main:app",
         host=settings.HOST,
         port=settings.PORT,
         reload=settings.DEBUG,
-        log_level=settings.LOG_LEVEL.lower()
+        log_level=settings.LOG_LEVEL.lower(),
     )

@@ -7,6 +7,14 @@ const ProtectedRoute = ({ children, requiredPermission }) => {
   const { isAuthenticated, loading, hasPermission } = useAuth();
   const location = useLocation();
 
+  // ✅ Always trust localStorage after MFA
+  const accessToken =
+    localStorage.getItem('access_token') ||
+    localStorage.getItem('token');
+
+  const mfaVerified = localStorage.getItem('mfa_verified') === 'true';
+
+  // ✅ While AuthContext initializes
   if (loading) {
     return (
       <div className="protected-route-loading">
@@ -15,10 +23,26 @@ const ProtectedRoute = ({ children, requiredPermission }) => {
     );
   }
 
-  if (!isAuthenticated) {
+  /**
+   * ✅ AUTH CHECK (FIX)
+   * If token exists in storage, user IS authenticated
+   * even if AuthContext state is stale
+   */
+  if (!accessToken) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  /**
+   * ✅ MFA CHECK
+   * Token exists but MFA not done → go MFA
+   */
+  if (!mfaVerified) {
+    return <Navigate to="/mfa" state={{ from: location }} replace />;
+  }
+
+  /**
+   * ✅ PERMISSION CHECK (unchanged)
+   */
   if (requiredPermission && !hasPermission(requiredPermission)) {
     return (
       <div className="access-denied">
@@ -28,8 +52,8 @@ const ProtectedRoute = ({ children, requiredPermission }) => {
     );
   }
 
+  // ✅ All good
   return children;
 };
 
 export default ProtectedRoute;
-
