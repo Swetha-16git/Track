@@ -11,6 +11,9 @@ import Dashboard from '../pages/Dashboard';
 import AssetOnboarding from '../pages/AssetOnboarding';
 import LiveTracking from '../pages/LiveTracking';
 
+// ✅ ADD THIS
+import Signup from '../components/Auth/Signup/Signup';
+
 const AppRoutes = () => {
   return (
     <AuthProvider>
@@ -60,8 +63,8 @@ const AppRoutes = () => {
         />
 
         {/* Default redirect */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </AuthProvider>
   );

@@ -1,3 +1,6 @@
+/* ===============================
+   PAGE – FIXED VIEWPORT
+================================ */
 .st-page {
   height: 100vh;
   width: 100%;
@@ -13,6 +16,7 @@
 
 /* ===============================
    MAIN CARD – NEUMORPHIC
+================================ */
 .st-shell {
   width: 1180px;
   max-width: 96%;
@@ -32,6 +36,7 @@
 
 /* ===============================
    LEFT PANEL
+================================ */
 .st-left {
   padding: 40px 56px;
   display: flex;
@@ -95,6 +100,7 @@
 
 /* ===============================
    RIGHT PANEL
+================================ */
 .st-right {
   padding: 48px 56px;
   display: flex;
@@ -118,6 +124,7 @@
 
 /* ===============================
    FORM – NEUMORPHIC INPUTS (WOW)
+================================ */
 .st-label {
   font-size: 12px;
   font-weight: 700;
@@ -160,8 +167,10 @@
 
 /* ===============================
    BUTTON – PRIMARY CTA
+================================ */
 /* ===============================
    SIGN IN BUTTON – PRIMARY CTA
+================================ */
 .st-btn {
   width: 100%;
   height: 50px;
@@ -232,6 +241,7 @@
 
 /* ===============================
    MOBILE
+================================ */
 @media (max-width: 980px) {
   .st-shell {
     grid-template-columns: 1fr;
@@ -241,139 +251,4 @@
   .st-left {
     display: none;
   }
-/* Page background */
-.login-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #6f6fdc, #7b68ee);
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-}
-
-/* Card */
-.login-box {
-  width: 380px;
-  background: transparent;
-  padding: 32px;
-  color: #fff;
-}
-
-/* Header */
-.login-header h1 {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.login-header p {
-  font-size: 15px;
-  opacity: 0.9;
-  margin-bottom: 28px;
-}
-
-/* Form */
-.login-form {
-  width: 100%;
-}
-
-/* Error */
-.error-message {
-  background: #ffdddd;
-  color: #a30000;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 14px;
-  margin-bottom: 16px;
-}
-
-/* Inputs */
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-group label {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 12px;
-  font-size: 15px;
-  border-radius: 6px;
-  border: none;
-  outline: none;
-}
-
-/* Login button */
-.login-btn {
-  width: 100%;
-  padding: 12px;
-  font-size: 15px;
-  font-weight: 600;
-  background: #ffffff;
-  color: #5a4fcf;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 8px;
-}
-
-.login-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-/* Divider */
-.divider {
-  text-align: center;
-  margin: 22px 0;
-  font-size: 13px;
-  opacity: 0.85;
-}
-
-/* MFA options */
-.mfa-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.mfa-btn {
-  flex: 1 1 48%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px;
-  font-size: 13px;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #333;
-  border: none;
-  cursor: pointer;
-}
-
-.mfa-btn:hover {
-  background: #f0f0f0;
-}
-
-.mfa-icon {
-  font-size: 16px;
-}
-
-/* Footer */
-.login-footer {
-  margin-top: 22px;
-  text-align: center;
-  font-size: 14px;
-}
-
-.login-footer a {
-  color: #ffffff;
-  font-weight: 600;
-  text-decoration: underline;
 }
