@@ -1,0 +1,241 @@
+/* =================================================
+   SIGNUP OVERRIDES – FIT + POLISH (LOCKED)
+================================================= */
+
+/* Keep signup in the same visible card */
+.st-shell--signup {
+  height: calc(100vh - 48px);
+  max-height: 720px;
+
+  box-shadow:
+    0 28px 60px rgba(15, 23, 42, 0.12),
+    0 10px 24px rgba(15, 23, 42, 0.07);
+}
+
+/* Tight padding */
+.st-shell--signup .st-left {
+  padding: 36px 50px;
+}
+
+.st-shell--signup .st-right {
+  padding: 36px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+/* Image size control */
+.st-shell--signup .st-asset-img {
+  max-height: 240px;
+  width: 520px;
+  max-width: 100%;
+  object-fit: contain;
+  margin: 10px 0;
+}
+
+/* Chips */
+.st-shell--signup .st-chips {
+  margin-top: auto;
+  gap: 8px;
+}
+
+.st-shell--signup .st-chip {
+  padding: 7px 10px;
+  font-size: 11.5px;
+  background: #f6f8fb;
+  color: #003f72;
+
+  box-shadow:
+    inset 2px 2px 4px rgba(255,255,255,0.9),
+    inset -2px -2px 4px rgba(0,63,114,0.15);
+}
+
+/* Titles */
+.st-shell--signup .st-title {
+  font-size: 18px;
+  margin: 0 0 4px;
+  font-weight: 900;
+  color: #003f72;
+}
+
+.st-shell--signup .st-subtitle {
+  margin: 6px 0 10px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: #6b7280;
+}
+
+/* Error */
+.st-shell--signup .st-error {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
+/* =================================================
+   FORM GRID (LABEL LEFT, INPUT RIGHT)
+================================================= */
+.st-shell--signup .st-form {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  column-gap: 16px;
+  row-gap: 10px;
+  align-items: center;
+}
+
+.st-shell--signup .st-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: #374151;
+}
+
+.st-shell--signup .st-input {
+  height: 40px;
+  border-radius: 12px;
+  margin: 0;
+  font-size: 13px;
+  padding: 0 14px;
+  border: none;
+  background: #f6f8fb;
+  color: #003f72;
+
+  box-shadow:
+    inset 4px 4px 8px rgba(0,63,114,0.15),
+    inset -4px -4px 8px rgba(255,255,255,0.9);
+
+  transition: all 0.2s ease;
+}
+
+.st-shell--signup .st-input::placeholder {
+  color: #9ca3af;
+}
+
+.st-shell--signup .st-input:focus {
+  outline: none;
+  box-shadow:
+    inset 6px 6px 10px rgba(0,63,114,0.2),
+    inset -6px -6px 10px rgba(255,255,255,1),
+    0 0 0 2px rgba(255,194,56,0.4);
+}
+
+/* =================================================
+   ACTION BUTTONS – SAME SIZE (LOCKED)
+================================================= */
+.st-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.st-actions button {
+  flex: 1;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cancel */
+.st-cancel {
+  background: #f6f8fb;
+  border: none;
+  color: #374151;
+  cursor: pointer;
+
+  box-shadow:
+    inset 2px 2px 4px rgba(255,255,255,0.9),
+    inset -2px -2px 4px rgba(15,23,42,0.12);
+
+  transition: all 0.15s ease;
+}
+
+.st-cancel:hover:not(:disabled) {
+  box-shadow:
+    inset 4px 4px 8px rgba(15,23,42,0.15),
+    inset -4px -4px 8px rgba(255,255,255,0.9);
+}
+
+/* =================================================
+   CREATE ACCOUNT – PRIMARY CTA (MATCH LOGIN)
+================================================= */
+.st-actions .st-btn {
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+
+  background: linear-gradient(
+    180deg,
+    #004b88 0%,
+    #003f72 100%
+  );
+
+  box-shadow:
+    6px 6px 14px rgba(0,63,114,0.35),
+    -6px -6px 14px rgba(255,255,255,0.85),
+    0 0 0 0 rgba(255,194,56,0);
+
+  transition: all 0.18s ease;
+}
+
+.st-actions .st-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    4px 4px 10px rgba(0,63,114,0.4),
+    -4px -4px 10px rgba(255,255,255,0.8),
+    0 0 0 3px rgba(255,194,56,0.35);
+}
+
+.st-actions .st-btn:active:not(:disabled) {
+  box-shadow:
+    inset 4px 4px 8px rgba(0,63,114,0.45),
+    inset -4px -4px 8px rgba(255,255,255,0.9);
+}
+
+.st-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Footer */
+.st-shell--signup .st-footer {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.st-shell--signup .st-link {
+  color: #003f72;
+  font-weight: 900;
+}
+
+/* =================================================
+   MOBILE
+================================================= */
+@media (max-width: 980px) {
+  .st-shell--signup {
+    height: auto;
+    max-height: none;
+  }
+
+  .st-shell--signup .st-left {
+    display: none;
+  }
+
+  .st-shell--signup .st-form {
+    grid-template-columns: 1fr;
+  }
+
+  .st-shell--signup .st-label {
+    margin-top: 8px;
+  }
+}
