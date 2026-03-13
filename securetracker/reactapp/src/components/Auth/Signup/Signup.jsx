@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 import './Signup.css';
-import assetImg from '../../../assets/loader.jpg';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    organization: '',
-    phoneNumber: '',
     password: '',
     confirmPassword: '',
+    organization: '',
+    phoneNumber: '',
   });
-
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -42,150 +42,116 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const baseUrl = process.env.REACT_APP_API_BASE_URL;
-
-      const payload = {
-        email: formData.email.trim(),
-        username: formData.username.trim(),
-        password: formData.password,
-        full_name: formData.username.trim(),
-        phone: formData.phoneNumber.trim(),
-        organisation_name: formData.organization.trim(),
-      };
-
-      const res = await fetch(`${baseUrl}/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.detail || 'Signup failed');
-
-      navigate('/login');
+      // Simulate signup
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      
+      // After signup, redirect to MFA setup
+      navigate('/mfa');
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Signup failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="st-page">
-      <div className="st-shell st-shell--signup">
-        {/* LEFT */}
-        <div className="st-left">
-          <div className="st-brand">
-            <span className="st-dot" />
-            <div>
-              <h1 className="st-app">SecureTracker</h1>
-              <p className="st-app-sub">
-                Onboard your organization & track vehicle assets securely
-              </p>
-            </div>
-          </div>
-
-          {/* ✅ Image same as Login */}
-          <img
-            src={assetImg}
-            alt="SecureTracker vehicle asset"
-            className="st-asset-img"
-          />
-
-          {/* ✅ Chips pinned bottom */}
-          <div className="st-chips">
-            <span className="st-chip">Create account</span>
-            <span className="st-chip">Org access</span>
-            <span className="st-chip">MFA‑ready</span>
-          </div>
+    <div className="signup-container">
+      <div className="signup-box">
+        <div className="signup-header">
+          <h1>Create Account</h1>
+          <p>Join Secure Tracker</p>
         </div>
 
-        {/* RIGHT */}
-        <div className="st-right">
-          <h2 className="st-title">Create Account</h2>
-          <p className="st-subtitle">
-            Create your SecureTracker account to onboard and manage vehicle assets.
-          </p>
+        <form onSubmit={handleSubmit} className="signup-form">
+          {error && <div className="error-message">{error}</div>}
 
-          {error && <div className="st-error">{error}</div>}
-
-          <form onSubmit={handleSubmit} className="st-form">
-            <label className="st-label">Username</label>
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
             <input
-              className="st-input"
+              type="text"
+              id="username"
               name="username"
               value={formData.username}
               onChange={handleChange}
+              placeholder="Choose a username"
               required
             />
+          </div>
 
-            <label className="st-label">Email Address</label>
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
             <input
-              className="st-input"
               type="email"
+              id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
+              placeholder="Enter your email"
               required
             />
+          </div>
 
-            <label className="st-label">Organization</label>
+          <div className="form-group">
+            <label htmlFor="organization">Organization</label>
             <input
-              className="st-input"
+              type="text"
+              id="organization"
               name="organization"
               value={formData.organization}
               onChange={handleChange}
+              placeholder="Your organization name"
               required
             />
+          </div>
 
-            <label className="st-label">Mobile Number</label>
+          <div className="form-group">
+            <label htmlFor="phoneNumber">Phone Number</label>
             <input
-              className="st-input"
+              type="tel"
+              id="phoneNumber"
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleChange}
+              placeholder="+1 234 567 8900"
               required
             />
+          </div>
 
-            <label className="st-label">Password</label>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
             <input
-              className="st-input"
               type="password"
+              id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
+              placeholder="Create a password"
               required
             />
+          </div>
 
-            <label className="st-label">Re‑type Password</label>
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm Password</label>
             <input
-              className="st-input"
               type="password"
+              id="confirmPassword"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
+              placeholder="Confirm your password"
               required
             />
-
-            <div className="st-actions">
-              <button
-                type="button"
-                className="st-cancel"
-                onClick={() => navigate('/login')}
-              >
-                Cancel
-              </button>
-
-              <button type="submit" className="st-btn" disabled={loading}>
-                {loading ? 'Creating…' : 'Create Account'}
-              </button>
-            </div>
-          </form>
-
-          <div className="st-footer">
-            <span>Already have an account?</span>
-            <Link to="/login" className="st-link">Sign in</Link>
           </div>
+
+          <button type="submit" className="signup-btn" disabled={loading}>
+            {loading ? 'Creating Account...' : 'Sign Up'}
+          </button>
+        </form>
+
+        <div className="signup-footer">
+          <p>
+            Already have an account? <Link to="/login">Sign in</Link>
+          </p>
         </div>
       </div>
     </div>
@@ -193,3 +159,4 @@ const Signup = () => {
 };
 
 export default Signup;
+

@@ -2,15 +2,11 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '../context/AuthContext';
 import ProtectedRoute from '../components/Auth/Common/ProtectedRoute';
-
 import LoginPage from '../pages/LoginPage';
 import MFAPage from '../pages/MFAPage';
 import Dashboard from '../pages/Dashboard';
 import AssetOnboarding from '../pages/AssetOnboarding';
 import LiveTracking from '../pages/LiveTracking';
-
-// ✅ ADD THIS
-import Signup from '../components/Auth/Signup/Signup';
 
 const AppRoutes = () => {
   return (
@@ -19,8 +15,8 @@ const AppRoutes = () => {
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/mfa" element={<MFAPage />} />
-        <Route path="/signup" element={<Signup />} />
-
+        <Route path="/signup" element={<LoginPage />} />
+        
         {/* Protected Routes */}
         <Route
           path="/dashboard"
@@ -54,13 +50,14 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-
+        
         {/* Default redirect */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </AuthProvider>
   );
 };
 
 export default AppRoutes;
+

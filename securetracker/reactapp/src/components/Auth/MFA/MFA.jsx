@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 import OtpTimer from './OtpTimer';
 import './MFA.css';
-import assetImg from '../../../assets/loader.jpg'; // ✅ same image as login/signup
 
 const MFA = () => {
   const [selectedMethod, setSelectedMethod] = useState('sms');
@@ -11,7 +11,7 @@ const MFA = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-
+  const { verifyMfa } = useAuth();
   const navigate = useNavigate();
 
   const mfaMethods = [
@@ -29,51 +29,31 @@ const MFA = () => {
     setOtpSent(false);
   };
 
-  // ✅ Promote pending tokens after MFA is completed
-  const promotePendingTokens = () => {
-    const pendingAccess = localStorage.getItem('pending_access_token');
-    const pendingRefresh = localStorage.getItem('pending_refresh_token');
-
-    if (!pendingAccess) {
-      throw new Error('Session expired. Please login again.');
-    }
-
-    localStorage.setItem('access_token', pendingAccess);
-    if (pendingRefresh) localStorage.setItem('refresh_token', pendingRefresh);
-
-    localStorage.removeItem('pending_access_token');
-    localStorage.removeItem('pending_refresh_token');
-
-    localStorage.setItem('mfa_verified', 'true');
-  };
-
-  // Simulate sending OTP (until backend OTP APIs are integrated)
   const handleSendOtp = async () => {
-    setError('');
-
-    if (selectedMethod === 'sms' && !phoneNumber.trim()) {
+    if (!phoneNumber && (selectedMethod === 'sms')) {
       setError('Please enter your phone number');
       return;
     }
-
     setLoading(true);
+    setError('');
+    
+    // Simulate sending OTP
     setTimeout(() => {
       setLoading(false);
       setOtpSent(true);
-    }, 800);
+    }, 1500);
   };
 
-  const handleVerify = async () => {
+  const handleVerify = async (e) => {
+    e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      if ((selectedMethod === 'sms' || selectedMethod === 'email') && otp.length !== 6) {
-        throw new Error('Please enter a valid 6-digit OTP');
+      const result = await verifyMfa(otp, selectedMethod);
+      if (result.token) {
+        navigate('/dashboard');
       }
-
-      promotePendingTokens();
-      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Verification failed. Please try again.');
     } finally {
@@ -81,13 +61,26 @@ const MFA = () => {
     }
   };
 
-  const handleBiometricAuth = async () => {
+  const handleBiometricAuth = async (type) => {
     setLoading(true);
     setError('');
 
     try {
-      promotePendingTokens();
-      navigate('/dashboard');
+      // Simulate biometric authentication
+      if (type === 'faceid') {
+        // In real implementation, this would use WebAuthn or a biometric API
+        const mockFaceData = { verified: true, timestamp: Date.now() };
+        const result = await verifyMfa(JSON.stringify(mockFaceData), 'faceid');
+        if (result.token) {
+          navigate('/dashboard');
+        }
+      } else if (type === 'fingerprint') {
+        const mockFingerprintData = { verified: true, timestamp: Date.now() };
+        const result = await verifyMfa(JSON.stringify(mockFingerprintData), 'fingerprint');
+        if (result.token) {
+          navigate('/dashboard');
+        }
+      }
     } catch (err) {
       setError(err.message || 'Biometric verification failed.');
     } finally {
@@ -100,8 +93,12 @@ const MFA = () => {
     setError('');
 
     try {
-      promotePendingTokens();
-      navigate('/dashboard');
+      // Simulate AD authentication
+      const mockAdData = { authenticated: true, timestamp: Date.now() };
+      const result = await verifyMfa(JSON.stringify(mockAdData), 'ad');
+      if (result.token) {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.message || 'Active Directory authentication failed.');
     } finally {
@@ -109,196 +106,154 @@ const MFA = () => {
     }
   };
 
-  const handleBackToLogin = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('pending_access_token');
-    localStorage.removeItem('pending_refresh_token');
-    localStorage.removeItem('temp_token');
-    localStorage.setItem('mfa_verified', 'false');
-    navigate('/login');
-  };
-
   return (
-    <div className="st-page">
-      <div className="st-shell st-shell--mfa">
-        {/* LEFT (Image like Login/Signup) */}
-        <div className="st-left">
-          <div className="st-brand">
-            <span className="st-dot" />
-            <div>
-              <h1 className="st-app">SecureTracker</h1>
-              <p className="st-app-sub">Complete verification to securely access your dashboard</p>
-            </div>
-          </div>
-
-          <img src={assetImg} alt="SecureTracker" className="st-asset-img" />
-
-          <div className="st-chips">
-            <span className="st-chip">Secure login</span>
-            <span className="st-chip">MFA enabled</span>
-            <span className="st-chip">Org access</span>
-          </div>
+    <div className="mfa-container">
+      <div className="mfa-box">
+        <div className="mfa-header">
+          <h1>Multi-Factor Authentication</h1>
+          <p>Select your verification method</p>
         </div>
 
-        {/* RIGHT (Authentication) */}
-        <div className="st-right">
-          <div className="mfa-panel">
-            <div className="mfa-header">
-              <h1>Multi‑Factor Authentication</h1>
-              <p>Select your verification method</p>
-            </div>
+        <div className="mfa-methods">
+          {mfaMethods.map((method) => (
+            <button
+              key={method.id}
+              className={`mfa-method-btn ${selectedMethod === method.id ? 'selected' : ''}`}
+              onClick={() => handleMethodSelect(method.id)}
+              type="button"
+            >
+              <span className="method-icon">{method.icon}</span>
+              <span className="method-name">{method.name}</span>
+            </button>
+          ))}
+        </div>
 
-            <div className="mfa-methods">
-              {mfaMethods.map((method) => (
-                <button
-                  key={method.id}
-                  className={`mfa-method-btn ${selectedMethod === method.id ? 'selected' : ''}`}
-                  onClick={() => handleMethodSelect(method.id)}
-                  type="button"
-                >
-                  <span className="method-icon">{method.icon}</span>
-                  <span className="method-name">{method.name}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="mfa-content">
-              {/* SMS OTP */}
-              {selectedMethod === 'sms' && (
-                <div className="mfa-form">
-                  {!otpSent ? (
-                    <>
-                      <p className="mfa-description">Enter your phone number to receive OTP</p>
-
-                      <div className="form-group">
-                        <label htmlFor="phone">Phone Number</label>
-                        <input
-                          type="tel"
-                          id="phone"
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                          placeholder="+1 234 567 8900"
-                          disabled={loading}
-                        />
-                      </div>
-
-                      <button className="mfa-action-btn" onClick={handleSendOtp} disabled={loading} type="button">
-                        {loading ? 'Sending…' : 'Send OTP'}
-                      </button>
-                    </>
-                  ) : (
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        handleVerify();
-                      }}
-                    >
-                      <p className="mfa-description">Enter the OTP sent to your phone</p>
-                      <OtpTimer onResend={handleSendOtp} />
-
-                      <div className="form-group">
-                        <label htmlFor="otp">Enter OTP</label>
-                        <input
-                          type="text"
-                          id="otp"
-                          value={otp}
-                          onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                          placeholder="Enter 6‑digit OTP"
-                          maxLength={6}
-                          required
-                          disabled={loading}
-                        />
-                      </div>
-
-                      <button type="submit" className="mfa-action-btn" disabled={loading || otp.length !== 6}>
-                        {loading ? 'Verifying…' : 'Verify OTP'}
-                      </button>
-                    </form>
-                  )}
-                </div>
-              )}
-
-              {/* EMAIL OTP */}
-              {selectedMethod === 'email' && (
-                <div className="mfa-form">
-                  {!otpSent ? (
-                    <>
-                      <p className="mfa-description">Click below to receive OTP in your email</p>
-
-                      <button className="mfa-action-btn" onClick={handleSendOtp} disabled={loading} type="button">
-                        {loading ? 'Sending…' : 'Send OTP'}
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <p className="mfa-description">Enter the OTP sent to your email</p>
-                      <OtpTimer onResend={handleSendOtp} />
-
-                      <div className="form-group">
-                        <label htmlFor="email-otp">Enter OTP</label>
-                        <input
-                          type="text"
-                          id="email-otp"
-                          value={otp}
-                          onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                          placeholder="Enter 6‑digit OTP"
-                          maxLength={6}
-                          required
-                          disabled={loading}
-                        />
-                      </div>
-
-                      <button className="mfa-action-btn" type="button" onClick={handleVerify} disabled={loading || otp.length !== 6}>
-                        {loading ? 'Verifying…' : 'Verify OTP'}
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
-
-              {/* Face ID */}
-              {selectedMethod === 'faceid' && (
-                <div className="mfa-form biometric-form">
-                  <div className="biometric-icon">👤</div>
-                  <p className="mfa-description">Use Face ID to authenticate</p>
-                  <button className="mfa-action-btn" onClick={handleBiometricAuth} disabled={loading} type="button">
-                    {loading ? 'Authenticating…' : 'Scan Face'}
+        <div className="mfa-content">
+          {selectedMethod === 'sms' && (
+            <div className="mfa-form">
+              {!otpSent ? (
+                <>
+                  <p className="mfa-description">Enter your phone number to receive OTP</p>
+                  <div className="form-group">
+                    <label htmlFor="phone">Phone Number</label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder="+1 234 567 8900"
+                    />
+                  </div>
+                  <button 
+                    className="mfa-action-btn" 
+                    onClick={handleSendOtp}
+                    disabled={loading}
+                  >
+                    {loading ? 'Sending...' : 'Send OTP'}
                   </button>
-                </div>
-              )}
-
-              {/* Fingerprint */}
-              {selectedMethod === 'fingerprint' && (
-                <div className="mfa-form biometric-form">
-                  <div className="biometric-icon">👆</div>
-                  <p className="mfa-description">Use Fingerprint to authenticate</p>
-                  <button className="mfa-action-btn" onClick={handleBiometricAuth} disabled={loading} type="button">
-                    {loading ? 'Authenticating…' : 'Scan Fingerprint'}
+                </>
+              ) : (
+                <form onSubmit={handleVerify}>
+                  <p className="mfa-description">Enter the OTP sent to your phone</p>
+                  <OtpTimer onResend={handleSendOtp} />
+                  <div className="form-group">
+                    <label htmlFor="otp">Enter OTP</label>
+                    <input
+                      type="text"
+                      id="otp"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      placeholder="Enter 6-digit OTP"
+                      maxLength={6}
+                      required
+                    />
+                  </div>
+                  <button 
+                    type="submit" 
+                    className="mfa-action-btn"
+                    disabled={loading || otp.length !== 6}
+                  >
+                    {loading ? 'Verifying...' : 'Verify OTP'}
                   </button>
-                </div>
-              )}
-
-              {/* Active Directory */}
-              {selectedMethod === 'ad' && (
-                <div className="mfa-form biometric-form">
-                  <div className="biometric-icon">🏢</div>
-                  <p className="mfa-description">Authenticate via Active Directory</p>
-                  <button className="mfa-action-btn" onClick={handleAdAuth} disabled={loading} type="button">
-                    {loading ? 'Authenticating…' : 'Login with AD'}
-                  </button>
-                </div>
+                </form>
               )}
             </div>
+          )}
 
-            {error && <div className="error-message">{error}</div>}
-
-            <div className="mfa-footer">
-              <button className="back-btn" onClick={handleBackToLogin} type="button">
-                ← Back to Login
+          {selectedMethod === 'email' && (
+            <div className="mfa-form">
+              <p className="mfa-description">Enter the OTP sent to your email</p>
+              <div className="form-group">
+                <label htmlFor="email-otp">Enter OTP</label>
+                <input
+                  type="text"
+                  id="email-otp"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="Enter 6-digit OTP"
+                  maxLength={6}
+                  required
+                />
+              </div>
+              <button 
+                className="mfa-action-btn" 
+                onClick={handleVerify}
+                disabled={loading || otp.length !== 6}
+              >
+                {loading ? 'Verifying...' : 'Verify OTP'}
               </button>
             </div>
-          </div>
+          )}
+
+          {selectedMethod === 'faceid' && (
+            <div className="mfa-form biometric-form">
+              <div className="biometric-icon">👤</div>
+              <p className="mfa-description">Use Face ID to authenticate</p>
+              <button 
+                className="mfa-action-btn biometric-btn"
+                onClick={() => handleBiometricAuth('faceid')}
+                disabled={loading}
+              >
+                {loading ? 'Authenticating...' : 'Scan Face'}
+              </button>
+            </div>
+          )}
+
+          {selectedMethod === 'fingerprint' && (
+            <div className="mfa-form biometric-form">
+              <div className="biometric-icon">👆</div>
+              <p className="mfa-description">Use Fingerprint to authenticate</p>
+              <button 
+                className="mfa-action-btn biometric-btn"
+                onClick={() => handleBiometricAuth('fingerprint')}
+                disabled={loading}
+              >
+                {loading ? 'Authenticating...' : 'Scan Fingerprint'}
+              </button>
+            </div>
+          )}
+
+          {selectedMethod === 'ad' && (
+            <div className="mfa-form">
+              <div className="biometric-icon">🏢</div>
+              <p className="mfa-description">Authenticate via Active Directory</p>
+              <button 
+                className="mfa-action-btn ad-auth-btn"
+                onClick={handleAdAuth}
+                disabled={loading}
+              >
+                {loading ? 'Authenticating...' : 'Login with AD'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {error && <div className="error-message">{error}</div>}
+
+        <div className="mfa-footer">
+          <button className="back-btn" onClick={() => navigate('/login')}>
+            ← Back to Login
+          </button>
         </div>
       </div>
     </div>
@@ -306,3 +261,4 @@ const MFA = () => {
 };
 
 export default MFA;
+
