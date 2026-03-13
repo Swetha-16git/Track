@@ -1,0 +1,240 @@
+/* ================================
+   GLOBAL LAYOUT
+================================ */
+.dashboard-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #e0e5ec;
+  font-family: "Rubik", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.dashboard-container {
+  display: flex;
+  flex: 1;
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 28px;
+  background: #e0e5ec;
+  overflow-y: auto;
+}
+
+/* ================================
+   HEADER
+================================ */
+.dashboard-header {
+  margin-bottom: 28px;
+}
+
+.dashboard-header h1 {
+  margin: 0 0 6px;
+  font-size: 30px;
+  font-weight: 700;
+  color: #2c2c2c;
+}
+
+.dashboard-header p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ================================
+   STATS GRID
+================================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+.stat-card {
+  background: #e0e5ec;
+  border-radius: 18px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  cursor: pointer;
+
+  box-shadow:
+    10px 10px 20px #b8bcc2,
+    -10px -10px 20px #ffffff;
+
+  transition: all 0.25s ease;
+}
+
+.stat-card:hover {
+  box-shadow:
+    5px 5px 10px #b8bcc2,
+    -5px -5px 10px #ffffff;
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  font-size: 42px;
+  filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.15));
+}
+
+.stat-info h3 {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 700;
+  color: #2c2c2c;
+}
+
+.stat-info p {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Alert pulse */
+.alert-card .stat-icon {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ================================
+   QUICK ACTIONS
+================================ */
+.quick-actions {
+  background: #e0e5ec;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 36px;
+
+  box-shadow:
+    12px 12px 24px #b8bcc2,
+    -12px -12px 24px #ffffff;
+}
+
+.quick-actions h2 {
+  margin-bottom: 18px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c2c2c;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* Primary Button */
+.action-btn-primary {
+  padding: 12px 26px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  color: #2563eb;
+  background: #e0e5ec;
+
+  box-shadow:
+    6px 6px 12px #b8bcc2,
+    -6px -6px 12px #ffffff;
+
+  transition: all 0.2s ease;
+}
+
+.action-btn-primary:hover {
+  box-shadow:
+    inset 4px 4px 8px #b8bcc2,
+    inset -4px -4px 8px #ffffff;
+}
+
+/* Secondary Button */
+.action-btn-secondary {
+  padding: 12px 26px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  color: #2c2c2c;
+  background: #e0e5ec;
+
+  box-shadow:
+    6px 6px 12px #b8bcc2,
+    -6px -6px 12px #ffffff;
+}
+
+/* ================================
+   RECENT ACTIVITY
+================================ */
+.recent-activity {
+  background: #e0e5ec;
+  border-radius: 20px;
+  padding: 24px;
+
+  box-shadow:
+    12px 12px 24px #b8bcc2,
+    -12px -12px 24px #ffffff;
+}
+
+.recent-activity h2 {
+  margin-bottom: 18px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c2c2c;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.activity-item {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #e0e5ec;
+
+  box-shadow:
+    inset 4px 4px 8px #b8bcc2,
+    inset -4px -4px 8px #ffffff;
+}
+
+.activity-icon {
+  font-size: 22px;
+}
+
+.activity-message {
+  margin: 0;
+  font-size: 14px;
+  color: #2c2c2c;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* ================================
+   ACCESS DENIED
+================================ */
+.access-denied {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.access-denied h2 {
+  color: #dc3545;
+  margin-bottom: 8px;
+}
+
+.access-denied p {
+  color: #6b7280;
+}

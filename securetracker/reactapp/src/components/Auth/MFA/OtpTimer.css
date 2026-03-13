@@ -1,0 +1,32 @@
+.otp-timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.otp-timer.expired {
+  color: #dc3545;
+}
+
+.otp-timer .timer-icon {
+  font-size: 16px;
+}
+
+.resend-link {
+  color: #007bff;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.resend-link:hover {
+  text-decoration: underline;
+}
+
+.resend-link.disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
