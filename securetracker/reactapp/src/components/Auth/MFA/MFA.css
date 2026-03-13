@@ -95,7 +95,6 @@
 
 /* ===============================
    RIGHT PANEL
-================================ */
 .st-right {
   padding: 40px 56px;
   display: flex;
@@ -106,7 +105,6 @@
 
 /* ===============================
    MFA PANEL
-================================ */
 .mfa-panel {
   width: 100%;
   max-width: 430px;
@@ -127,7 +125,6 @@
 
 /* ===============================
    MFA METHODS
-================================ */
 .mfa-methods {
   display: grid;
   grid-template-columns: 1fr 1fr;
