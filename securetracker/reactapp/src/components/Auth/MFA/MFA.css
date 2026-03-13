@@ -1,10 +1,37 @@
+/* ===============================
+   Same SecureTracker page + shell
+================================ */
 .st-page {
-/* Page background */
-.mfa-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 24px;
+  font-family: "Segoe UI", system-ui, sans-serif;
+
+  background:
+    radial-gradient(900px 520px at 18% 20%, rgba(15, 118, 110, 0.10), transparent 60%),
+    linear-gradient(180deg, #eef7f6 0%, #f8fbfb 100%);
+}
+
+.st-shell {
+  width: 1180px;
+  max-width: 96%;
+  height: calc(100vh - 48px);
+  max-height: 720px;
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 28px 60px rgba(15, 23, 42, 0.12),
+    0 10px 24px rgba(15, 23, 42, 0.07);
+}
+
+/* ===============================
+   LEFT PANEL
+================================ */
 .st-left {
   padding: 40px 56px;
   display: flex;
@@ -131,67 +158,13 @@
     inset -4px -4px 8px rgba(255,255,255,0.9);
 }
 
-  background: linear-gradient(135deg, #6f6fdc, #7b68ee);
-  font-family: "Rubik", "Segoe UI", Roboto, Arial, sans-serif;
-}
-
-/* Card */
-.mfa-box {
-  width: 420px;
-  padding: 32px;
-  color: #ffffff;
-}
-
-/* Header */
-.mfa-header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.mfa-header p {
-  font-size: 14px;
-  opacity: 0.9;
-  margin-bottom: 24px;
-}
-
-/* MFA method buttons */
-.mfa-methods {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 24px;
-}
-
-.mfa-method-btn {
-  flex: 1 1 48%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px;
-  font-size: 13px;
-  font-weight: 500;
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  border-radius: 8px;
-  color: #ffffff;
-  cursor: pointer;
-}
-
-.mfa-method-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.mfa-method-btn.selected {
-  background: #ffffff;
-  color: #5a4fcf;
-}
-
-/* Icons */
 .method-icon {
   font-size: 16px;
 }
 
+/* ===============================
+   FORM
+================================ */
 .mfa-description {
   font-size: 13px;
   color: #334155;
@@ -200,31 +173,44 @@
 
 .form-group {
   margin-bottom: 14px;
-/* Content */
-.mfa-content {
-  margin-bottom: 20px;
-}
-
-/* Description */
-.mfa-description {
-  font-size: 14px;
-  margin-bottom: 12px;
-}
-
-/* Forms */
-.mfa-form .form-group {
-  margin-bottom: 16px;
 }
 
 .mfa-form label {
   display: block;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 800;
   margin-bottom: 6px;
+  color: #374151;
 }
 
 .mfa-form input {
   width: 100%;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: none;
+  background: #f6f8fb;
+  font-size: 14px;
+  color: #003f72;
+
+  box-shadow:
+    inset 4px 4px 8px rgba(0,63,114,0.15),
+    inset -4px -4px 8px rgba(255,255,255,0.9);
+
+  transition: all 0.2s ease;
+}
+
+.mfa-form input:focus {
+  outline: none;
+  box-shadow:
+    inset 6px 6px 10px rgba(0,63,114,0.25),
+    inset -6px -6px 10px rgba(255,255,255,1),
+    0 0 0 2px rgba(255,194,56,0.4);
+}
+
+/* ===============================
+   ✅ MFA PRIMARY ACTION – SAME AS LOGIN/SIGNUP
+================================ */
 .mfa-action-btn {
   width: 100%;
   height: 44px;
@@ -272,66 +258,25 @@
 
 /* ===============================
    FOOTER
+================================ */
 .mfa-footer {
   margin-top: 16px;
-  padding: 12px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: none;
-  outline: none;
-}
-
-/* Action button */
-.mfa-action-btn {
-  width: 100%;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  background: #ffffff;
-  color: #5a4fcf;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.mfa-action-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-/* Biometric section */
-.biometric-form {
-  text-align: center;
-}
-
-.biometric-icon {
-  font-size: 36px;
-  margin-bottom: 12px;
-}
-
-.biometric-btn {
-  margin-top: 8px;
-}
-
-/* Error */
-.error-message {
-  background: #ffdddd;
-  color: #a30000;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  margin-top: 16px;
-}
-
-/* Footer */
-.mfa-footer {
-  margin-top: 20px;
   text-align: center;
 }
 
 .back-btn {
   background: none;
   border: none;
+  color: #003f72;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ===============================
+   MOBILE
+================================ */
 @media (max-width: 980px) {
   .st-shell {
     grid-template-columns: 1fr;
@@ -347,8 +292,4 @@
     border-left: none;
     padding: 28px 22px;
   }
-  color: #ffffff;
-  font-size: 13px;
-  cursor: pointer;
-  text-decoration: underline;
 }
