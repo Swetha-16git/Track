@@ -15,6 +15,7 @@ from app.config.settings import settings
 from app.config.constants import APP_NAME, APP_VERSION, API_PREFIX
 from app.database.db_connection import engine, Base
 from app.routers import auth_router, user_router, asset_router, tracking_router, role_router
+from app.routers.asset_router import router as asset_router #M
 from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -49,11 +50,14 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    # allow_origins=settings.CORS_ORIGINS,
+    allow_origins=["http://localhost:3000"],#M
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(router, prefix="/api/assets") #M
+
 
 
 @app.middleware("http")

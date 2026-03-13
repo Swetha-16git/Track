@@ -4,9 +4,11 @@
 .navbar {
   height: 64px;
   padding: 0 24px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: nowrap; /* ✅ prevents wrapping */
 
   background: #e0e5ec;
   position: sticky;
@@ -27,6 +29,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  flex: 0 0 auto;
 }
 
 /* Menu Toggle */
@@ -61,6 +64,7 @@
   align-items: center;
   gap: 10px;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .brand-icon {
@@ -77,14 +81,15 @@
    CENTER SEARCH
 ================================ */
 .navbar-center {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   justify-content: center;
+  min-width: 220px;
 }
 
 .search-box {
   position: relative;
-  width: 320px;
+  width: min(520px, 100%);
 }
 
 .search-input {
@@ -117,9 +122,129 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  flex: 0 0 auto;
 }
 
-/* Notifications */
+/* ================================
+   ASSETS DROPDOWN
+================================ */
+.nav-item-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Assets Button */
+.nav-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: #e0e5ec;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+
+  box-shadow:
+    6px 6px 12px #b8bcc2,
+    -6px -6px 12px #ffffff;
+
+  transition: all 0.2s ease;
+}
+
+.nav-item-btn:hover,
+.nav-item-btn.open {
+  box-shadow:
+    inset 4px 4px 8px #b8bcc2,
+    inset -4px -4px 8px #ffffff;
+}
+
+.nav-item-icon {
+  font-size: 16px;
+}
+
+.nav-item-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c2c2c;
+}
+
+.nav-item-arrow {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* Assets Dropdown Menu */
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px); /* ✅ directly below Assets */
+  right: 0;
+  left: auto;
+
+  width: 220px;
+  background: #e0e5ec;
+  border-radius: 18px;
+  padding: 12px;
+  z-index: 2000;
+
+  box-shadow:
+    12px 12px 24px #b8bcc2,
+    -12px -12px 24px #ffffff;
+}
+
+/* Dropdown Items */
+.nav-dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 12px;
+  background: #e0e5ec;
+  border: none;
+  cursor: pointer;
+
+  box-shadow:
+    inset 2px 2px 4px #b8bcc2,
+    inset -2px -2px 4px #ffffff;
+
+  transition: all 0.2s ease;
+}
+
+.nav-dropdown-item:hover {
+  box-shadow:
+    inset 3px 3px 6px #b8bcc2,
+    inset -3px -3px 6px #ffffff;
+}
+
+.dd-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #e0e5ec;
+  box-shadow:
+    inset 3px 3px 6px #b8bcc2,
+    inset -3px -3px 6px #ffffff;
+
+  font-size: 16px;
+}
+
+.dd-text {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ================================
+   NOTIFICATIONS
+================================ */
 .notification-btn {
   position: relative;
   background: #e0e5ec;
@@ -159,6 +284,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+
   background: #e0e5ec;
   border: none;
   padding: 8px 14px;
@@ -183,9 +309,11 @@
   height: 36px;
   border-radius: 50%;
   background: #e0e5ec;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-weight: 700;
   color: #2563eb;
 
@@ -205,14 +333,13 @@
   opacity: 0.6;
 }
 
-/* ================================
-   DROPDOWN MENU
-================================ */
+/* User Dropdown Menu */
 .dropdown-menu {
   position: absolute;
-  top: 60px;
+  top: calc(100% + 10px);
   right: 0;
   width: 220px;
+
   background: #e0e5ec;
   border-radius: 18px;
   padding: 12px;
@@ -220,21 +347,6 @@
   box-shadow:
     12px 12px 24px #b8bcc2,
     -12px -12px 24px #ffffff;
-}
-
-.dropdown-header {
-  padding-bottom: 10px;
-}
-
-.user-email {
-  font-size: 13px;
-  font-weight: 600;
-  color: #2c2c2c;
-}
-
-.user-org {
-  font-size: 12px;
-  color: #6b7280;
 }
 
 .dropdown-divider {
@@ -247,11 +359,10 @@
   display: flex;
   align-items: center;
   gap: 10px;
+
   padding: 10px;
   font-size: 14px;
-  border-radius: 10px;
-  text-decoration: none;
-  color: #2c2c2c;
+  border-radius: 12px;
   background: #e0e5ec;
   border: none;
   cursor: pointer;
