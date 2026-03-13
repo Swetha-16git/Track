@@ -1,0 +1,59 @@
+.live-tracking-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.view-toggle .view-btn {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.view-toggle .view-btn:hover {
+  background: #f8f9fa;
+}
+
+.view-toggle .view-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.tracking-content {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.tracking-content.map .map-section {
+  flex: 1;
+  min-width: 100%;
+}
+
+.tracking-content.table .table-section {
+  flex: 1;
+  min-width: 100%;
+}
+
+.tracking-content.both .map-section,
+.tracking-content.both .table-section {
+  flex: 1;
+  min-width: 400px;
+}
+
+.map-section,
+.table-section {
+  flex: 1;
+  min-width: 400px;
+}
+
