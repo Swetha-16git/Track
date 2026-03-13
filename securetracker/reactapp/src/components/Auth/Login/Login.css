@@ -1,3 +1,246 @@
+.st-page {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: "Segoe UI", system-ui, sans-serif;
+
+  /* Design system surface */
+  background: #f6f8fb;
+}
+
+/* ===============================
+   MAIN CARD – NEUMORPHIC
+.st-shell {
+  width: 1180px;
+  max-width: 96%;
+  height: calc(100vh - 48px);
+  max-height: 720px;
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  border-radius: 20px;
+  background: #f6f8fb;
+  overflow: hidden;
+
+  /* Soft raised card */
+  box-shadow:
+    20px 20px 40px rgba(0, 63, 114, 0.12),
+    -20px -20px 40px rgba(255, 255, 255, 0.9);
+}
+
+/* ===============================
+   LEFT PANEL
+.st-left {
+  padding: 40px 56px;
+  display: flex;
+  flex-direction: column;
+}
+
+.st-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.st-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: #003f72; /* Primary blue */
+}
+
+.st-app {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+  color: #003f72;
+}
+
+.st-app-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Image */
+.st-asset-img {
+  width: 100%;
+  max-width: 520px;
+  max-height: 320px;
+  object-fit: contain;
+  margin: 16px 0;
+}
+
+/* Chips */
+.st-chips {
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.st-chip {
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #f6f8fb;
+  color: #003f72;
+
+  box-shadow:
+    inset 2px 2px 4px rgba(255,255,255,0.9),
+    inset -2px -2px 4px rgba(0,63,114,0.15);
+}
+
+/* ===============================
+   RIGHT PANEL
+.st-right {
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Titles */
+.st-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #003f72;
+}
+
+.st-subtitle {
+  margin: 8px 0 20px;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+/* ===============================
+   FORM – NEUMORPHIC INPUTS (WOW)
+.st-label {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #374151;
+}
+
+/* Input – embedded */
+.st-input {
+  width: 100%;
+  height: 50px;
+  padding: 0 16px;
+  margin-bottom: 20px;
+  border-radius: 14px;
+  border: none;
+  background: #f6f8fb;
+  font-size: 14px;
+  color: #003f72;
+
+  box-shadow:
+    inset 4px 4px 8px rgba(0,63,114,0.15),
+    inset -4px -4px 8px rgba(255,255,255,0.9);
+
+  transition: all 0.2s ease;
+}
+
+.st-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Focus – subtle accent */
+.st-input:focus {
+  outline: none;
+
+  box-shadow:
+    inset 6px 6px 10px rgba(0,63,114,0.2),
+    inset -6px -6px 10px rgba(255,255,255,1),
+    0 0 0 2px rgba(255,194,56,0.4); /* Accent yellow */
+}
+
+/* ===============================
+   BUTTON – PRIMARY CTA
+/* ===============================
+   SIGN IN BUTTON – PRIMARY CTA
+.st-btn {
+  width: 100%;
+  height: 50px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  color: #ffffff;
+
+  /* ✅ Design‑system blue */
+  background: linear-gradient(
+    180deg,
+    #004b88 0%,
+    #003f72 100%
+  );
+
+  /* ✅ Neumorphic + accent glow */
+  box-shadow:
+    6px 6px 14px rgba(0, 63, 114, 0.35),
+    -6px -6px 14px rgba(255, 255, 255, 0.8),
+    0 0 0 0 rgba(255, 194, 56, 0.0);
+
+  transition: all 0.18s ease;
+}
+
+/* Hover – confident, premium */
+.st-btn:hover:not(:disabled) {
+  box-shadow:
+    4px 4px 10px rgba(0, 63, 114, 0.4),
+    -4px -4px 10px rgba(255, 255, 255, 0.75),
+    0 0 0 3px rgba(255, 194, 56, 0.35); /* ✅ yellow accent */
+}
+
+/* Pressed – proper neumorphic press */
+.st-btn:active:not(:disabled) {
+  box-shadow:
+    inset 4px 4px 8px rgba(0, 63, 114, 0.45),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.85);
+}
+
+/* Disabled */
+.st-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+
+/* Footer */
+.st-footer {
+  margin-top: 16px;
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.st-link {
+  color: #003f72;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.st-link:hover {
+  text-decoration: underline;
+}
+
+/* ===============================
+   MOBILE
+@media (max-width: 980px) {
+  .st-shell {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .st-left {
+    display: none;
+  }
 /* Page background */
 .login-container {
   min-height: 100vh;
