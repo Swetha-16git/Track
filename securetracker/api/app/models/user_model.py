@@ -7,13 +7,12 @@ from datetime import datetime
 import enum
 
 from app.database.db_connection import Base
-from app.config.constants import ROLE_ADMIN, ROLE_MANAGER, ROLE_VIEWER
+from app.config.constants import ROLE_ADMIN, ROLE_VIEWER
 
 
 class UserRole(enum.Enum):
     """User role enumeration"""
     admin = ROLE_ADMIN
-    manager = ROLE_MANAGER
     viewer = ROLE_VIEWER
 
 
