@@ -1,73 +1,41 @@
-import axios from 'axios';
+import api from "./api";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// Asset Services
-export const assetService = {
-  // Get all assets for user's organization
+const assetService = {
+  // ✅ GET /api/v1/assets/
   getAllAssets: async () => {
-    const response = await api.get('/assets');
-    return response.data;
+    const { data } = await api.get("/assets/");
+    return data;
   },
 
-  // Get asset by ID
+  // ✅ GET /api/v1/assets/{asset_id}
   getAssetById: async (assetId) => {
-    const response = await api.get(`/assets/${assetId}`);
-    return response.data;
+    const { data } = await api.get(`/assets/${assetId}`);
+    return data;
   },
 
-  // Create new asset (onboarding)
+  // ✅ POST /api/v1/assets/
   createAsset: async (assetData) => {
-    const response = await api.post('/assets', assetData);
-    return response.data;
+    const { data } = await api.post("/assets/", assetData);
+    return data;
   },
 
-  // Update asset
+  // ✅ PUT /api/v1/assets/{asset_id}
   updateAsset: async (assetId, assetData) => {
-    const response = await api.put(`/assets/${assetId}`, assetData);
-    return response.data;
+    const { data } = await api.put(`/assets/${assetId}`, assetData);
+    return data;
   },
 
-  // Delete asset
+  // ✅ DELETE /api/v1/assets/{asset_id}
   deleteAsset: async (assetId) => {
-    const response = await api.delete(`/assets/${assetId}`);
-    return response.data;
+    const { data } = await api.delete(`/assets/${assetId}`);
+    return data;
   },
 
-  // Get assets by organization
-  getAssetsByOrganization: async (orgId) => {
-    const response = await api.get(`/organizations/${orgId}/assets`);
-    return response.data;
-  },
-
-  // Search assets
-  searchAssets: async (query) => {
-    const response = await api.get('/assets/search', { params: { q: query } });
-    return response.data;
-  },
-
-  // Get asset types
-  getAssetTypes: async () => {
-    const response = await api.get('/assets/types');
-    return response.data;
+  // ✅ PUT /api/v1/assets/{asset_id}/location
+  updateAssetLocation: async (assetId, locationData) => {
+    const { data } = await api.put(`/assets/${assetId}/location`, locationData);
+    return data;
   },
 };
 
 export default assetService;
-
