@@ -157,7 +157,7 @@ class AssetService:
             AssetService._set_default_if_column_exists(data, "status", "active")
             AssetService._set_default_if_column_exists(data, "asset_type", "vehicle")
             AssetService._set_default_if_column_exists(data, "description", "")
-            AssetService._set_default_if_column_exists(data, "year", 2025)
+            AssetService._set_default_if_column_exists(data, "year", 2026)
             AssetService._set_default_if_column_exists(data, "created_at", datetime.utcnow())
             AssetService._set_default_if_column_exists(data, "updated_at", datetime.utcnow())
  

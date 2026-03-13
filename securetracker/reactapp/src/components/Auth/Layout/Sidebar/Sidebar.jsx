@@ -13,12 +13,12 @@ const Sidebar = ({ isOpen }) => {
       label: 'Dashboard',
       permission: 'read',
     },
-    {
-      path: '/assets',
-      icon: '🚗',
-      label: 'Assets',
-      permission: 'read',
-    },
+    // {
+    //   path: '/assets',
+    //   icon: '🚗',
+    //   label: 'Assets',
+    //   permission: 'read',
+    // },
     {
       path: '/asset-onboarding',
       icon: '➕',
