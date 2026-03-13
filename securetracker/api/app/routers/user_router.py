@@ -8,7 +8,7 @@ import logging
  
 from app.database.db_connection import get_db
 from app.services.user_service import user_service
-from app.security.permissions import get_current_user, require_admin, require_manager
+from app.security.permissions import get_current_user, require_admin
 from app.models.user_model import User
  
 logger = logging.getLogger(__name__)
