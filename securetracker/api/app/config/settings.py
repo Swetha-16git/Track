@@ -95,11 +95,10 @@ class Settings(BaseSettings):
         default="dev-jwt-secret-change-in-production"
     )
 
-    # ========================
+# ========================
     # Roles
     # ========================
     ADMIN_ROLE: str = "admin"
-    MANAGER_ROLE: str = "manager"
     VIEWER_ROLE: str = "viewer"
 
     class Config:
