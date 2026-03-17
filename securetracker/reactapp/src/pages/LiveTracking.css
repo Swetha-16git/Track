@@ -4,6 +4,14 @@
   flex-direction: column;
 }
 
+.admin-mode .live-tracking-layout {
+  background: var(--bg-primary, #0f172a);
+}
+
+.viewer-mode .live-tracking-layout {
+  background: #f8fafc;
+}
+
 .view-toggle {
   display: flex;
   gap: 8px;

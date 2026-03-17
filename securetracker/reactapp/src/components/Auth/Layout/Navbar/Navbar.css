@@ -2,24 +2,49 @@
    NAVBAR CONTAINER
 ================================ */
 .navbar {
-  height: 64px;
-  padding: 0 24px;
+  height: 70px;
+  padding: 0 28px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: nowrap; /* ✅ prevents wrapping */
+  flex-wrap: nowrap;
 
-  background: #e0e5ec;
   position: sticky;
   top: 0;
   z-index: 1000;
 
+  font-family: "Rubik", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* ADMIN GLASS NAVBAR */
+.admin-mode .navbar {
+  background: rgba(26, 31, 46, 0.95);
+  backdrop-filter: var(--glass-blur, blur(25px));
+  border-bottom: 1px solid rgba(103, 126, 234, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.admin-mode .navbar-brand {
+  background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Admin dark navbar */
+.admin-mode .navbar {
+  background: var(--bg-secondary, #1e293b);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--bg-card, #334155);
+}
+
+/* Viewer light navbar (original neomorphic) */
+.viewer-mode .navbar {
+  background: #e0e5ec;
   box-shadow:
     6px 6px 12px #b8bcc2,
     -6px -6px 12px #ffffff;
-
-  font-family: "Rubik", "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 /* ================================
@@ -55,6 +80,13 @@
 
 .menu-icon {
   font-size: 20px;
+}
+
+.admin-mode .menu-icon {
+  color: var(--text-primary, #f8fafc);
+}
+
+.viewer-mode .menu-icon {
   color: #2c2c2c;
 }
 
@@ -74,6 +106,13 @@
 .brand-text {
   font-size: 18px;
   font-weight: 700;
+}
+
+.admin-mode .brand-text {
+  color: var(--text-primary, #f8fafc);
+}
+
+.viewer-mode .brand-text {
   color: #2c2c2c;
 }
 
@@ -308,15 +347,25 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #e0e5ec;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   font-weight: 700;
-  color: #2563eb;
+}
 
+/* Admin mode */
+.admin-mode .user-avatar {
+  background: var(--accent, #3b82f6);
+  color: white;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+/* Viewer mode */
+.viewer-mode .user-avatar {
+  background: #e0e5ec;
+  color: #2563eb;
   box-shadow:
     inset 3px 3px 6px #b8bcc2,
     inset -3px -3px 6px #ffffff;
@@ -325,6 +374,13 @@
 .user-name {
   font-size: 14px;
   font-weight: 600;
+}
+
+.admin-mode .user-name {
+  color: var(--text-primary, #f8fafc);
+}
+
+.viewer-mode .user-name {
   color: #2c2c2c;
 }
 

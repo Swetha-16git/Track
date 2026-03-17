@@ -95,7 +95,7 @@ const Sidebar = ({ isOpen }) => {
           </div>
           <div className="user-details">
             <span className="user-name">{user?.username || 'User'}</span>
-            <span className="user-role">{user?.role || 'Role'}</span>
+            <span className="user-role role-badge">{user?.role || 'Role'}</span>
           </div>
         </div>
       </div>

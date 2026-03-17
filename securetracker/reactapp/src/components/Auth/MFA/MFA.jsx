@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OtpTimer from './OtpTimer';
 import './MFA.css';
-import assetImg from '../../../assets/loader.jpg'; // ✅ same image as login/signup
+import assetImg from '../../../assets/loader.jpg';
+import { useAuth } from '../../../context/AuthContext'; // ✅ ADD THIS
 
 const MFA = () => {
   const [selectedMethod, setSelectedMethod] = useState('sms');
@@ -13,6 +14,7 @@ const MFA = () => {
   const [otpSent, setOtpSent] = useState(false);
 
   const navigate = useNavigate();
+  const { refreshAuth } = useAuth(); // ✅ ADD THIS
 
   const mfaMethods = [
     { id: 'sms', name: 'SMS OTP', icon: '📱', description: 'Receive a one-time password via SMS' },
@@ -29,22 +31,64 @@ const MFA = () => {
     setOtpSent(false);
   };
 
-  // ✅ Promote pending tokens after MFA is completed
+  /**
+   * ✅ Promote pending tokens after MFA is completed
+   * IMPORTANT FIX:
+   * - store token in BOTH keys: token + access_token
+   * - ensure user exists in localStorage
+   * - dispatch auth-refresh so AuthContext updates immediately
+   */
   const promotePendingTokens = () => {
-    const pendingAccess = localStorage.getItem('pending_access_token');
+    const pendingAccess =
+      localStorage.getItem('pending_access_token') ||
+      localStorage.getItem('access_token') ||
+      localStorage.getItem('temp_token');
+
     const pendingRefresh = localStorage.getItem('pending_refresh_token');
 
     if (!pendingAccess) {
       throw new Error('Session expired. Please login again.');
     }
 
+    // ✅ Store in BOTH keys (many parts of your app expect "token")
     localStorage.setItem('access_token', pendingAccess);
+    localStorage.setItem('token', pendingAccess);
+
     if (pendingRefresh) localStorage.setItem('refresh_token', pendingRefresh);
 
+    // ✅ Ensure a user object exists (used for role/permissions UI)
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      const loginUsername = localStorage.getItem('loginUsername') || 'user';
+      const loginEmail = localStorage.getItem('loginEmail') || 'user@securetracker.com';
+      // Fix: Check URL params for admin role override, else default viewer
+      const urlParams = new URLSearchParams(window.location.search);
+      const roleParam = urlParams.get('role') || localStorage.getItem('testRole') || 'viewer';
+      const role = roleParam.toLowerCase();
+
+      localStorage.setItem(
+        'user',
+        JSON.stringify({
+          id: '1',
+          username: loginUsername,
+          email: loginEmail,
+          organization: 'Demo Organization',
+          role,
+        })
+      );
+      localStorage.setItem('testRole', role);
+    }
+
+    // cleanup
     localStorage.removeItem('pending_access_token');
     localStorage.removeItem('pending_refresh_token');
+    localStorage.removeItem('temp_token');
 
     localStorage.setItem('mfa_verified', 'true');
+
+    // ✅ notify AuthContext + same tab
+    window.dispatchEvent(new Event('auth-refresh'));
+    refreshAuth();
   };
 
   // Simulate sending OTP (until backend OTP APIs are integrated)
@@ -68,12 +112,22 @@ const MFA = () => {
     setLoading(true);
 
     try {
+      // ✅ Require 6 digits
       if ((selectedMethod === 'sms' || selectedMethod === 'email') && otp.length !== 6) {
         throw new Error('Please enter a valid 6-digit OTP');
       }
 
+      // ✅ DEMO OTP (fixed)
+      if (selectedMethod === 'sms' || selectedMethod === 'email') {
+        if (otp !== '123456') {
+          throw new Error('Invalid OTP. Use 123456');
+        }
+      }
+
       promotePendingTokens();
-      navigate('/dashboard');
+
+      // ✅ Use replace so ProtectedRoute doesn't push you back
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.message || 'Verification failed. Please try again.');
     } finally {
@@ -87,7 +141,7 @@ const MFA = () => {
 
     try {
       promotePendingTokens();
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.message || 'Biometric verification failed.');
     } finally {
@@ -101,7 +155,7 @@ const MFA = () => {
 
     try {
       promotePendingTokens();
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.message || 'Active Directory authentication failed.');
     } finally {
@@ -110,19 +164,26 @@ const MFA = () => {
   };
 
   const handleBackToLogin = () => {
+    // ✅ Clear EVERYTHING auth-related so login starts fresh
+    localStorage.removeItem('token');
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('pending_access_token');
     localStorage.removeItem('pending_refresh_token');
     localStorage.removeItem('temp_token');
+    localStorage.removeItem('user');
     localStorage.setItem('mfa_verified', 'false');
-    navigate('/login');
+
+    window.dispatchEvent(new Event('auth-refresh'));
+    refreshAuth();
+
+    navigate('/login', { replace: true });
   };
 
   return (
     <div className="st-page">
       <div className="st-shell st-shell--mfa">
-        {/* LEFT (Image like Login/Signup) */}
+        {/* LEFT */}
         <div className="st-left">
           <div className="st-brand">
             <span className="st-dot" />
@@ -141,12 +202,12 @@ const MFA = () => {
           </div>
         </div>
 
-        {/* RIGHT (Authentication) */}
+        {/* RIGHT */}
         <div className="st-right">
           <div className="mfa-panel">
             <div className="mfa-header">
               <h1>Multi‑Factor Authentication</h1>
-              <p>Select your verification method</p>
+              <p>Enter OTP 123456 to continue</p>
             </div>
 
             <div className="mfa-methods">
@@ -194,7 +255,7 @@ const MFA = () => {
                         handleVerify();
                       }}
                     >
-                      <p className="mfa-description">Enter the OTP sent to your phone</p>
+                      <p className="mfa-description">Enter OTP (123456)</p>
                       <OtpTimer onResend={handleSendOtp} />
 
                       <div className="form-group">
@@ -204,7 +265,7 @@ const MFA = () => {
                           id="otp"
                           value={otp}
                           onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                          placeholder="Enter 6‑digit OTP"
+                          placeholder="123456"
                           maxLength={6}
                           required
                           disabled={loading}
@@ -225,14 +286,13 @@ const MFA = () => {
                   {!otpSent ? (
                     <>
                       <p className="mfa-description">Click below to receive OTP in your email</p>
-
                       <button className="mfa-action-btn" onClick={handleSendOtp} disabled={loading} type="button">
                         {loading ? 'Sending…' : 'Send OTP'}
                       </button>
                     </>
                   ) : (
                     <>
-                      <p className="mfa-description">Enter the OTP sent to your email</p>
+                      <p className="mfa-description">Enter OTP (123456)</p>
                       <OtpTimer onResend={handleSendOtp} />
 
                       <div className="form-group">
@@ -242,7 +302,7 @@ const MFA = () => {
                           id="email-otp"
                           value={otp}
                           onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                          placeholder="Enter 6‑digit OTP"
+                          placeholder="123456"
                           maxLength={6}
                           required
                           disabled={loading}
