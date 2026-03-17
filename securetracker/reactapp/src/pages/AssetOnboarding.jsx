@@ -65,6 +65,8 @@ const AssetOnboarding = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingAsset, setEditingAsset] = useState(null);
+
+  const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pageError, setPageError] = useState('');
 

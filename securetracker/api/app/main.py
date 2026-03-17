@@ -60,9 +60,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
- 
- 
-# ✅ REQUEST LOGGING
+
+
+
+
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
@@ -109,7 +110,7 @@ async def root():
 # ✅ ✅ ROUTER REGISTRATION (ONLY PLACE)
 app.include_router(auth_router.router, prefix=f"{API_PREFIX}/auth", tags=["Authentication"])
 app.include_router(user_router.router, prefix=f"{API_PREFIX}/users", tags=["Users"])
-app.include_router(asset_router.router, prefix=f"{API_PREFIX}/assets", tags=["Assets"])
+app.include_router(asset_router, prefix=f"{API_PREFIX}/assets", tags=["Assets"])
 app.include_router(tracking_router.router, prefix=f"{API_PREFIX}/tracking", tags=["Tracking"])
 app.include_router(role_router.router, prefix=f"{API_PREFIX}/roles", tags=["Roles"])
  
