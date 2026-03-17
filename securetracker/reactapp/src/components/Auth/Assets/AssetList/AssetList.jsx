@@ -1,18 +1,42 @@
-import React, { useState } from 'react';
-import AssetCard from '../AssetCard/AssetCard';
-import Loader from '../../Common/Loader';
-import './AssetList.css';
+import React, { useState } from "react";
+import AssetCard from "../AssetCard/AssetCard";
+import Loader from "../../Common/Loader";
+import "./AssetList.css";
+
+const pick = (obj, keys, fallback = "") => {
+  for (const k of keys) {
+    const v = obj?.[k];
+    if (v !== undefined && v !== null && v !== "") return v;
+  }
+  return fallback;
+};
 
 const AssetList = ({ assets, loading, onEdit, onDelete, onTrack }) => {
-  const [filter, setFilter] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const term = searchTerm.trim().toLowerCase();
 
   const filteredAssets = assets?.filter((asset) => {
-    const matchesFilter = filter === 'all' || asset.status === filter;
-    const matchesSearch =
-      asset.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asset.assetId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asset.licensePlate?.toLowerCase().includes(searchTerm.toLowerCase());
+    const status = (pick(asset, ["status"], "") || "").toLowerCase();
+
+    const matchesFilter = filter === "all" || status === filter;
+
+    const haystack = [
+      pick(asset, ["name"], ""),
+      pick(asset, ["asset_id", "assetId"], ""),
+      pick(asset, ["license_plate", "licensePlate"], ""),
+      pick(asset, ["make"], ""),
+      pick(asset, ["model"], ""),
+      pick(asset, ["vin"], ""),
+      pick(asset, ["color"], ""),
+      pick(asset, ["asset_type", "type"], ""),
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    const matchesSearch = !term || haystack.includes(term);
+
     return matchesFilter && matchesSearch;
   });
 
@@ -36,30 +60,37 @@ const AssetList = ({ assets, loading, onEdit, onDelete, onTrack }) => {
             className="search-input"
           />
         </div>
+
         <div className="filter-buttons">
           <button
-            className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-            onClick={() => setFilter('all')}
+            className={`filter-btn ${filter === "all" ? "active" : ""}`}
+            onClick={() => setFilter("all")}
           >
             All
           </button>
           <button
-            className={`filter-btn ${filter === 'active' ? 'active' : ''}`}
-            onClick={() => setFilter('active')}
+            className={`filter-btn ${filter === "active" ? "active" : ""}`}
+            onClick={() => setFilter("active")}
           >
             Active
           </button>
           <button
-            className={`filter-btn ${filter === 'inactive' ? 'active' : ''}`}
-            onClick={() => setFilter('inactive')}
+            className={`filter-btn ${filter === "inactive" ? "active" : ""}`}
+            onClick={() => setFilter("inactive")}
           >
             Inactive
           </button>
           <button
-            className={`filter-btn ${filter === 'maintenance' ? 'active' : ''}`}
-            onClick={() => setFilter('maintenance')}
+            className={`filter-btn ${filter === "maintenance" ? "active" : ""}`}
+            onClick={() => setFilter("maintenance")}
           >
             Maintenance
+          </button>
+          <button
+            className={`filter-btn ${filter === "stolen" ? "active" : ""}`}
+            onClick={() => setFilter("stolen")}
+          >
+            Stolen
           </button>
         </div>
       </div>
@@ -74,7 +105,7 @@ const AssetList = ({ assets, loading, onEdit, onDelete, onTrack }) => {
         <div className="asset-grid">
           {filteredAssets?.map((asset) => (
             <AssetCard
-              key={asset.id || asset.assetId}
+              key={asset.id || asset.asset_id || asset.assetId}
               asset={asset}
               onEdit={onEdit}
               onDelete={onDelete}
@@ -92,4 +123,3 @@ const AssetList = ({ assets, loading, onEdit, onDelete, onTrack }) => {
 };
 
 export default AssetList;
-

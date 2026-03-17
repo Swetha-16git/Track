@@ -76,13 +76,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
   };
 
-  const hasPermission = (permission) => {
+const hasPermission = (permission) => {
     if (!user || !user.role) return false;
     
     const rolePermissions = {
       admin: ['read', 'write', 'delete', 'manage_users', 'manage_assets', 'view_tracking'],
-      manager: ['read', 'write', 'manage_assets', 'view_tracking'],
-      user: ['read', 'view_tracking'],
+      viewer: ['read', 'view_tracking'],
       guest: ['read']
     };
     

@@ -1,85 +1,29 @@
-import axios from 'axios';
+import api from "./api";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// Tracking Services
-export const trackingService = {
-  // Get all tracking data for organization's assets
-  getAllTrackingData: async () => {
-    const response = await api.get('/tracking');
-    return response.data;
+const trackingService = {
+  // GET /api/v1/tracking/locations
+  getAllLatestLocations: async () => {
+    const { data } = await api.get("/tracking/locations");
+    return data;
   },
 
-  // Get tracking data for specific asset
-  getAssetTracking: async (assetId) => {
-    const response = await api.get(`/tracking/asset/${assetId}`);
-    return response.data;
+  // GET /api/v1/tracking/asset/{asset_id}
+  getHistory: async (assetId, params = {}) => {
+    const { data } = await api.get(`/tracking/asset/${assetId}`, { params });
+    return data;
   },
 
-  // Get real-time location of asset
-  getAssetLocation: async (assetId) => {
-    const response = await api.get(`/tracking/asset/${assetId}/location`);
-    return response.data;
+  // GET /api/v1/tracking/asset/{asset_id}/latest
+  getLatest: async (assetId) => {
+    const { data } = await api.get(`/tracking/asset/${assetId}/latest`);
+    return data;
   },
 
-  // Get tracking history for asset
-  getTrackingHistory: async (assetId, startDate, endDate) => {
-    const response = await api.get(`/tracking/asset/${assetId}/history`, {
-      params: { start_date: startDate, end_date: endDate },
-    });
-    return response.data;
-  },
-
-  // Get all asset locations (for live map)
-  getAllAssetLocations: async () => {
-    const response = await api.get('/tracking/locations');
-    return response.data;
-  },
-
-  // Update asset location (simulated for demo)
-  updateLocation: async (assetId, locationData) => {
-    const response = await api.post(`/tracking/asset/${assetId}/update`, locationData);
-    return response.data;
-  },
-
-  // Get tracking alerts
-  getAlerts: async () => {
-    const response = await api.get('/tracking/alerts');
-    return response.data;
-  },
-
-  // Subscribe to real-time tracking updates (WebSocket)
-  subscribeToUpdates: (assetId, callback) => {
-    // This would typically connect to a WebSocket
-    // For demo, we'll use polling
-    const interval = setInterval(async () => {
-      try {
-        const data = await trackingService.getAssetLocation(assetId);
-        callback(data);
-      } catch (error) {
-        console.error('Error fetching tracking update:', error);
-      }
-    }, 5000); // Poll every 5 seconds
-
-    return () => clearInterval(interval);
+  // POST /api/v1/tracking/record
+  createRecord: async (payload) => {
+    const { data } = await api.post("/tracking/record", payload);
+    return data;
   },
 };
 
 export default trackingService;
-

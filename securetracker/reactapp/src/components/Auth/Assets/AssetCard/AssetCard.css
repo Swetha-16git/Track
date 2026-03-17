@@ -1,25 +1,52 @@
 .asset-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  background: linear-gradient(180deg, #ffffff 0%, #f6f8fb 100%);
+  border-radius: 18px;
   padding: 20px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Accent strip */
+.asset-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: linear-gradient(180deg, #0d6efd, #6610f2);
 }
 
 .asset-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px) scale(1.01);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .asset-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 16px;
+  margin-bottom: 18px;
 }
 
 .asset-icon {
-  font-size: 32px;
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at top left, #ffffff55, transparent),
+    linear-gradient(135deg, #0d6efd, #6610f2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(13, 110, 253, 0.35);
 }
 
 .asset-info {
@@ -28,109 +55,115 @@
 
 .asset-name {
   margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
+  font-size: 19px;
+  font-weight: 800;
+  color: #1f2937;
 }
 
 .asset-id {
   font-size: 12px;
-  color: #666;
+  color: #6b7280;
+  letter-spacing: 0.4px;
 }
 
 .asset-status {
-  padding: 4px 12px;
-  border-radius: 20px;
+  padding: 6px 14px;
+  border-radius: 999px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 
+/* Status styles */
 .status-active {
-  background: #d4edda;
-  color: #155724;
+  background: linear-gradient(135deg, #d1fae5, #ecfdf5);
+  color: #065f46;
 }
 
 .status-inactive {
-  background: #f8d7da;
-  color: #721c24;
+  background: linear-gradient(135deg, #fee2e2, #fff1f2);
+  color: #991b1b;
 }
 
 .status-maintenance {
-  background: #fff3cd;
-  color: #856404;
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  color: #92400e;
+}
+
+.status-stolen {
+  background: linear-gradient(135deg, #fecaca, #fff1f2);
+  color: #7f1d1d;
 }
 
 .status-unknown {
-  background: #e2e3e5;
-  color: #383d41;
+  background: #e5e7eb;
+  color: #374151;
 }
 
 .asset-body {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 14px;
+  padding: 14px 16px;
   margin-bottom: 16px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .asset-detail {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.asset-detail:last-child {
-  border-bottom: none;
+  padding: 6px 0;
 }
 
 .detail-label {
-  font-weight: 500;
-  color: #666;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
 }
 
 .detail-value {
-  color: #333;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
 }
 
 .asset-actions {
   display: flex;
-  gap: 8px;
   justify-content: flex-end;
+  gap: 10px;
 }
 
 .action-btn {
-  padding: 8px 16px;
+  padding: 9px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
   border: none;
-  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
   display: flex;
   align-items: center;
-  gap: 4px;
-  transition: background-color 0.2s;
+  gap: 6px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
 }
 
 .track-btn {
-  background: #007bff;
-  color: white;
-}
-
-.track-btn:hover {
-  background: #0056b3;
+  background: linear-gradient(135deg, #0d6efd, #2563eb);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(13, 110, 253, 0.35);
 }
 
 .edit-btn {
-  background: #28a745;
-  color: white;
-}
-
-.edit-btn:hover {
-  background: #1e7e34;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
 }
 
 .delete-btn {
-  background: #dc3545;
-  color: white;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
 }
-
-.delete-btn:hover {
-  background: #c82333;
-}
-
