@@ -13,6 +13,7 @@ import Modal from '../components/Auth/Common/Modal';
 import { assetService } from '../services/assetService';
 import './AssetOnboarding.css';
 
+/* API → UI */
 const toUiAsset = (a) => ({
   id: a.id,
   assetId: a.asset_id,
@@ -30,6 +31,7 @@ const toUiAsset = (a) => ({
   lastLongitude: a.last_longitude ?? null,
 });
 
+/* UI → API */
 const toApiPayload = (ui) => ({
   name: ui.name,
   description: ui.description ?? null,
@@ -38,27 +40,31 @@ const toApiPayload = (ui) => ({
   make: ui.make ?? null,
   model: ui.model ?? null,
   year: ui.year ? Number(ui.year) : null,
-  license_plate: ui.licensePlate ?? null,
+  license_plate: ui.licensePlate ?? ui.license_plate ?? null,
   vin: ui.vin ?? null,
   color: ui.color ?? null,
+  last_latitude: ui.last_latitude ?? ui.lastLatitude ?? null,
+  last_longitude: ui.last_longitude ?? ui.lastLongitude ?? null,
 });
 
 const AssetOnboarding = () => {
   const { hasPermission } = useAuth();
 
-  // ✅ MUST match backend permissions.py
   const canRead = hasPermission('assets:read');
   const canManage = hasPermission('assets:write');
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  // ✅ NEW: support status filter
+  const selectedStatus = searchParams.get('status');
+  // ✅ Backward compatible: support older type filter links
   const selectedType = searchParams.get('type');
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingAsset, setEditingAsset] = useState(null);
 
-  // ✅ only ONE assets state
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pageError, setPageError] = useState('');
@@ -74,7 +80,7 @@ const AssetOnboarding = () => {
         setAssets(apiAssets.map(toUiAsset));
       } catch (e) {
         console.error(e);
-        setPageError('Failed to load assets. Check backend + token + permissions.');
+        setPageError('Failed to load assets. Check backend, token, or permissions.');
       } finally {
         setLoading(false);
       }
@@ -83,10 +89,18 @@ const AssetOnboarding = () => {
     if (canRead) loadAssets();
   }, [canRead]);
 
+  // ✅ Filter by STATUS first, else by TYPE
   const filteredAssets = useMemo(() => {
-    if (!selectedType) return assets;
-    return assets.filter((a) => a.type === selectedType);
-  }, [assets, selectedType]);
+    let list = assets;
+
+    if (selectedStatus) {
+      list = list.filter((a) => String(a.status).toLowerCase() === String(selectedStatus).toLowerCase());
+    } else if (selectedType) {
+      list = list.filter((a) => String(a.type).toLowerCase() === String(selectedType).toLowerCase());
+    }
+
+    return list;
+  }, [assets, selectedStatus, selectedType]);
 
   const handleAddAsset = () => {
     if (!canManage) return;
@@ -102,7 +116,7 @@ const AssetOnboarding = () => {
 
   const handleDeleteAsset = async (asset) => {
     if (!canManage) return;
-    if (!window.confirm(`Are you sure you want to delete "${asset.name}"?`)) return;
+    if (!window.confirm(`Delete asset "${asset.name}"?`)) return;
 
     try {
       setLoading(true);
@@ -132,9 +146,7 @@ const AssetOnboarding = () => {
       if (editingAsset) {
         const updatedApiAsset = await assetService.updateAsset(editingAsset.id, payload);
         const updatedUi = toUiAsset(updatedApiAsset);
-        setAssets((prev) =>
-          prev.map((a) => (a.id === editingAsset.id ? updatedUi : a))
-        );
+        setAssets((prev) => prev.map((a) => (a.id === editingAsset.id ? updatedUi : a)));
       } else {
         const createdApiAsset = await assetService.createAsset(payload);
         const createdUi = toUiAsset(createdApiAsset);
@@ -145,15 +157,12 @@ const AssetOnboarding = () => {
       setEditingAsset(null);
     } catch (e) {
       console.error(e);
-      setPageError(
-        'Save failed. Common causes: viewer role (403), enum mismatch, backend validation.'
-      );
+      setPageError('Save failed. Check permissions and backend validation.');
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ viewer can still READ (assets:read)
   if (!canRead) {
     return (
       <div className="asset-onboarding-layout">
@@ -181,7 +190,19 @@ const AssetOnboarding = () => {
             <div>
               <h1>Assets</h1>
               <p>
-                {selectedType ? (
+                {selectedStatus ? (
+                  <>
+                    Showing status: <b>{selectedStatus}</b>{' '}
+                    <button
+                      type="button"
+                      className="clear-filter-btn"
+                      onClick={() => navigate('/assets')}
+                      style={{ marginLeft: 8 }}
+                    >
+                      Clear
+                    </button>
+                  </>
+                ) : selectedType ? (
                   <>
                     Showing type: <b>{selectedType}</b>{' '}
                     <button
@@ -194,12 +215,11 @@ const AssetOnboarding = () => {
                     </button>
                   </>
                 ) : (
-                  'All asset types'
+                  'All assets'
                 )}
               </p>
             </div>
 
-            {/* ✅ Admin only */}
             {canManage && (
               <button className="add-asset-btn" onClick={handleAddAsset}>
                 ➕ Add New Asset

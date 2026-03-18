@@ -1,433 +1,86 @@
-/* ================================
-   NAVBAR CONTAINER
-================================ */
 .navbar {
-  height: 70px;
-  padding: 0 28px;
-
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: nowrap;
-
-  position: sticky;
-  top: 0;
+  padding: 0 24px;
   z-index: 1000;
-
-  font-family: "Rubik", "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-/* ADMIN GLASS NAVBAR */
-.admin-mode .navbar {
-  background: rgba(26, 31, 46, 0.95);
-  backdrop-filter: var(--glass-blur, blur(25px));
-  border-bottom: 1px solid rgba(103, 126, 234, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.admin-mode .navbar-brand {
-  background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Admin dark navbar */
-.admin-mode .navbar {
-  background: var(--bg-secondary, #1e293b);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border-bottom: 1px solid var(--bg-card, #334155);
-}
-
-/* Viewer light navbar (original neomorphic) */
-.viewer-mode .navbar {
-  background: #e0e5ec;
-  box-shadow:
-    6px 6px 12px #b8bcc2,
-    -6px -6px 12px #ffffff;
-}
-
-/* ================================
-   LEFT SECTION
-================================ */
 .navbar-left {
   display: flex;
   align-items: center;
   gap: 16px;
-  flex: 0 0 auto;
 }
 
-/* Menu Toggle */
 .menu-toggle {
-  background: #e0e5ec;
+  background: none;
   border: none;
-  padding: 10px;
-  border-radius: 12px;
-  cursor: pointer;
-
-  box-shadow:
-    4px 4px 8px #b8bcc2,
-    -4px -4px 8px #ffffff;
-
-  transition: all 0.2s ease;
-}
-
-.menu-toggle:hover {
-  box-shadow:
-    inset 3px 3px 6px #b8bcc2,
-    inset -3px -3px 6px #ffffff;
-}
-
-.menu-icon {
   font-size: 20px;
+  cursor: pointer;
+  color: #0b5ed7;
 }
 
-.admin-mode .menu-icon {
-  color: var(--text-primary, #f8fafc);
-}
-
-.viewer-mode .menu-icon {
-  color: #2c2c2c;
-}
-
-/* Brand */
 .navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.brand-icon {
-  font-size: 24px;
-}
-
-.brand-text {
-  font-size: 18px;
   font-weight: 700;
+  font-size: 18px;
+  color: #0b5ed7;
+  text-decoration: none;
 }
 
-.admin-mode .brand-text {
-  color: var(--text-primary, #f8fafc);
-}
-
-.viewer-mode .brand-text {
-  color: #2c2c2c;
-}
-
-/* ================================
-   CENTER SEARCH
-================================ */
-.navbar-center {
-  flex: 1 1 auto;
-  display: flex;
-  justify-content: center;
-  min-width: 220px;
-}
-
-.search-box {
+.nav-item-dropdown {
   position: relative;
-  width: min(520px, 100%);
 }
 
-.search-input {
-  width: 100%;
-  padding: 10px 40px 10px 16px;
-  border-radius: 14px;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  background: #e0e5ec;
-
-  box-shadow:
-    inset 4px 4px 8px #b8bcc2,
-    inset -4px -4px 8px #ffffff;
+.nav-item-dropdown button {
+  background: #f1f5f9;
+  border: 1px solid #e5e7eb;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
 }
 
-.search-icon {
+.nav-dropdown-menu {
   position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 16px;
-  opacity: 0.7;
+  top: 40px;
+  left: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  min-width: 180px;
 }
 
-/* ================================
-   RIGHT SECTION
-================================ */
+.nav-dropdown-menu button {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nav-dropdown-menu button:hover {
+  background: #f4f7fb;
+}
+
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
-  flex: 0 0 auto;
+  gap: 14px;
 }
 
-/* ================================
-   ASSETS DROPDOWN
-================================ */
-.nav-item-dropdown {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-/* Assets Button */
-.nav-item-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  background: #e0e5ec;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 16px;
-  cursor: pointer;
-
-  box-shadow:
-    6px 6px 12px #b8bcc2,
-    -6px -6px 12px #ffffff;
-
-  transition: all 0.2s ease;
-}
-
-.nav-item-btn:hover,
-.nav-item-btn.open {
-  box-shadow:
-    inset 4px 4px 8px #b8bcc2,
-    inset -4px -4px 8px #ffffff;
-}
-
-.nav-item-icon {
-  font-size: 16px;
-}
-
-.nav-item-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: #2c2c2c;
-}
-
-.nav-item-arrow {
-  font-size: 12px;
-  opacity: 0.6;
-}
-
-/* Assets Dropdown Menu */
-.nav-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 10px); /* ✅ directly below Assets */
-  right: 0;
-  left: auto;
-
-  width: 220px;
-  background: #e0e5ec;
-  border-radius: 18px;
-  padding: 12px;
-  z-index: 2000;
-
-  box-shadow:
-    12px 12px 24px #b8bcc2,
-    -12px -12px 24px #ffffff;
-}
-
-/* Dropdown Items */
-.nav-dropdown-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding: 10px;
-  font-size: 14px;
-  border-radius: 12px;
-  background: #e0e5ec;
-  border: none;
-  cursor: pointer;
-
-  box-shadow:
-    inset 2px 2px 4px #b8bcc2,
-    inset -2px -2px 4px #ffffff;
-
-  transition: all 0.2s ease;
-}
-
-.nav-dropdown-item:hover {
-  box-shadow:
-    inset 3px 3px 6px #b8bcc2,
-    inset -3px -3px 6px #ffffff;
-}
-
-.dd-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 12px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #e0e5ec;
-  box-shadow:
-    inset 3px 3px 6px #b8bcc2,
-    inset -3px -3px 6px #ffffff;
-
-  font-size: 16px;
-}
-
-.dd-text {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-/* ================================
-   NOTIFICATIONS
-================================ */
-.notification-btn {
-  position: relative;
-  background: #e0e5ec;
-  border: none;
-  padding: 10px;
-  border-radius: 12px;
-  cursor: pointer;
-
-  box-shadow:
-    4px 4px 8px #b8bcc2,
-    -4px -4px 8px #ffffff;
-}
-
-.notification-btn span {
-  font-size: 18px;
-}
-
-.notification-badge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #dc3545;
+.navbar-right button {
+  background: #0b5ed7;
   color: #ffffff;
-  font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 50%;
-}
-
-/* ================================
-   USER DROPDOWN
-================================ */
-.user-dropdown {
-  position: relative;
-}
-
-.user-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  background: #e0e5ec;
   border: none;
-  padding: 8px 14px;
-  border-radius: 16px;
+  padding: 6px 16px;
+  border-radius: 20px;
   cursor: pointer;
-
-  box-shadow:
-    6px 6px 12px #b8bcc2,
-    -6px -6px 12px #ffffff;
-
-  transition: all 0.2s ease;
-}
-
-.user-btn:hover {
-  box-shadow:
-    inset 4px 4px 8px #b8bcc2,
-    inset -4px -4px 8px #ffffff;
-}
-
-.user-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-weight: 700;
-}
-
-/* Admin mode */
-.admin-mode .user-avatar {
-  background: var(--accent, #3b82f6);
-  color: white;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-}
-
-/* Viewer mode */
-.viewer-mode .user-avatar {
-  background: #e0e5ec;
-  color: #2563eb;
-  box-shadow:
-    inset 3px 3px 6px #b8bcc2,
-    inset -3px -3px 6px #ffffff;
-}
-
-.user-name {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.admin-mode .user-name {
-  color: var(--text-primary, #f8fafc);
-}
-
-.viewer-mode .user-name {
-  color: #2c2c2c;
-}
-
-.dropdown-arrow {
-  font-size: 12px;
-  opacity: 0.6;
-}
-
-/* User Dropdown Menu */
-.dropdown-menu {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  width: 220px;
-
-  background: #e0e5ec;
-  border-radius: 18px;
-  padding: 12px;
-
-  box-shadow:
-    12px 12px 24px #b8bcc2,
-    -12px -12px 24px #ffffff;
-}
-
-.dropdown-divider {
-  height: 1px;
-  background: rgba(0,0,0,0.1);
-  margin: 10px 0;
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding: 10px;
-  font-size: 14px;
-  border-radius: 12px;
-  background: #e0e5ec;
-  border: none;
-  cursor: pointer;
-
-  box-shadow:
-    inset 2px 2px 4px #b8bcc2,
-    inset -2px -2px 4px #ffffff;
-}
-
-.dropdown-item.logout {
-  color: #dc3545;
 }
