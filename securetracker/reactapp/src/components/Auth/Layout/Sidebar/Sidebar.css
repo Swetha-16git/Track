@@ -1,315 +1,60 @@
-/* Sidebar.css */
-
-/* ===== Theme tokens (easy to tweak) ===== */
-:root {
-  --sb-bg: #ffffff;
-  --sb-border: #eef1f6;
-  --sb-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
-  --sb-muted: #7a8899;
-  --sb-text: #1f2a37;
-
-  --sb-hover-bg: #f3f6fb;
-  --sb-active-bg: #eef6ff;
-  --sb-active-text: #0b5cab;
-  --sb-icon-bg: transparent;
-  --sb-active-icon-bg: #ffcc47;
-  --sb-active-icon-shadow: 0 8px 16px rgba(255, 204, 71, 0.35);
-  --sb-radius: 16px;
-  --sb-item-radius: 12px;
-  --sb-width-open: 280px;
-  --sb-width-closed: 80px;
-}
-
-/* ADMIN GLASSMORPHISM SIDEBAR */
-.admin-mode .sidebar {
-  background: var(--glass-bg, rgba(30, 41, 59, 0.95)) !important;
-  backdrop-filter: var(--glass-blur, blur(20px));
-  border-right: 1px solid rgba(103, 126, 234, 0.3);
-  box-shadow: var(--sidebar-glow, rgba(103, 126, 234, 0.3)) 0 0 30px;
-}
-
-.admin-mode .sidebar-header {
-  background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.admin-mode .org-icon {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-}
-
-.admin-mode .nav-link:hover {
-  background: var(--sidebar-glow, rgba(103, 126, 234, 0.4));
-  box-shadow: 0 4px 12px rgba(103, 126, 234, 0.3);
-}
-
-.admin-mode .nav-link.active {
-  background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
-  box-shadow: var(--glow-gold);
-}
-
-.admin-mode .nav-link.active .nav-icon {
-  background: var(--gold, #ffd700);
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-  color: #1a1f2e;
-}
-
-.admin-mode .user-info {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-/* ===== Sidebar container ===== */
 .sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-
-  background: var(--sb-bg);
-  border-right: 1px solid var(--sb-border);
-  box-shadow: var(--sb-shadow);
-
-  display: flex;
-  flex-direction: column;
-
+  position: fixed;
+  top: 56px;
+  left: 0;
+  height: calc(100vh - 56px);
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  transition: width 0.3s ease;
   overflow: hidden;
-  transition: width 220ms ease, transform 220ms ease;
+  z-index: 100;
 }
 
-/* Expanded/Collapsed widths */
+/* Open */
 .sidebar.open {
-  width: var(--sb-width-open);
+  width: 220px;
 }
 
+/* Closed */
 .sidebar.closed {
-  width: var(--sb-width-closed);
+  width: 64px;
 }
 
-/* ===== Header ===== */
-.sidebar-header {
-  padding: 16px 14px;
-  border-bottom: 1px solid var(--sb-border);
-}
-
-.org-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: #fafbfe;
-}
-
-.org-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-
-  display: grid;
-  place-items: center;
-
-  background: #f1f5fb;
-  color: var(--sb-active-text);
-  font-size: 18px;
-}
-
-.org-name {
-  font-weight: 600;
-  color: var(--sb-text);
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Hide org name when collapsed */
-.sidebar.closed .org-name {
-  display: none;
-}
-
-/* Center org icon when collapsed */
-.sidebar.closed .org-info {
-  justify-content: center;
-  padding: 10px;
-}
-
-/* ===== Nav ===== */
-.sidebar-nav {
-  flex: 1;
-  padding: 10px 10px 14px;
-  overflow-y: auto;
-}
-
-/* optional scrollbar styling */
-.sidebar-nav::-webkit-scrollbar {
-  width: 8px;
-}
-.sidebar-nav::-webkit-scrollbar-thumb {
-  background: #dfe6f2;
-  border-radius: 999px;
-}
-.sidebar-nav::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.nav-list {
+.sidebar ul {
   list-style: none;
-  padding: 0;
+  padding: 16px 0;
   margin: 0;
-  display: grid;
-  gap: 6px;
 }
 
-/* ===== Nav link ===== */
-.nav-link {
+.sidebar a {
   display: flex;
   align-items: center;
   gap: 12px;
-
-  padding: 10px 12px;
-  border-radius: var(--sb-item-radius);
+  padding: 10px 14px;
+  margin: 6px 10px;
+  border-radius: 8px;
+  color: #374151;
   text-decoration: none;
-
-  color: var(--sb-muted);
-  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+  white-space: nowrap;
 }
 
-/* Hover like screenshot */
-.nav-link:hover {
-  background: var(--sb-hover-bg);
-  color: #2b3a4a;
+.sidebar a:hover {
+  background: #f1f5f9;
 }
 
-/* Active state */
-.nav-link.active {
-  background: var(--sb-active-bg);
-  color: var(--sb-active-text);
-  font-weight: 600;
+.sidebar a.active {
+  background: #0b5ed7;
+  color: #ffffff;
 }
 
-/* Icon style */
-.nav-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 14px;
-
-  display: grid;
-  place-items: center;
-
-  background: var(--sb-icon-bg);
+/* Icon always visible */
+.sidebar a span:first-child {
   font-size: 18px;
-  line-height: 1;
+  min-width: 24px;
+  text-align: center;
 }
 
-/* Active icon gets yellow pill like screenshot */
-.nav-link.active .nav-icon {
-  background: var(--sb-active-icon-bg);
-  box-shadow: var(--sb-active-icon-shadow);
-  color: #1d2939;
-}
-
-/* Labels */
-.nav-label {
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Collapse behavior: center icons, hide labels */
-.sidebar.closed .nav-link {
-  justify-content: center;
-  padding: 10px;
-}
-
-.sidebar.closed .nav-label {
+/* Hide text when closed */
+.sidebar.closed a span:last-child {
   display: none;
 }
-
-/* ===== Footer (user info) ===== */
-.sidebar-footer {
-  border-top: 1px solid var(--sb-border);
-  padding: 14px;
-}
-
-/* Role-aware overrides */
-.admin-mode .sidebar-footer {
-  background: var(--bg-card, #334155);
-  border-top-color: var(--bg-hover, #475569);
-}
-
-.viewer-mode .sidebar-footer {
-  background: #fafbfe;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: #fafbfe;
-}
-
-.user-avatar-small {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-
-  display: grid;
-  place-items: center;
-
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.admin-mode .user-avatar-small {
-  background: var(--accent, #3b82f6);
-  color: white;
-}
-
-.viewer-mode .user-avatar-small {
-  background: #eaf2ff;
-  color: var(--sb-active-text, #0b5cab);
-}
-
-.user-details {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.user-name {
-  font-weight: 600;
-  color: var(--sb-text);
-  font-size: 13px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.user-role.role-badge {
-  font-size: 11px !important;
-}
-
-/* Hide user details when collapsed */
-.sidebar.closed .user-details {
-  display: none;
-}
-
-.sidebar.closed .user-info {
-  justify-content: center;
-  padding: 10px;
-}
-
-/* ===== Optional: nicer click feel ===== */
-.nav-link:active {
-  transform: translateY(1px);
-}
-
-/* ===== Responsive (optional) =====
-   If you want sidebar to overlay on small screens, you can adapt later.
-*/

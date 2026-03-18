@@ -1,67 +1,79 @@
-.live-tracking-layout {
-  min-height: 100vh;
+/* ===== MAIN CONTENT SHIFT (SIDEBAR AWARE) ===== */
+.dashboard-main {
+  margin-top: 56px;
+  padding: 32px;
+  min-height: calc(100vh - 56px);
+  background: #f4f7fb;
+  transition: margin-left 0.3s ease;
+}
+
+/* Sidebar open */
+.sidebar.open ~ .dashboard-main {
+  margin-left: 220px;
+}
+
+/* Sidebar closed */
+.sidebar.closed ~ .dashboard-main {
+  margin-left: 64px;
+}
+
+/* ===== LIVE TRACKING PAGE ===== */
+.page-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
 }
 
-.admin-mode .live-tracking-layout {
-  background: var(--bg-primary, #0f172a);
+.page-header h1 {
+  color: #0b5ed7;
+  font-size: 24px;
 }
 
-.viewer-mode .live-tracking-layout {
-  background: #f8fafc;
-}
-
+/* View toggle buttons */
 .view-toggle {
   display: flex;
   gap: 8px;
 }
 
 .view-toggle .view-btn {
-  padding: 8px 16px;
-  border: 1px solid #ddd;
-  background: #fff;
-  border-radius: 6px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
   cursor: pointer;
   font-size: 14px;
-  transition: all 0.2s;
-}
-
-.view-toggle .view-btn:hover {
-  background: #f8f9fa;
 }
 
 .view-toggle .view-btn.active {
-  background: #007bff;
-  color: white;
-  border-color: #007bff;
+  background: #0b5ed7;
+  color: #ffffff;
+  border-color: #0b5ed7;
 }
 
+/* Map + Table layout */
 .tracking-content {
-  display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 24px;
 }
 
-.tracking-content.map .map-section {
-  flex: 1;
-  min-width: 100%;
+/* Single view modes */
+.tracking-content.map {
+  grid-template-columns: 1fr;
 }
 
-.tracking-content.table .table-section {
-  flex: 1;
-  min-width: 100%;
+.tracking-content.table {
+  grid-template-columns: 1fr;
 }
 
-.tracking-content.both .map-section,
-.tracking-content.both .table-section {
-  flex: 1;
-  min-width: 400px;
-}
-
+/* Cards */
 .map-section,
 .table-section {
-  flex: 1;
-  min-width: 400px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
 }
-
