@@ -1,11 +1,13 @@
-/* ================================
-   GLOBAL LAYOUT
-================================ */
+/* =====================================================
+   DASHBOARD – LIGHT ENTERPRISE STYLE
+   Matches Assets Page UI
+===================================================== */
+
 .dashboard-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #e0e5ec;
+  background: #eef2f7;
   font-family: "Rubik", "Segoe UI", Roboto, Arial, sans-serif;
 }
 
@@ -17,79 +19,99 @@
 .dashboard-main {
   flex: 1;
   padding: 28px;
-  background: #e0e5ec;
   overflow-y: auto;
+  background: #eef2f7;
 }
 
-/* ================================
+/* =====================================================
    HEADER
-================================ */
+===================================================== */
 .dashboard-header {
-  margin-bottom: 28px;
+  padding: 22px 26px;
+  margin-bottom: 26px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.dashboard-header::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 5px;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #2563eb, #7c3aed);
 }
 
 .dashboard-header h1 {
   margin: 0 0 6px;
-  font-size: 30px;
-  font-weight: 700;
-  color: #2c2c2c;
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
 }
 
 .dashboard-header p {
   margin: 0;
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #64748b;
 }
 
-/* ================================
+/* =====================================================
    STATS GRID
-================================ */
+===================================================== */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 24px;
-  margin-bottom: 36px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 22px;
+  margin-bottom: 32px;
 }
 
+/* STAT CARD */
 .stat-card {
-  background: #e0e5ec;
+  background: #ffffff;
   border-radius: 18px;
-  padding: 24px;
+  padding: 22px;
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
   cursor: pointer;
-
-  box-shadow:
-    10px 10px 20px #b8bcc2,
-    -10px -10px 20px #ffffff;
-
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
   transition: all 0.25s ease;
 }
 
 .stat-card:hover {
-  box-shadow:
-    5px 5px 10px #b8bcc2,
-    -5px -5px 10px #ffffff;
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.12);
 }
 
+/* ICON */
 .stat-icon {
-  font-size: 42px;
-  filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.15));
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #ffffff;
 }
 
+/* STAT TEXT */
 .stat-info h3 {
   margin: 0;
-  font-size: 34px;
-  font-weight: 700;
-  color: #2c2c2c;
+  font-size: 30px;
+  font-weight: 800;
+  color: #0f172a;
 }
 
 .stat-info p {
   margin-top: 4px;
   font-size: 13px;
-  color: #6b7280;
+  color: #64748b;
 }
 
 /* Alert pulse */
@@ -102,25 +124,22 @@
   50% { opacity: 0.5; }
 }
 
-/* ================================
+/* =====================================================
    QUICK ACTIONS
-================================ */
+===================================================== */
 .quick-actions {
-  background: #e0e5ec;
-  border-radius: 20px;
-  padding: 24px;
-  margin-bottom: 36px;
-
-  box-shadow:
-    12px 12px 24px #b8bcc2,
-    -12px -12px 24px #ffffff;
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 32px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
 .quick-actions h2 {
-  margin-bottom: 18px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #2c2c2c;
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .action-buttons {
@@ -129,64 +148,51 @@
   gap: 14px;
 }
 
-/* Primary Button */
-.action-btn-primary {
-  padding: 12px 26px;
+/* Buttons */
+.action-btn-primary,
+.action-btn-secondary {
+  padding: 12px 24px;
   font-size: 14px;
-  font-weight: 600;
   border-radius: 14px;
   border: none;
   cursor: pointer;
-  color: #2563eb;
-  background: #e0e5ec;
-
-  box-shadow:
-    6px 6px 12px #b8bcc2,
-    -6px -6px 12px #ffffff;
-
+  font-weight: 600;
   transition: all 0.2s ease;
 }
 
-.action-btn-primary:hover {
-  box-shadow:
-    inset 4px 4px 8px #b8bcc2,
-    inset -4px -4px 8px #ffffff;
+.action-btn-primary {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #ffffff;
+  box-shadow: 0 10px 26px rgba(37, 99, 235, 0.35);
 }
 
-/* Secondary Button */
-.action-btn-secondary {
-  padding: 12px 26px;
-  font-size: 14px;
-  font-weight: 500;
-  border-radius: 14px;
-  border: none;
-  cursor: pointer;
-  color: #2c2c2c;
-  background: #e0e5ec;
+.action-btn-primary:hover {
+  transform: translateY(-2px);
+}
 
+.action-btn-secondary {
+  background: #e0e5ec;
+  color: #0f172a;
   box-shadow:
     6px 6px 12px #b8bcc2,
     -6px -6px 12px #ffffff;
 }
 
-/* ================================
+/* =====================================================
    RECENT ACTIVITY
-================================ */
+===================================================== */
 .recent-activity {
-  background: #e0e5ec;
-  border-radius: 20px;
-  padding: 24px;
-
-  box-shadow:
-    12px 12px 24px #b8bcc2,
-    -12px -12px 24px #ffffff;
+  border-radius: 18px;
+  padding: 22px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
 .recent-activity h2 {
-  margin-bottom: 18px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #2c2c2c;
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .activity-list {
@@ -201,7 +207,6 @@
   padding: 14px;
   border-radius: 14px;
   background: #e0e5ec;
-
   box-shadow:
     inset 4px 4px 8px #b8bcc2,
     inset -4px -4px 8px #ffffff;
@@ -214,27 +219,27 @@
 .activity-message {
   margin: 0;
   font-size: 14px;
-  color: #2c2c2c;
+  color: #0f172a;
 }
 
 .activity-time {
   font-size: 12px;
-  color: #6b7280;
+  color: #64748b;
 }
 
-/* ================================
-   ACCESS DENIED
-================================ */
-.access-denied {
-  text-align: center;
-  padding: 80px 20px;
-}
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 768px) {
+  .dashboard-main {
+    padding: 18px;
+  }
 
-.access-denied h2 {
-  color: #dc3545;
-  margin-bottom: 8px;
-}
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 
-.access-denied p {
-  color: #6b7280;
+  .action-buttons {
+    flex-direction: column;
+  }
 }

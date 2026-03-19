@@ -1,59 +1,80 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* App.css - Role-based themes */
+
+/* ADMIN MODE - Bright Glass Premium */
+.admin-mode {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* background-color: #f5f7fa; */
+/* VIEWER MODE - Original Neomorphic */
+.viewer-mode {
+  --bg-primary: #e0e5ec;
+  --bg-secondary: #f1f5f9;
+  --bg-card: #f8fafc;
+  --bg-hover: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #dc2626;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-button {
-  font-family: inherit;
-}
-
-/* Global layout styles */
-.login-page,
-.mfa-page {
+.app-container {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
-/* Responsive utilities */
-@media (max-width: 768px) {
-  .dashboard-main {
-    padding: 16px;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .tracking-content {
-    flex-direction: column;
-  }
-
-  .map-section,
-  .table-section {
-    min-width: 100%;
-  }
+/* Admin glass overrides */
+.admin-mode .sidebar {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(103, 126, 234, 0.3);
 }
 
+.admin-mode .navbar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(25px);
+}
+
+.admin-mode .stat-card {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(103, 126, 234, 0.2);
+  color: var(--text-primary) !important;
+}
+
+.admin-mode .stat-info h3 {
+  color: var(--text-primary) !important;
+}
+
+.admin-mode .stat-info p {
+  color: var(--text-secondary) !important;
+}
+
+/* Role badges */
+.role-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.admin-mode .role-badge {
+  background: #667eea;
+  color: white;
+}
+
+.viewer-mode .role-badge {
+  background: #6b7280;
+  color: white;
+}
+
+/* Viewer neomorphic preserved */
+.viewer-mode [class*="shadow"] {
+  box-shadow: inherit;
+}

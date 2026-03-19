@@ -8,19 +8,55 @@
   --sb-muted: #7a8899;
   --sb-text: #1f2a37;
 
-  --sb-hover-bg: #f3f6fb;        /* light blue-gray hover like your image */
-  --sb-active-bg: #eef6ff;       /* subtle active row tint */
-  --sb-active-text: #0b5cab;     /* deep blue label in active */
+  --sb-hover-bg: #f3f6fb;
+  --sb-active-bg: #eef6ff;
+  --sb-active-text: #0b5cab;
   --sb-icon-bg: transparent;
-
-  --sb-active-icon-bg: #ffcc47;  /* yellow icon badge in image */
+  --sb-active-icon-bg: #ffcc47;
   --sb-active-icon-shadow: 0 8px 16px rgba(255, 204, 71, 0.35);
-
   --sb-radius: 16px;
   --sb-item-radius: 12px;
+  --sb-width-open: 280px;
+  --sb-width-closed: 80px;
+}
 
-  --sb-width-open: 260px;
-  --sb-width-closed: 76px;
+/* ADMIN GLASSMORPHISM SIDEBAR */
+.admin-mode .sidebar {
+  background: var(--glass-bg, rgba(30, 41, 59, 0.95)) !important;
+  backdrop-filter: var(--glass-blur, blur(20px));
+  border-right: 1px solid rgba(103, 126, 234, 0.3);
+  box-shadow: var(--sidebar-glow, rgba(103, 126, 234, 0.3)) 0 0 30px;
+}
+
+.admin-mode .sidebar-header {
+  background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-mode .org-icon {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.admin-mode .nav-link:hover {
+  background: var(--sidebar-glow, rgba(103, 126, 234, 0.4));
+  box-shadow: 0 4px 12px rgba(103, 126, 234, 0.3);
+}
+
+.admin-mode .nav-link.active {
+  background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+  box-shadow: var(--glow-gold);
+}
+
+.admin-mode .nav-link.active .nav-icon {
+  background: var(--gold, #ffd700);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+  color: #1a1f2e;
+}
+
+.admin-mode .user-info {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 /* ===== Sidebar container ===== */
@@ -195,7 +231,16 @@
 .sidebar-footer {
   border-top: 1px solid var(--sb-border);
   padding: 14px;
-  background: #ffffff;
+}
+
+/* Role-aware overrides */
+.admin-mode .sidebar-footer {
+  background: var(--bg-card, #334155);
+  border-top-color: var(--bg-hover, #475569);
+}
+
+.viewer-mode .sidebar-footer {
+  background: #fafbfe;
 }
 
 .user-info {
@@ -216,10 +261,18 @@
   display: grid;
   place-items: center;
 
-  background: #eaf2ff;
-  color: var(--sb-active-text);
   font-weight: 700;
   font-size: 14px;
+}
+
+.admin-mode .user-avatar-small {
+  background: var(--accent, #3b82f6);
+  color: white;
+}
+
+.viewer-mode .user-avatar-small {
+  background: #eaf2ff;
+  color: var(--sb-active-text, #0b5cab);
 }
 
 .user-details {
@@ -238,12 +291,8 @@
   text-overflow: ellipsis;
 }
 
-.user-role {
-  font-size: 12px;
-  color: var(--sb-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.user-role.role-badge {
+  font-size: 11px !important;
 }
 
 /* Hide user details when collapsed */
