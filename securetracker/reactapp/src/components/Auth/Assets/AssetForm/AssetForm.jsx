@@ -15,15 +15,17 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
     vin: "",
     color: "",
 
-    // ✅ NEW: location fields for live tracking
-    latitude: "",
-    longitude: "",
+    // ✅ location fields stored as last_latitude/last_longitude (matches backend style)
+    last_latitude: "",
+    last_longitude: "",
   });
 
   useEffect(() => {
     if (asset) {
-      // support both snake_case and camelCase if present
+      // support both snake_case and your UI camelCase fields
       const lat =
+        asset.last_latitude ??
+        asset.lastLatitude ??
         asset.latitude ??
         asset.lat ??
         asset.location?.latitude ??
@@ -31,6 +33,8 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
         "";
 
       const lon =
+        asset.last_longitude ??
+        asset.lastLongitude ??
         asset.longitude ??
         asset.lon ??
         asset.lng ??
@@ -52,9 +56,8 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
         vin: asset.vin ?? "",
         color: asset.color ?? "",
 
-        // ✅ NEW: set initial location if asset already has it
-        latitude: lat,
-        longitude: lon,
+        last_latitude: lat,
+        last_longitude: lon,
       });
     }
   }, [asset]);
@@ -71,16 +74,16 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
       ...formData,
       year: formData.year === "" ? null : Number(formData.year),
 
-      // ensure latitude/longitude numbers (or null)
-      latitude:
-        formData.latitude === "" || formData.latitude === null
+      // ✅ ensure numbers (or null)
+      last_latitude:
+        formData.last_latitude === "" || formData.last_latitude === null
           ? null
-          : Number(formData.latitude),
+          : Number(formData.last_latitude),
 
-      longitude:
-        formData.longitude === "" || formData.longitude === null
+      last_longitude:
+        formData.last_longitude === "" || formData.last_longitude === null
           ? null
-          : Number(formData.longitude),
+          : Number(formData.last_longitude),
     };
 
     onSubmit(payload);
@@ -237,15 +240,15 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
         </div>
       </div>
 
-      {/* ✅ NEW: Location row for live tracking */}
+      {/* ✅ Location row */}
       <div className="form-row">
         <div className="form-group">
-          <label htmlFor="latitude">Latitude</label>
+          <label htmlFor="last_latitude">Latitude</label>
           <input
             type="number"
-            id="latitude"
-            name="latitude"
-            value={formData.latitude}
+            id="last_latitude"
+            name="last_latitude"
+            value={formData.last_latitude}
             onChange={handleChange}
             placeholder="e.g., 13.0827"
             step="any"
@@ -253,12 +256,12 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="longitude">Longitude</label>
+          <label htmlFor="last_longitude">Longitude</label>
           <input
             type="number"
-            id="longitude"
-            name="longitude"
-            value={formData.longitude}
+            id="last_longitude"
+            name="last_longitude"
+            value={formData.last_longitude}
             onChange={handleChange}
             placeholder="e.g., 80.2707"
             step="any"
