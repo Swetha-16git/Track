@@ -78,3 +78,6 @@
 .viewer-mode [class*="shadow"] {
   box-shadow: inherit;
 }
+.hover-opacity:hover {
+  opacity: 1 !important;
+}
