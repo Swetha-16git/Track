@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from "react";
 import "./AssetForm.css";
 
-const AssetForm = ({ asset, onSubmit, onCancel }) => {
-  const [formData, setFormData] = useState({
-    asset_id: "",
-    name: "",
-    description: "",
-    asset_type: "car",
-    status: "active",
-    make: "",
-    model: "",
-    year: "",
-    license_plate: "",
-    vin: "",
-    color: "",
+const initialState = {
+  asset_id: "",
+  name: "",
+  description: "",
+  asset_type: "tower crane",
+  status: "active",
+  make: "",
+  model: "",
+  year: "",
+  license_plate: "",
+  vin: "",
+  color: "",
+  latitude: "",
+  longitude: "",
+};
 
-    // ✅ NEW: location fields for live tracking
-    latitude: "",
-    longitude: "",
-  });
+const AssetForm = ({ asset, onSubmit, onCancel }) => {
+  const [formData, setFormData] = useState(initialState);
 
   useEffect(() => {
     if (asset) {
@@ -40,10 +40,10 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
         "";
 
       setFormData({
-        asset_id: asset.asset_id ?? asset.assetId ?? "",
+        asset_id: String(asset.asset_id ?? asset.assetId ?? ""),
         name: asset.name ?? "",
         description: asset.description ?? "",
-        asset_type: asset.asset_type ?? asset.type ?? "car",
+        asset_type: asset.asset_type ?? asset.type ?? "tower crane",
         status: asset.status ?? "active",
         make: asset.make ?? "",
         model: asset.model ?? "",
@@ -51,32 +51,46 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
         license_plate: asset.license_plate ?? asset.licensePlate ?? "",
         vin: asset.vin ?? "",
         color: asset.color ?? "",
-
-        // ✅ NEW: set initial location if asset already has it
-        latitude: lat,
-        longitude: lon,
+        latitude: lat === null || lat === undefined ? "" : String(lat),
+        longitude: lon === null || lon === undefined ? "" : String(lon),
       });
+    } else {
+      // Reset for Add Asset
+      setFormData(initialState);
     }
   }, [asset]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // ✅ Asset ID must be numeric-only
+    if (name === "asset_id") {
+      const onlyDigits = value.replace(/\D/g, "");
+      setFormData((prev) => ({ ...prev, asset_id: onlyDigits }));
+      return;
+    }
+
+    // ✅ Normal update for all other fields
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // ✅ Validate numeric-only Asset ID
+    if (!formData.asset_id || !/^\d+$/.test(formData.asset_id)) {
+      alert("Asset ID must contain only numbers (digits).");
+      return;
+    }
+
     const payload = {
       ...formData,
+      asset_id: Number(formData.asset_id), // ✅ send numeric
       year: formData.year === "" ? null : Number(formData.year),
-
-      // ensure latitude/longitude numbers (or null)
       latitude:
         formData.latitude === "" || formData.latitude === null
           ? null
           : Number(formData.latitude),
-
       longitude:
         formData.longitude === "" || formData.longitude === null
           ? null
@@ -86,8 +100,30 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
     onSubmit(payload);
   };
 
-  const assetTypes = ["car", "bike", "truck", "motorcycle", "other"];
+  // ✅ Updated asset types (your requested list)
+  const assetTypes = [
+    "tower crane",
+    "mobile crane",
+    "excavator",
+    "bulldozer",
+    "wheel tractor-scraper",
+    "skid steer loader",
+    "backhoe loader",
+    "trencher",
+    "articulated hauler",
+    "compactor",
+    "concrete pump",
+    "tunnel boring machine",
+  ];
+
   const statusOptions = ["active", "inactive", "maintenance", "stolen"];
+
+  // ✅ Pretty label: "tunnel boring machine" -> "Tunnel Boring Machine"
+  const toTitleCase = (str) =>
+    (str || "")
+      .split(" ")
+      .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : ""))
+      .join(" ");
 
   return (
     <form onSubmit={handleSubmit} className="asset-form">
@@ -100,10 +136,16 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             name="asset_id"
             value={formData.asset_id}
             onChange={handleChange}
-            placeholder="e.g., AST-0001"
+            placeholder="e.g., 1001"
             required
-            disabled={!!asset}
+            disabled={!!asset} // ✅ ID cannot be edited once created
+            inputMode="numeric"
+            pattern="[0-9]*"
+            autoComplete="off"
           />
+          <small style={{ opacity: 0.7 }}>
+            Only numbers allowed. Asset ID cannot be changed after creation.
+          </small>
         </div>
 
         <div className="form-group">
@@ -132,7 +174,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
           >
             {assetTypes.map((t) => (
               <option key={t} value={t}>
-                {t.charAt(0).toUpperCase() + t.slice(1)}
+                {toTitleCase(t)}
               </option>
             ))}
           </select>
@@ -149,7 +191,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
           >
             {statusOptions.map((s) => (
               <option key={s} value={s}>
-                {s.charAt(0).toUpperCase() + s.slice(1)}
+                {toTitleCase(s)}
               </option>
             ))}
           </select>
@@ -165,7 +207,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             name="make"
             value={formData.make}
             onChange={handleChange}
-            placeholder="e.g., Toyota"
+            placeholder="e.g., Caterpillar"
           />
         </div>
 
@@ -177,7 +219,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             name="model"
             value={formData.model}
             onChange={handleChange}
-            placeholder="e.g., Camry"
+            placeholder="e.g., 320D"
           />
         </div>
       </div>
@@ -232,12 +274,12 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             name="color"
             value={formData.color}
             onChange={handleChange}
-            placeholder="e.g., Silver"
+            placeholder="e.g., Yellow"
           />
         </div>
       </div>
 
-      {/* ✅ NEW: Location row for live tracking */}
+      {/* ✅ Location fields for live tracking */}
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="latitude">Latitude</label>
