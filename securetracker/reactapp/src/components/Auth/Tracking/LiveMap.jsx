@@ -1,102 +1,105 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import './Tracking.css';
 
-const LiveMap = ({ assets, selectedAsset, onAssetSelect }) => {
-  const [mapReady, setMapReady] = useState(false);
+/** Fix marker icons in React builds */
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 
-  // Mock locations for demo purposes
-  const mockLocations = {
-    'ASSET001': { lat: 40.7128, lng: -74.0060, address: 'New York, NY' },
-    'ASSET002': { lat: 34.0522, lng: -118.2437, address: 'Los Angeles, CA' },
-    'ASSET003': { lat: 41.8781, lng: -87.6298, address: 'Chicago, IL' },
-    'ASSET004': { lat: 29.7604, lng: -95.3698, address: 'Houston, TX' },
-    'ASSET005': { lat: 33.4484, lng: -112.0740, address: 'Phoenix, AZ' },
-  };
+/** ✅ This makes the map MOVE when selectedAsset changes */
+function RecenterMap({ lat, lng }) {
+  const map = useMap();
 
   useEffect(() => {
-    // Simulate map initialization
-    const timer = setTimeout(() => setMapReady(true), 500);
-    return () => clearTimeout(timer);
-  }, []);
+    if (lat == null || lng == null) return;
+    map.setView([lat, lng], 15, { animate: true });
+  }, [lat, lng, map]);
 
-  const getAssetLocation = (assetId) => {
-    return mockLocations[assetId] || { lat: 39.8283, lng: -98.5795, address: 'Unknown Location' };
-  };
+  return null;
+}
+
+const LiveMap = ({ assets = [], selectedAsset, onAssetSelect }) => {
+  const assetsWithLocation = useMemo(
+    () => assets.filter((a) => a.last_latitude != null && a.last_longitude != null),
+    [assets]
+  );
+
+  const selectedLat = selectedAsset?.last_latitude ?? null;
+  const selectedLng = selectedAsset?.last_longitude ?? null;
+
+  const defaultCenter = useMemo(() => {
+    // If selected asset has coordinates, center there
+    if (selectedLat != null && selectedLng != null) return [selectedLat, selectedLng];
+
+    // Else center on first asset with coords
+    if (assetsWithLocation.length > 0) {
+      return [assetsWithLocation[0].last_latitude, assetsWithLocation[0].last_longitude];
+    }
+
+    // Fallback (India)
+    return [20.5937, 78.9629];
+  }, [selectedLat, selectedLng, assetsWithLocation]);
 
   return (
     <div className="live-map-container">
       <div className="map-header">
         <h3>Live Map</h3>
-        <span className="map-status">
-          {mapReady ? '🟢 Live' : 'Loading...'}
-        </span>
+        <span className="map-status">🟢 Live</span>
       </div>
-      
-      <div className="map-view">
-        {!mapReady ? (
-          <div className="map-loading">
-            <div className="map-spinner"></div>
-            <p>Loading map...</p>
+
+      <div className="map-view" style={{ height: 520 }}>
+        <MapContainer center={defaultCenter} zoom={10} style={{ height: '100%', width: '100%' }}>
+          <TileLayer
+            attribution="&copy; OpenStreetMap contributors"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+
+          {/* ✅ recenter when selected asset changes */}
+          <RecenterMap lat={selectedLat} lng={selectedLng} />
+
+          {assetsWithLocation.map((a) => (
+            <Marker
+              key={a.asset_id}
+              position={[a.last_latitude, a.last_longitude]}
+              eventHandlers={{ click: () => onAssetSelect && onAssetSelect(a) }}
+            >
+              <Popup>
+                <div>
+                  <b>{a.name}</b>
+                  <br />
+                  Asset ID: {a.asset_id}
+                  <br />
+                  Lat: {a.last_latitude}
+                  <br />
+                  Lng: {a.last_longitude}
+                  <br />
+                  Status: {a.status}
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+
+        {assetsWithLocation.length === 0 && (
+          <div style={{ padding: 12, opacity: 0.8 }}>
+            No assets have coordinates yet. Update last_latitude/last_longitude in Asset Form.
           </div>
-        ) : (
-          <div className="map-content">
-            {/* Simplified map representation */}
-            <div className="map-placeholder">
-              <div className="map-grid">
-                {assets?.map((asset, index) => {
-                  const location = getAssetLocation(asset.assetId);
-                  return (
-                    <div
-                      key={asset.assetId}
-                      className={`map-marker ${selectedAsset?.assetId === asset.assetId ? 'selected' : ''}`}
-                      style={{
-                        top: `${20 + (index * 15)}%`,
-                        left: `${20 + (index * 12)}%`,
-                      }}
-                      onClick={() => onAssetSelect(asset)}
-                      title={location.address}
-                    >
-                      <span className="marker-icon">
-                        {asset.type === 'car' ? '🚗' : asset.type === 'bike' ? '🏍️' : '🚙'}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="map-legend">
-                <span>🟢 Active</span>
-                <span>🔴 Inactive</span>
-                <span>🟡 Maintenance</span>
-              </div>
-            </div>
+        )}
+
+        {selectedAsset && (selectedLat == null || selectedLng == null) && (
+          <div style={{ padding: 12, color: '#b91c1c' }}>
+            Selected asset has no coordinates yet. Please update latitude/longitude for this asset.
           </div>
         )}
       </div>
-
-      {selectedAsset && (
-        <div className="asset-info-panel">
-          <h4>Selected Asset</h4>
-          <div className="info-row">
-            <span className="info-label">ID:</span>
-            <span className="info-value">{selectedAsset.assetId}</span>
-          </div>
-          <div className="info-row">
-            <span className="info-label">Name:</span>
-            <span className="info-value">{selectedAsset.name}</span>
-          </div>
-          <div className="info-row">
-            <span className="info-label">Location:</span>
-            <span className="info-value">{getAssetLocation(selectedAsset.assetId).address}</span>
-          </div>
-          <div className="info-row">
-            <span className="info-label">Speed:</span>
-            <span className="info-value">{Math.floor(Math.random() * 80) + 20} km/h</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default LiveMap;
-
