@@ -9,9 +9,15 @@ const pick = (obj, keys, fallback = "") => {
   return fallback;
 };
 
+const pretty = (s) =>
+  String(s || "")
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+
 const AssetCard = ({ asset, onEdit, onDelete, onTrack }) => {
   const status = pick(asset, ["status"], "unknown");
-  const assetType = pick(asset, ["asset_type", "type"], "other");
+  const vehicleType = pick(asset, ["asset_type", "type"], "other");
   const assetId = pick(asset, ["asset_id", "assetId"], "-");
 
   const getStatusClass = (s) => {
@@ -31,26 +37,49 @@ const AssetCard = ({ asset, onEdit, onDelete, onTrack }) => {
 
   const getTypeIcon = (t) => {
     switch ((t || "").toLowerCase()) {
-      case "car":
-        return "🚗";
-      case "bike":
-        return "🚲";
-      case "truck":
+      case "excavator":
+        return "🚜";
+      case "backhoe_loader":
+        return "🚜";
+      case "bulldozer":
+        return "🚧";
+      case "wheel_loader":
+        return "🚜";
+      case "dump_truck":
         return "🚚";
-      case "motorcycle":
-        return "🏍️";
+      case "concrete_mixer":
+        return "🚛";
+      case "tower_crane":
+        return "🏗️";
+      case "mobile_crane":
+        return "🏗️";
+      case "crawler_crane":
+        return "🏗️";
+      case "forklift":
+        return "🏋️";
+      case "grader":
+        return "🛣️";
+      case "roller":
+        return "🛞";
+      case "paver":
+        return "🧱";
+      case "compactor":
+        return "🧱";
+      case "telehandler":
+        return "🦾";
       default:
-        return "🚙";
+        return "🏗️";
     }
   };
 
   return (
     <div className="asset-card">
       <div className="asset-header">
-        <div className="asset-icon">{getTypeIcon(assetType)}</div>
+        <div className="asset-icon">{getTypeIcon(vehicleType)}</div>
 
         <div className="asset-info">
-          <h3 className="asset-name">{pick(asset, ["name"], assetId)}</h3>
+          {/* ✅ Name removed; Asset ID becomes title */}
+          <h3 className="asset-name">Asset {assetId}</h3>
           <span className="asset-id">ID: {assetId}</span>
         </div>
 
@@ -61,8 +90,8 @@ const AssetCard = ({ asset, onEdit, onDelete, onTrack }) => {
 
       <div className="asset-body">
         <div className="asset-detail">
-          <span className="detail-label">Type:</span>
-          <span className="detail-value">{assetType || "other"}</span>
+          <span className="detail-label">Vehicle Type:</span>
+          <span className="detail-value">{pretty(vehicleType) || "Other"}</span>
         </div>
 
         <div className="asset-detail">
@@ -117,7 +146,10 @@ const AssetCard = ({ asset, onEdit, onDelete, onTrack }) => {
           </button>
         )}
         {onDelete && (
-          <button className="action-btn delete-btn" onClick={() => onDelete(asset)}>
+          <button
+            className="action-btn delete-btn"
+            onClick={() => onDelete(asset)}
+          >
             <span>🗑️</span> Delete
           </button>
         )}
