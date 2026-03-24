@@ -124,10 +124,22 @@ export default function LandingPage() {
 
         /* ===== Navbar ===== */
         .nav-glass{
-          background: rgba(255,255,255,0.78);
-          backdrop-filter: blur(12px);
-          border-bottom: 1px solid rgba(12,18,28,0.08);
-        }
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  /* ✅ Keep navbar tight */
+  padding: 0 !important;
+  min-height: 56px;           /* Bootstrap navbar default-ish */
+  height: auto;
+
+  /* ✅ Glass look but not huge */
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
 
         /* ===== Buttons ===== */
         .btn-primary-thick{

@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "../components/Auth/Common/ProtectedRoute";
 
-import LandingPage from "../pages/LandingPage";
+import LandingPage from "../pages/LandingPage.jsx";
 import LoginPage from "../pages/LoginPage";
 import Signup from "../components/Auth/Signup/Signup";
 import MFAPage from "../pages/MFAPage";
@@ -60,6 +60,15 @@ const AppRoutes = () => {
       />
 
       {/* ✅ Fallback */}
+      <Route path="/reports" element={
+          <ProtectedRoute requiredPermission="assets:read">
+            <div style={{padding: '2rem', textAlign: 'center'}}>
+              <h2>Reports</h2>
+              <p>Asset reports and analytics will be implemented here.</p>
+              <div style={{fontSize: '4rem', margin: '2rem 0'}}>📈</div>
+            </div>
+          </ProtectedRoute>
+        } />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

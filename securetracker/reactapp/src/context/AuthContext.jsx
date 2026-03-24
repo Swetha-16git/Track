@@ -16,8 +16,8 @@ export const useAuth = () => {
 };
 
 const getStoredToken = () =>
-  localStorage.getItem('token') ||
   localStorage.getItem('access_token') ||
+  localStorage.getItem('token') ||
   null;
 
 const safeDecode = (token) => {
@@ -77,8 +77,6 @@ export const AuthProvider = ({ children }) => {
     setToken(storedToken);
     setUser(derivedUser);
 
-    // optional: keep a synced user object for debugging/UI display
-    localStorage.setItem('user', JSON.stringify(derivedUser));
   }, []);
 
   useEffect(() => {
