@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ProtectedRoute from "../components/Auth/Common/ProtectedRoute";
 
-import LandingPage from "../pages/LandingPage";
+import LandingPage from "../pages/LandingPage.jsx";
 import LoginPage from "../pages/LoginPage";
 import Signup from "../components/Auth/Signup/Signup";
 import MFAPage from "../pages/MFAPage";

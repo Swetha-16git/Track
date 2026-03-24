@@ -4,9 +4,8 @@ import "./AssetForm.css";
 const AssetForm = ({ asset, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
     asset_id: "",
-    // ✅ name removed
     description: "",
-    asset_type: "car",
+    asset_type: "excavator", // ✅ default construction type
     status: "active",
     make: "",
     model: "",
@@ -14,15 +13,39 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
     license_plate: "",
     vin: "",
     color: "",
- 
-    // ✅ location fields stored as last_latitude/last_longitude (matches backend style)
     last_latitude: "",
     last_longitude: "",
   });
- 
+
+  const assetTypes = [
+    "excavator",
+    "backhoe_loader",
+    "bulldozer",
+    "wheel_loader",
+    "dump_truck",
+    "concrete_mixer",
+    "tower_crane",
+    "mobile_crane",
+    "crawler_crane",
+    "forklift",
+    "grader",
+    "roller",
+    "paver",
+    "compactor",
+    "telehandler",
+    "other",
+  ];
+
+  const statusOptions = ["active", "inactive", "maintenance", "stolen"];
+
+  const pretty = (s) =>
+    String(s || "")
+      .split("_")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+
   useEffect(() => {
     if (asset) {
-      // support both snake_case and your UI camelCase fields
       const lat =
         asset.last_latitude ??
         asset.lastLatitude ??
@@ -44,12 +67,11 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
         "";
  
       setFormData({
-        // ✅ asset_id filled, keep as string in form (convert on submit)
-        asset_id: String(asset.asset_id ?? asset.assetId ?? ""),
- 
-        // ✅ name removed
+        // ✅ numeric-only; strips any legacy formats
+        asset_id: String(asset.asset_id ?? asset.assetId ?? "").replace(/\D/g, ""),
+
         description: asset.description ?? "",
-        asset_type: asset.asset_type ?? asset.type ?? "car",
+        asset_type: asset.asset_type ?? asset.type ?? "excavator",
         status: asset.status ?? "active",
         make: asset.make ?? "",
         model: asset.model ?? "",
@@ -57,45 +79,41 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
         license_plate: asset.license_plate ?? asset.licensePlate ?? "",
         vin: asset.vin ?? "",
         color: asset.color ?? "",
- 
-        last_latitude: lat === null ? "" : String(lat),
-        last_longitude: lon === null ? "" : String(lon),
+        last_latitude: lat,
+        last_longitude: lon,
       });
     }
   }, [asset]);
- 
-  // ✅ one handleChange for all fields, with numeric-only enforcement for asset_id
+
+  // ✅ FIXED handleChange (this is the real solution)
   const handleChange = (e) => {
     const { name, value } = e.target;
- 
-    // ✅ numeric-only asset_id (blocks AST-, letters, symbols, spaces)
+
+    // ✅ numeric-only asset id
     if (name === "asset_id") {
       const onlyDigits = value.replace(/\D/g, "");
       setFormData((prev) => ({ ...prev, asset_id: onlyDigits }));
       return;
     }
- 
+
+    // ✅ IMPORTANT: update by field name
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
  
   const handleSubmit = (e) => {
     e.preventDefault();
- 
+
     // ✅ final safety: asset_id must be digits only
     if (!/^\d+$/.test(formData.asset_id)) {
       alert("Asset ID must contain only numeric values");
       return;
     }
- 
+
     const payload = {
       ...formData,
- 
-      // ✅ convert asset_id to number before sending
-      asset_id: Number(formData.asset_id),
- 
+
       year: formData.year === "" ? null : Number(formData.year),
- 
-      // ✅ ensure numbers (or null)
+
       last_latitude:
         formData.last_latitude === "" || formData.last_latitude === null
           ? null
@@ -106,20 +124,17 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
           ? null
           : Number(formData.last_longitude),
     };
- 
+
     // ✅ name is not present in payload at all
     onSubmit(payload);
   };
- 
-  const assetTypes = ["car", "bike", "truck", "motorcycle", "other"];
-  const statusOptions = ["active", "inactive", "maintenance", "stolen"];
- 
+
   return (
     <form onSubmit={handleSubmit} className="asset-form">
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="asset_id">Asset ID *</label>
- 
+
           {/* ✅ text + inputMode keeps leading zeros & blocks e/E/+/- issues */}
           <input
             type="text"
@@ -127,18 +142,19 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             name="asset_id"
             value={formData.asset_id}
             onChange={handleChange}
-            placeholder="Enter numeric Asset ID (e.g., 1773752141197)"
+            placeholder="e.g., 1001"
             required
             disabled={!!asset}
             inputMode="numeric"
             pattern="[0-9]*"
+            maxLength={10}
           />
         </div>
       </div>
  
       <div className="form-row">
         <div className="form-group">
-          <label htmlFor="asset_type">Asset Type *</label>
+          <label htmlFor="asset_type">Vehicle Type *</label>
           <select
             id="asset_type"
             name="asset_type"
@@ -148,7 +164,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
           >
             {assetTypes.map((t) => (
               <option key={t} value={t}>
-                {t.charAt(0).toUpperCase() + t.slice(1)}
+                {pretty(t)}
               </option>
             ))}
           </select>
@@ -181,7 +197,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             name="make"
             value={formData.make}
             onChange={handleChange}
-            placeholder="e.g., Toyota"
+            placeholder="e.g., CAT"
           />
         </div>
  
@@ -193,7 +209,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             name="model"
             value={formData.model}
             onChange={handleChange}
-            placeholder="e.g., Camry"
+            placeholder="e.g., 320D"
           />
         </div>
       </div>
@@ -248,12 +264,11 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             name="color"
             value={formData.color}
             onChange={handleChange}
-            placeholder="e.g., Silver"
+            placeholder="e.g., Yellow"
           />
         </div>
       </div>
- 
-      {/* ✅ Location row */}
+
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="last_latitude">Latitude</label>
@@ -305,7 +320,5 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
     </form>
   );
 };
- 
+
 export default AssetForm;
- 
- 

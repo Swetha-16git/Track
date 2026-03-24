@@ -1,19 +1,19 @@
 """
 Application Settings and Configuration
 """
-
+ 
 from typing import List
 from pydantic import Field
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
-
+ 
 # Explicitly load .env file (important for Windows & enterprise setups)
 load_dotenv()
-
-
+ 
+ 
 class Settings(BaseSettings):
     """Application settings"""
-
+ 
     # ========================
     # Application
     # ========================
@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
     API_PREFIX: str = "/api/v1"
     LOG_LEVEL: str = "INFO"
-
+ 
     # ========================
     # Security / Auth
     # ========================
@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     MFA_TOKEN_EXPIRE_MINUTES: int = 5
-
+ 
     # ========================
     # Database (PostgreSQL)
     # ========================
@@ -43,12 +43,12 @@ class Settings(BaseSettings):
         default="postgresql://postgres:postgres@localhost:5432/securetracker"
     )
     DB_ECHO: bool = False
-
+ 
     # SQLAlchemy connection pool
     DB_POOL_SIZE: int = 5
     DB_MAX_OVERFLOW: int = 10
     DB_POOL_TIMEOUT: int = 30
-
+ 
     # ========================
     # CORS
     # ========================
@@ -58,14 +58,14 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000",
         "http://127.0.0.1:8000",
     ]
-
+ 
     # ========================
     # MFA / OTP
     # ========================
     MFA_ISSUER: str = "Secure Tracker"
     OTP_LENGTH: int = 6
     OTP_WINDOW: int = 1
-
+ 
     # ========================
     # SMS / Email (Optional)
     # ========================
@@ -76,7 +76,7 @@ class Settings(BaseSettings):
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
     SMTP_FROM_EMAIL: str = "noreply@securetracker.com"
-
+ 
     # ========================
     # Active Directory (Optional)
     # ========================
@@ -85,7 +85,7 @@ class Settings(BaseSettings):
     AD_BASE_DN: str = ""
     AD_DOMAIN: str = ""
     AD_USE_SSL: bool = False
-
+ 
     # ========================
     # JWT
     # ========================
@@ -93,17 +93,18 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = Field(
         default="dev-jwt-secret-change-in-production"
     )
-
+ 
 # ========================
     # Roles
     # ========================
     ADMIN_ROLE: str = "admin"
     VIEWER_ROLE: str = "viewer"
-
+ 
     class Config:
         env_file = ".env"
         case_sensitive = True
-
-
+ 
+ 
 # Singleton settings instance
 settings = Settings()
+ 

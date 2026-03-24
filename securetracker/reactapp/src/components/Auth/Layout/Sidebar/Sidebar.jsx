@@ -7,7 +7,7 @@ const Sidebar = ({ isOpen }) => {
   const { hasPermission } = useAuth();
 
   const menu = [
-    { path: '/dashboard', label: 'Dashboard', icon: '📊', perm: 'assets:read' },
+    { path: '/dashboard', label: 'Asset Insight', icon: '📊', perm: 'assets:read' },
     { path: '/asset-onboarding', label: 'Asset Onboarding', icon: '➕', perm: 'assets:write' },
     { path: '/users', label: 'Users', icon: '👥', perm: 'manage_users' },
     { path: '/reports', label: 'Reports', icon: '📈', perm: 'assets:read' },

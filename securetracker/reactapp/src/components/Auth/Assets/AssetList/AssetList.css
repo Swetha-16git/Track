@@ -26,7 +26,7 @@
   min-width: 260px;
 }
 
-/* Search input: soft inset (like screenshot) */
+/* Search */
 .search-input {
   width: 100%;
   max-width: 340px;
@@ -64,7 +64,7 @@
   flex-wrap: wrap;
 }
 
-/* Pills: neumorphic */
+/* Filters */
 .filter-btn {
   padding: 9px 16px;
   border-radius: 999px;
@@ -106,15 +106,7 @@
   margin-top: 14px;
 }
 
-/* Loading wrapper */
-.asset-list-loading {
-  padding: 80px 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Empty state: premium center */
+/* Empty */
 .empty-state {
   padding: 70px 20px;
   text-align: center;
@@ -144,12 +136,6 @@
   font-size: 18px;
   font-weight: 800;
   color: #0f172a;
-}
-
-.empty-state p {
-  margin: 0;
-  font-size: 13px;
-  color: #64748b;
 }
 
 /* Count */

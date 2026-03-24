@@ -1,113 +1,113 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
- 
-import Navbar from '../components/Auth/Layout/Navbar/Navbar';
-import Sidebar from '../components/Auth/Layout/Sidebar/Sidebar';
-import Footer from '../components/Auth/Layout/Footer';
- 
-import AssetList from '../components/Auth/Assets/AssetList/AssetList';
-import AssetForm from '../components/Auth/Assets/AssetForm/AssetForm';
-import Modal from '../components/Auth/Common/Modal';
- 
-import { assetService } from '../services/assetService';
-import './AssetOnboarding.css';
- 
-/* API → UI */
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
+import Navbar from "../components/Auth/Layout/Navbar/Navbar";
+import Sidebar from "../components/Auth/Layout/Sidebar/Sidebar";
+import Footer from "../components/Auth/Layout/Footer";
+
+import AssetList from "../components/Auth/Assets/AssetList/AssetList";
+import AssetForm from "../components/Auth/Assets/AssetForm/AssetForm";
+import Modal from "../components/Auth/Common/Modal";
+
+import { assetService } from "../services/assetService";
+import "./AssetOnboarding.css";
+
+const safeLower = (v) => String(v ?? "").toLowerCase();
+
+/* -------------------------------
+   API → UI mapping
+-------------------------------- */
 const toUiAsset = (a) => ({
-  id: a.id,
+  id: a.id, // DB primary key
   assetId: a.asset_id,
-  name: a.name,
-  description: a.description ?? '',
   type: a.asset_type,
   status: a.status,
-  make: a.make ?? '',
-  model: a.model ?? '',
-  year: a.year ?? '',
-  licensePlate: a.license_plate ?? '',
-  vin: a.vin ?? '',
-  color: a.color ?? '',
+  make: a.make ?? "",
+  model: a.model ?? "",
+  year: a.year ?? "",
+  licensePlate: a.license_plate ?? "",
+  vin: a.vin ?? "",
+  color: a.color ?? "",
+  description: a.description ?? "",
   lastLatitude: a.last_latitude ?? null,
   lastLongitude: a.last_longitude ?? null,
+  name: a.name ?? "",
 });
- 
-/* UI → API */
-const toApiPayload = (ui) => ({
-  name: ui.name,
-  description: ui.description ?? null,
-  asset_type: ui.type || ui.asset_type || 'car',
-  status: ui.status || 'active',
-  make: ui.make ?? null,
-  model: ui.model ?? null,
-  year: ui.year ? Number(ui.year) : null,
-  license_plate: ui.licensePlate ?? ui.license_plate ?? null,
-  vin: ui.vin ?? null,
-  color: ui.color ?? null,
-  last_latitude: ui.last_latitude ?? ui.lastLatitude ?? null,
-  last_longitude: ui.last_longitude ?? ui.lastLongitude ?? null,
-});
- 
+
+/* -------------------------------
+   Error extraction
+-------------------------------- */
+const extractBackendError = (err) => {
+  const detail = err?.response?.data?.detail;
+  if (typeof detail === "string") return detail;
+  return err?.message || "Save failed";
+};
+
 const AssetOnboarding = () => {
   const { hasPermission } = useAuth();
- 
-  const canRead = hasPermission('assets:read');
-  const canManage = hasPermission('assets:write');
- 
+  const canRead = hasPermission("assets:read");
+  const canManage = hasPermission("assets:write");
+
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
- 
-  // ✅ NEW: support status filter
-  const selectedStatus = searchParams.get('status');
-  // ✅ Backward compatible: support older type filter links
-  const selectedType = searchParams.get('type');
- 
+
+  const selectedStatus = searchParams.get("status");
+  const selectedType = searchParams.get("type");
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingAsset, setEditingAsset] = useState(null);
  
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [pageError, setPageError] = useState('');
- 
+  const [pageError, setPageError] = useState("");
+
   const toggleSidebar = () => setSidebarOpen((p) => !p);
- 
-  /* ===============================
+
+  /* -------------------------------
      Load assets
-  ================================ */
+  -------------------------------- */
+  const loadAssets = async () => {
+    try {
+      setPageError("");
+      setLoading(true);
+      const res = await assetService.getAllAssets();
+      setAssets(res.map(toUiAsset));
+    } catch (e) {
+      console.error(e);
+      setPageError("Failed to load assets");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadAssets = async () => {
-      try {
-        setPageError('');
-        setLoading(true);
-        const apiAssets = await assetService.getAllAssets();
-        setAssets(apiAssets.map(toUiAsset));
-      } catch (e) {
-        console.error(e);
-        setPageError('Failed to load assets. Check backend, token, or permissions.');
-      } finally {
-        setLoading(false);
-      }
-    };
- 
     if (canRead) loadAssets();
   }, [canRead]);
- 
-  // ✅ Filter by STATUS first, else by TYPE
+
+  /* -------------------------------
+     Filters
+  -------------------------------- */
   const filteredAssets = useMemo(() => {
     let list = assets;
  
     if (selectedStatus) {
-      list = list.filter((a) => String(a.status).toLowerCase() === String(selectedStatus).toLowerCase());
+      list = list.filter(
+        (a) => safeLower(a.status) === safeLower(selectedStatus)
+      );
     } else if (selectedType) {
-      list = list.filter((a) => String(a.type).toLowerCase() === String(selectedType).toLowerCase());
+      list = list.filter(
+        (a) => safeLower(a.type) === safeLower(selectedType)
+      );
     }
  
     return list;
   }, [assets, selectedStatus, selectedType]);
- 
-  /* ===============================
+
+  /* -------------------------------
      Actions
-  ================================ */
+  -------------------------------- */
   const handleAddAsset = () => {
     if (!canManage) return;
     setEditingAsset(null);
@@ -122,15 +122,15 @@ const AssetOnboarding = () => {
  
   const handleDeleteAsset = async (asset) => {
     if (!canManage) return;
-    if (!window.confirm(`Delete asset "${asset.name}"?`)) return;
- 
+    if (!window.confirm(`Delete Asset ID "${asset.assetId}"?`)) return;
+
     try {
       setLoading(true);
       await assetService.deleteAsset(asset.id);
       setAssets((prev) => prev.filter((a) => a.id !== asset.id));
     } catch (e) {
       console.error(e);
-      setPageError('Delete failed.');
+      setPageError(extractBackendError(e));
     } finally {
       setLoading(false);
     }
@@ -139,43 +139,60 @@ const AssetOnboarding = () => {
   const handleTrackAsset = (asset) => {
     navigate(`/tracking?asset=${asset.assetId}`);
   };
- 
-  /* ===============================
-     SUBMIT (FIXED)
-  ================================ */
-  const handleSubmitAsset = async (assetDataFromForm) => {
+
+  /* -------------------------------
+     ✅ FIXED SUBMIT LOGIC
+  -------------------------------- */
+  const handleSubmitAsset = async (formData) => {
     if (!canManage) return;
  
     try {
-      setPageError('');
+      setPageError("");
       setLoading(true);
- 
-      const payload = toApiPayload(assetDataFromForm);
-      console.log('✅ CREATE ASSET PAYLOAD:', payload);
- 
-      if (editingAsset) {
-        const updatedApiAsset = await assetService.updateAsset(editingAsset.id, payload);
-        const updatedUi = toUiAsset(updatedApiAsset);
-        setAssets((prev) => prev.map((a) => (a.id === editingAsset.id ? updatedUi : a)));
-      } else {
-        const created = await assetService.createAsset(payload);
+
+      if (!editingAsset) {
+        // ✅ CREATE → asset_id MUST be sent
+        if (!formData.asset_id) {
+          throw new Error("asset_id is required");
+        }
+
+        const created = await assetService.createAsset(formData);
         setAssets((prev) => [toUiAsset(created), ...prev]);
+      } else {
+        // ✅ UPDATE → NEVER send asset_id
+        const updatePayload = { ...formData };
+        delete updatePayload.asset_id;
+
+        const updated = await assetService.updateAsset(
+          editingAsset.id,
+          updatePayload
+        );
+
+        setAssets((prev) =>
+          prev.map((a) => (a.id === editingAsset.id ? toUiAsset(updated) : a))
+        );
       }
  
       setShowModal(false);
       setEditingAsset(null);
     } catch (e) {
       console.error(e);
-      setPageError('Save failed. Check permissions and backend validation.');
+      setPageError(extractBackendError(e));
     } finally {
       setLoading(false);
     }
   };
- 
+
+  /* -------------------------------
+     Access denied
+  -------------------------------- */
   if (!canRead) {
     return <div>Access Denied</div>;
   }
- 
+
+  /* -------------------------------
+     UI
+  -------------------------------- */
   return (
     <div className="asset-onboarding-layout">
       <Navbar toggleSidebar={toggleSidebar} />
@@ -186,33 +203,11 @@ const AssetOnboarding = () => {
             <div>
               <h1>Assets</h1>
               <p>
-                {selectedStatus ? (
-                  <>
-                    Showing status: <b>{selectedStatus}</b>{' '}
-                    <button
-                      type="button"
-                      className="clear-filter-btn"
-                      onClick={() => navigate('/assets')}
-                      style={{ marginLeft: 8 }}
-                    >
-                      Clear
-                    </button>
-                  </>
-                ) : selectedType ? (
-                  <>
-                    Showing type: <b>{selectedType}</b>{' '}
-                    <button
-                      type="button"
-                      className="clear-filter-btn"
-                      onClick={() => navigate('/assets')}
-                      style={{ marginLeft: 8 }}
-                    >
-                      Clear
-                    </button>
-                  </>
-                ) : (
-                  'All assets'
-                )}
+                {selectedStatus
+                  ? `Showing status: ${selectedStatus}`
+                  : selectedType
+                  ? `Showing type: ${selectedType}`
+                  : "All assets"}
               </p>
             </div>
  
@@ -222,9 +217,9 @@ const AssetOnboarding = () => {
               </button>
             )}
           </div>
- 
+
           {pageError && <div className="error-message">{pageError}</div>}
- 
+
           <AssetList
             assets={filteredAssets}
             loading={loading}
@@ -242,7 +237,8 @@ const AssetOnboarding = () => {
         <Modal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
-          title={editingAsset ? 'Edit Asset' : 'Add New Asset'}
+          title={editingAsset ? "Edit Asset" : "Add New Asset"}
+          size="large"
         >
           <AssetForm
             asset={editingAsset}
