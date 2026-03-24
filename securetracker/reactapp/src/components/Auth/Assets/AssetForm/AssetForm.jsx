@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./AssetForm.css";
-
+ 
 const AssetForm = ({ asset, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
     asset_id: "",
@@ -94,7 +94,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
 
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+ 
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -150,7 +150,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             ))}
           </select>
         </div>
-
+ 
         <div className="form-group">
           <label>Status *</label>
           <select
@@ -179,7 +179,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             placeholder="Manufacturer (e.g., CAT, JCB)"
           />
         </div>
-
+ 
         <div className="form-group">
           <label>Model</label>
           <input
@@ -205,7 +205,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             max={new Date().getFullYear() + 1}
           />
         </div>
-
+ 
         <div className="form-group">
           <label>License Plate</label>
           <input
@@ -242,7 +242,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             step="any"
           />
         </div>
-
+ 
         <div className="form-group">
           <label>Longitude</label>
           <input

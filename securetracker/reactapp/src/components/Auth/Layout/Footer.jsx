@@ -1,5 +1,5 @@
 import React from 'react';
-
+ 
 const Footer = () => {
   return (
     <footer className="app-footer">
@@ -14,6 +14,8 @@ const Footer = () => {
     </footer>
   );
 };
-
+ 
 export default Footer;
-
+ 
+ 
+ 
