@@ -6,152 +6,36 @@ import Sidebar from "../components/Auth/Layout/Sidebar/Sidebar";
 import Footer from "../components/Auth/Layout/Footer";
 import "./Dashboard.css";
 
-/** ---------- Clean line SVG icons (industrial equipment) ---------- */
-const AssetSvg = ({ name }) => {
-  const common = { width: 34, height: 34, viewBox: "0 0 64 64", fill: "none" };
+const normalizeType = (t) =>
+  String(t || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
 
-  switch (name) {
-    case "roller":
-      return (
-        <svg {...common}>
-          <path
-            d="M10 34h28c6 0 10-4 10-10v-2H22c-6 0-12 4-12 12z"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-          <path
-            d="M38 34h10c3 0 6 3 6 6v4H38v-10z"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinejoin="round"
-          />
-          <circle cx="18" cy="46" r="6" stroke="currentColor" strokeWidth="3" />
-          <circle cx="46" cy="46" r="6" stroke="currentColor" strokeWidth="3" />
-        </svg>
-      );
+const typeToIconFile = (type) => {
+  const t = normalizeType(type);
 
-    case "crane":
-      return (
-        <svg {...common}>
-          <path
-            d="M16 54V14l10 8v32"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-          <path
-            d="M26 22h28l-8 8H26"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M46 30v10l-6 6"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-          <path
-            d="M16 54h34"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-        </svg>
-      );
+  if (t.includes("concrete_plant") || t === "plant") return "concrete plant.png";
+  if (t.includes("tower_crane") || t.includes("towercrane")) return "towercrane.png";
+  if (t.includes("road_roller") || t.includes("roller")) return "road roller.png";
+  if (t.includes("wheel_loader") || t.includes("loader")) return "wheelloader.png";
+  if (t.includes("concrete_pump") || t.includes("pump")) return "concrete pump.png";
 
-    case "loader":
-      return (
-        <svg {...common}>
-          <path
-            d="M14 40h18l6 8H14v-8z"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M32 32h10l6 8H32v-16z"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M48 40h8v8h-8"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-          <circle cx="22" cy="52" r="5" stroke="currentColor" strokeWidth="3" />
-          <circle cx="44" cy="52" r="5" stroke="currentColor" strokeWidth="3" />
-          <path
-            d="M52 40l-6 12"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-        </svg>
-      );
+  if (t.includes("backhoe")) return "backhoe loader.png";
+  if (t.includes("bulldozer")) return "bulldozer.png";
+  if (t.includes("compactor")) return "compactor.png";
+  if (t.includes("grader")) return "grader.png";
+  if (t.includes("paver")) return "paver.jpg";
 
-    case "pump":
-      return (
-        <svg {...common}>
-          <rect x="14" y="26" width="18" height="22" rx="4" stroke="currentColor" strokeWidth="3" />
-          <path
-            d="M32 30h10l6 6v12h-8"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M20 22v-6h14v6"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-          <circle cx="22" cy="52" r="5" stroke="currentColor" strokeWidth="3" />
-          <circle cx="44" cy="52" r="5" stroke="currentColor" strokeWidth="3" />
-        </svg>
-      );
+  if (t.includes("crawlercrane")) return "crawlercrane.png";
+  if (t.includes("mobilecrane")) return "mobilecrane.png";
 
-    case "plant":
-      return (
-        <svg {...common}>
-          <path
-            d="M18 50V22h10v28"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-          <path
-            d="M28 26h12l6 8H28"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M18 50h30"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-          <path
-            d="M22 22v-8h18v8"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-        </svg>
-      );
+  if (t.includes("dumptruck") || t.includes("dump")) return "dumptruck.png";
+  if (t.includes("forklift")) return "forklift.png";
+  if (t.includes("excavator")) return "excavator.jpg";
+  if (t.includes("telehandler")) return "telehandler.jpg";
 
-    default:
-      return (
-        <svg {...common}>
-          <rect x="16" y="20" width="32" height="24" rx="6" stroke="currentColor" strokeWidth="3" />
-          <path d="M22 44h20" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-        </svg>
-      );
-  }
+  return "compactor.png";
 };
 
 const Dashboard = () => {
@@ -159,7 +43,7 @@ const Dashboard = () => {
   const [assets, setAssets] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Filters like reference UI
+  // ✅ Keep only useful filters
   const [onlyCritical, setOnlyCritical] = useState(false);
   const [assetTypeFilter, setAssetTypeFilter] = useState("All");
 
@@ -167,7 +51,6 @@ const Dashboard = () => {
     assetService.getAllAssets().then(setAssets).catch(console.error);
   }, []);
 
-  // Type detection (supports different backend field names)
   const getType = (a) => a.asset_type || a.type || a.category || "Unknown";
 
   // KPIs
@@ -179,7 +62,8 @@ const Dashboard = () => {
   );
 
   const maintenanceAssets = useMemo(
-    () => assets.filter((a) => String(a.status || "").toLowerCase() === "maintenance").length,
+    () =>
+      assets.filter((a) => String(a.status || "").toLowerCase() === "maintenance").length,
     [assets]
   );
 
@@ -203,10 +87,13 @@ const Dashboard = () => {
   // Filtered assets
   const filteredAssets = useMemo(() => {
     return assets.filter((a) => {
-      const typeOk = assetTypeFilter === "All" ? true : String(getType(a)) === assetTypeFilter;
+      const typeOk =
+        assetTypeFilter === "All" ? true : String(getType(a)) === assetTypeFilter;
 
-      // "Only Critical" -> treat maintenance as critical (change if you have critical flag)
-      const criticalOk = onlyCritical ? String(a.status || "").toLowerCase() === "maintenance" : true;
+      // Only Critical -> maintenance treated as critical
+      const criticalOk = onlyCritical
+        ? String(a.status || "").toLowerCase() === "maintenance"
+        : true;
 
       return typeOk && criticalOk;
     });
@@ -227,26 +114,19 @@ const Dashboard = () => {
 
   const recentAssets = useMemo(() => [...filteredAssets].slice(0, 6), [filteredAssets]);
 
-  // ✅ Vehicle/equipment icon mapping (NO box icon)
   const getAssetTypeIcon = (typeName) => {
-    const t = String(typeName || "").toLowerCase();
-
-    // Simple vehicles via Bootstrap Icons
-    if (t.includes("car")) return <i className="bi bi-car-front-fill" />;
-    if (t.includes("truck")) return <i className="bi bi-truck-flatbed" />;
-    if (t.includes("bus")) return <i className="bi bi-bus-front-fill" />;
-    if (t.includes("bike") || t.includes("motor")) return <i className="bi bi-bicycle" />;
-
-    // Industrial equipment via SVG
-    if (t.includes("roller")) return <AssetSvg name="roller" />;
-    if (t.includes("crane")) return <AssetSvg name="crane" />;
-    if (t.includes("loader")) return <AssetSvg name="loader" />;
-    if (t.includes("pump")) return <AssetSvg name="pump" />;
-    if (t.includes("concrete") || t.includes("batching") || t.includes("plant"))
-      return <AssetSvg name="plant" />;
-
-    // fallback
-    return <i className="bi bi-truck" />;
+    const filename = typeToIconFile(typeName);
+    return (
+      <img
+        src={`/vehicle-icons/${filename}`}
+        alt=""
+        className="tile-icon-img"
+        onError={(e) => {
+          e.currentTarget.src = "/vehicle-icons/compactor.png";
+        }}
+        style={{ width: "34px", height: "34px", objectFit: "contain" }}
+      />
+    );
   };
 
   return (
@@ -254,7 +134,6 @@ const Dashboard = () => {
       <Navbar toggleSidebar={() => setSidebarOpen((p) => !p)} />
       <Sidebar isOpen={sidebarOpen} />
 
-      {/* ✅ NO BIG GAP: ai-main has NO margin-top now */}
       <main className={`ai-main ${sidebarOpen ? "ai-sidebar-open" : "ai-sidebar-closed"}`}>
         {/* TOP BAR */}
         <section className="ai-topbar">
@@ -289,21 +168,9 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* ✅ Removed extra top-right icons: locations/alerts/analytics/search */}
           <div className="ai-topbar__right">
             <div className="ai-actions">
-              <button className="ai-iconbtn" title="Locations">
-                <i className="bi bi-geo" />
-              </button>
-              <button className="ai-iconbtn" title="Alerts">
-                <i className="bi bi-bell" />
-              </button>
-              <button className="ai-iconbtn" title="Analytics">
-                <i className="bi bi-bar-chart" />
-              </button>
-              <button className="ai-iconbtn" title="Search">
-                <i className="bi bi-search" />
-              </button>
-
               <button className="ai-primarybtn" onClick={() => navigate("/assets")}>
                 Manage Assets
               </button>
@@ -346,14 +213,7 @@ const Dashboard = () => {
                   <div className="ai-muted">Quick view by equipment category</div>
                 </div>
 
-                <div className="ai-viewToggle">
-                  <button className="ai-iconbtn ai-iconbtn--soft" title="Grid">
-                    <i className="bi bi-grid-3x3-gap" />
-                  </button>
-                  <button className="ai-iconbtn ai-iconbtn--soft" title="Chart">
-                    <i className="bi bi-graph-up" />
-                  </button>
-                </div>
+                {/* ✅ Removed grid/chart view toggle buttons */}
               </div>
 
               <div className="ai-tileGrid">
@@ -366,10 +226,7 @@ const Dashboard = () => {
                       onClick={() => setAssetTypeFilter(t.name)}
                       type="button"
                     >
-                      <div className="ai-tile__icon">
-                        {/* ✅ vehicle/equipment icons */}
-                        {getAssetTypeIcon(t.name)}
-                      </div>
+                      <div className="ai-tile__icon">{getAssetTypeIcon(t.name)}</div>
 
                       <div className="ai-tile__name">{String(t.name).toLowerCase()}</div>
 
@@ -412,7 +269,6 @@ const Dashboard = () => {
               )}
             </div>
 
-            {/* Bottom strip */}
             <div className="ai-card ai-statusStrip">
               <div className="ai-statusItem">
                 <i className="bi bi-slash-circle" />
@@ -437,11 +293,6 @@ const Dashboard = () => {
                   <div className="ai-muted ai-small">Issues</div>
                 </div>
               </div>
-
-              <button className="ai-addTile" onClick={() => navigate("/assets/onboarding")}>
-                <i className="bi bi-plus-lg" />
-                <span>Add Asset</span>
-              </button>
             </div>
           </div>
 
