@@ -15,8 +15,6 @@ from app.security.permissions import (
 )
 
 logger = logging.getLogger(__name__)
-
-# ✅ IMPORTANT: prefix must match Swagger URL
 router = APIRouter(tags=["Assets"])
 
 
@@ -53,6 +51,8 @@ async def get_assets(
                 "model": a.model,
                 "year": a.year,
                 "license_plate": a.license_plate,
+                "vin": a.vin,
+                "color": a.color,
                 "last_latitude": a.last_latitude,
                 "last_longitude": a.last_longitude,
                 "organisation_id": a.organisation_id,
@@ -65,11 +65,11 @@ async def get_assets(
 
 @router.get("/{asset_id}")
 async def get_asset(
-    asset_id: int,
+    asset_id: int,  # ✅ This is DB primary key (Asset.id)
     db: Session = Depends(get_db),
     current_user: dict = Depends(require_assets_read)
 ):
-    """Get asset by ID"""
+    """Get asset by DB ID"""
     asset = asset_service.get_asset_by_id(db, asset_id)
 
     if not asset:
@@ -80,27 +80,7 @@ async def get_asset(
 
     return {
         "success": True,
-        "asset": {
-            "id": asset.id,
-            "asset_id": asset.asset_id,
-            "name": asset.name,
-            "description": asset.description,
-            "asset_type": asset.asset_type.value if hasattr(asset.asset_type, "value") else asset.asset_type,
-            "status": asset.status.value if hasattr(asset.status, "value") else asset.status,
-            "make": asset.make,
-            "model": asset.model,
-            "year": asset.year,
-            "license_plate": asset.license_plate,
-            "vin": asset.vin,
-            "color": asset.color,
-            "last_latitude": asset.last_latitude,
-            "last_longitude": asset.last_longitude,
-            "last_location_update": asset.last_location_update.isoformat() if asset.last_location_update else None,
-            "organisation_id": asset.organisation_id,
-            "owner_id": asset.owner_id,
-            "created_at": asset.created_at.isoformat() if asset.created_at else None,
-            "updated_at": asset.updated_at.isoformat() if asset.updated_at else None
-        }
+        "asset": asset_service._asset_to_dict(asset)  # safe dict
     }
 
 
@@ -124,7 +104,7 @@ async def create_asset(
 
 @router.put("/{asset_id}")
 async def update_asset(
-    asset_id: int,
+    asset_id: int,  # ✅ DB primary key (Asset.id)
     asset_data: dict,
     db: Session = Depends(get_db),
     current_user: dict = Depends(require_assets_write)
@@ -143,7 +123,7 @@ async def update_asset(
 
 @router.delete("/{asset_id}")
 async def delete_asset(
-    asset_id: int,
+    asset_id: int,  # ✅ DB primary key
     db: Session = Depends(get_db),
     current_user: dict = Depends(require_assets_write)
 ):
@@ -161,7 +141,7 @@ async def delete_asset(
 
 @router.put("/{asset_id}/location")
 async def update_asset_location(
-    asset_id: int,
+    asset_id: int,  # ✅ DB primary key
     location_data: dict,
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)

@@ -50,34 +50,13 @@ const MFA = () => {
       throw new Error('Session expired. Please login again.');
     }
 
-    // ✅ Store in BOTH keys (many parts of your app expect "token")
+    // ✅ Store in standardized keys
     localStorage.setItem('access_token', pendingAccess);
     localStorage.setItem('token', pendingAccess);
 
     if (pendingRefresh) localStorage.setItem('refresh_token', pendingRefresh);
 
-    // ✅ Ensure a user object exists (used for role/permissions UI)
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) {
-      const loginUsername = localStorage.getItem('loginUsername') || 'user';
-      const loginEmail = localStorage.getItem('loginEmail') || 'user@securetracker.com';
-      // Fix: Check URL params for admin role override, else default viewer
-      const urlParams = new URLSearchParams(window.location.search);
-      const roleParam = urlParams.get('role') || localStorage.getItem('testRole') || 'viewer';
-      const role = roleParam.toLowerCase();
-
-      localStorage.setItem(
-        'user',
-        JSON.stringify({
-          id: '1',
-          username: loginUsername,
-          email: loginEmail,
-          organization: 'Demo Organization',
-          role,
-        })
-      );
-      localStorage.setItem('testRole', role);
-    }
+    // User derived from JWT decode in AuthContext; no localStorage 'user' needed
 
     // cleanup
     localStorage.removeItem('pending_access_token');

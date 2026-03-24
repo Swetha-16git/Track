@@ -19,11 +19,10 @@ const AssetList = ({ assets, loading, onEdit, onDelete, onTrack }) => {
 
   const filteredAssets = assets?.filter((asset) => {
     const status = (pick(asset, ["status"], "") || "").toLowerCase();
-
     const matchesFilter = filter === "all" || status === filter;
 
+    // ✅ Name removed; search by ID/type/make/model/plate/vin/color/status
     const haystack = [
-      pick(asset, ["name"], ""),
       pick(asset, ["asset_id", "assetId"], ""),
       pick(asset, ["license_plate", "licensePlate"], ""),
       pick(asset, ["make"], ""),
@@ -31,12 +30,12 @@ const AssetList = ({ assets, loading, onEdit, onDelete, onTrack }) => {
       pick(asset, ["vin"], ""),
       pick(asset, ["color"], ""),
       pick(asset, ["asset_type", "type"], ""),
+      pick(asset, ["status"], ""),
     ]
       .join(" ")
       .toLowerCase();
 
     const matchesSearch = !term || haystack.includes(term);
-
     return matchesFilter && matchesSearch;
   });
 
@@ -54,7 +53,7 @@ const AssetList = ({ assets, loading, onEdit, onDelete, onTrack }) => {
         <div className="search-filter">
           <input
             type="text"
-            placeholder="Search assets..."
+            placeholder="Search by Asset ID, type, plate, make, model..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
@@ -97,7 +96,7 @@ const AssetList = ({ assets, loading, onEdit, onDelete, onTrack }) => {
 
       {filteredAssets?.length === 0 ? (
         <div className="empty-state">
-          <span className="empty-icon">🚗</span>
+          <span className="empty-icon">🏗️</span>
           <h3>No assets found</h3>
           <p>Try adjusting your search or filter criteria</p>
         </div>
