@@ -20,14 +20,25 @@ MFA_METHOD_FINGERPRINT = "fingerprint"
 MFA_METHOD_FACEID = "faceid"
 MFA_METHOD_AD = "active_directory"
 
-# Asset Types
-ASSET_TYPE_CAR = "car"
-ASSET_TYPE_BIKE = "bike"
-ASSET_TYPE_TRUCK = "truck"
-ASSET_TYPE_MOTORCYCLE = "motorcycle"
+# Construction Asset Types
+ASSET_TYPE_EXCAVATOR = "excavator"
+ASSET_TYPE_BACKHOE_LOADER = "backhoe_loader"
+ASSET_TYPE_BULLDOZER = "bulldozer"
+ASSET_TYPE_WHEEL_LOADER = "wheel_loader"
+ASSET_TYPE_DUMP_TRUCK = "dump_truck"
+ASSET_TYPE_CONCRETE_MIXER = "concrete_mixer"
+ASSET_TYPE_TOWER_CRANE = "tower_crane"
+ASSET_TYPE_MOBILE_CRANE = "mobile_crane"
+ASSET_TYPE_CRAWLER_CRANE = "crawler_crane"
+ASSET_TYPE_FORKLIFT = "forklift"
+ASSET_TYPE_GRADER = "grader"
+ASSET_TYPE_ROLLER = "roller"
+ASSET_TYPE_PAVER = "paver"
+ASSET_TYPE_COMPACTOR = "compactor"
+ASSET_TYPE_TELEHANDLER = "telehandler"
 ASSET_TYPE_OTHER = "other"
 
-# Asset Status
+# Status (keep as is)
 ASSET_STATUS_ACTIVE = "active"
 ASSET_STATUS_INACTIVE = "inactive"
 ASSET_STATUS_MAINTENANCE = "maintenance"

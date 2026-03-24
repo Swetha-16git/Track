@@ -1,254 +1,257 @@
 """
-Asset Service (CORRECTED)
+Asset Service
 """
-from typing import List, Optional, Tuple, Dict, Any
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError, DataError, ProgrammingError
 from datetime import datetime
-import uuid
-import logging
- 
-from app.models.asset_model import Asset, TrackingDevice
-from app.models.user_model import User
-from app.config.constants import MSG_ASSET_CREATED, MSG_ASSET_UPDATED, MSG_ASSET_DELETED
- 
-logger = logging.getLogger(__name__)
- 
- 
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+
+from app.models.asset_model import Asset, AssetType, AssetStatus
+
+
 class AssetService:
-    """Asset management service"""
- 
-    # -------------------------
+    # -----------------------------
     # Helpers
-    # -------------------------
-    @staticmethod
-    def generate_asset_id() -> str:
-        return f"AST-{uuid.uuid4().hex[:8].upper()}"
- 
-    @staticmethod
-    def get_asset_by_id(db: Session, asset_id: int) -> Optional[Asset]:
-        return db.query(Asset).filter(Asset.id == asset_id).first()
- 
-    @staticmethod
-    def get_asset_by_asset_id(db: Session, asset_id: str) -> Optional[Asset]:
-        return db.query(Asset).filter(Asset.asset_id == asset_id).first()
- 
-    @staticmethod
-    def get_assets(
-        db: Session,
-        skip: int = 0,
-        limit: int = 100,
-        organisation_id: Optional[int] = None,
-        status: Optional[str] = None
-    ) -> List[Asset]:
-        query = db.query(Asset)
- 
-        if organisation_id:
-            query = query.filter(Asset.organisation_id == organisation_id)
- 
-        if status:
-            query = query.filter(Asset.status == status)
- 
-        return query.offset(skip).limit(limit).all()
- 
-    # -------------------------
-    # ✅ KEY FIX: normalize payload keys
-    # -------------------------
-    @staticmethod
-    def _normalize_asset_payload(asset_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Accepts old keys from Swagger/UI and maps them to Asset model keys.
-        Prevents: TypeError invalid keyword argument for Asset
-        """
-        data = dict(asset_data or {})
- 
-        mapping = {
-            "asset_name": "name",
-            "asset_description": "description",
-            "manufacturer": "make",
-            "registration_number": "license_plate",
-            "serial_number": "vin",
-            "asset_code": "asset_id",
-        }
- 
-        normalized: Dict[str, Any] = {}
-        for k, v in data.items():
-            normalized[mapping.get(k, k)] = v
- 
-        # never allow these from client
-        normalized.pop("password", None)
-        normalized.pop("organisation_id", None)  # should come from token/db
-        normalized.pop("owner_id", None)         # should come from token
- 
-        return normalized
- 
-    @staticmethod
-    def _set_attr_safely(obj: Any, key: str, value: Any) -> None:
-        """
-        Sets attribute only if it exists on model.
-        If the field is Enum in DB/model, tries to cast using Enum class.
-        """
+    # -----------------------------
+    def _digits_only(self, value) -> str:
+        """Convert to string, trim, enforce digits-only"""
         if value is None:
-            return
-        if not hasattr(obj, key):
-            return
- 
-        current = getattr(obj, key)
- 
+            raise ValueError("asset_id is required")
+
+        s = str(value).strip()
+        if not s.isdigit():
+            raise ValueError("asset_id must contain only numbers (digits)")
+        return s
+
+    def _make_name(self, asset_type: AssetType, asset_id: str) -> str:
+        return f"{asset_type.value.replace('_', ' ').title()} {asset_id}"
+
+    def _to_asset_type(self, value) -> AssetType:
+        """Convert string -> AssetType enum"""
+        if value is None:
+            # default type
+            return AssetType.excavator
+
+        if isinstance(value, AssetType):
+            return value
+
+        s = str(value).strip()
+        return AssetType(s)
+
+    def _to_status(self, value) -> AssetStatus:
+        """Convert string -> AssetStatus enum"""
+        if value is None:
+            return AssetStatus.active
+        if isinstance(value, AssetStatus):
+            return value
+        s = str(value).strip()
+        return AssetStatus(s)
+
+    def _asset_to_dict(self, a: Asset) -> dict:
+        return {
+            "id": a.id,
+            "asset_id": a.asset_id,
+            "name": a.name,
+            "description": a.description,
+            "asset_type": a.asset_type.value if hasattr(a.asset_type, "value") else str(a.asset_type),
+            "status": a.status.value if hasattr(a.status, "value") else str(a.status),
+            "make": a.make,
+            "model": a.model,
+            "year": a.year,
+            "license_plate": a.license_plate,
+            "vin": a.vin,
+            "color": a.color,
+            "last_latitude": a.last_latitude,
+            "last_longitude": a.last_longitude,
+            "last_location_update": a.last_location_update.isoformat() if a.last_location_update else None,
+            "organisation_id": a.organisation_id,
+            "owner_id": a.owner_id,
+            "created_at": a.created_at.isoformat() if a.created_at else None,
+            "updated_at": a.updated_at.isoformat() if a.updated_at else None,
+        }
+
+    # -----------------------------
+    # Read APIs
+    # -----------------------------
+    def get_assets(self, db: Session, skip: int, limit: int, organisation_id: int, status: str = None):
+        query = db.query(Asset).filter(
+            Asset.organisation_id == organisation_id,
+            Asset.is_active == True
+        )
+
+        if status:
+            # status is enum in DB; accept status string
+            query = query.filter(Asset.status == AssetStatus(status))
+
+        return query.offset(skip).limit(limit).all()
+
+    def get_asset_by_id(self, db: Session, asset_pk: int):
+        return db.query(Asset).filter(Asset.id == asset_pk, Asset.is_active == True).first()
+
+    # -----------------------------
+    # Create
+    # -----------------------------
+    def create_asset(self, db: Session, asset_data: dict, current_user: dict):
         try:
-            # if current looks like an Enum value
-            if hasattr(current, "value") and current.__class__:
-                enum_cls = current.__class__
-                setattr(obj, key, enum_cls(value))
-                return
-        except Exception:
-            pass
- 
-        setattr(obj, key, value)
- 
-    @staticmethod
-    def _set_default_if_column_exists(data: Dict[str, Any], field: str, value: Any) -> None:
-        """
-        Only set defaults for fields that exist in the Asset model.
-        """
-        if field in data:
-            return
-        if hasattr(Asset, field):
-            data[field] = value
- 
-    # -------------------------
-    # ✅ FIXED: create_asset INSIDE class + safe defaults + safe org/owner
-    # -------------------------
-    @staticmethod
-    def create_asset(db: Session, asset_data: dict, current_user: dict) -> Tuple[bool, dict]:
-        """
-        Create new asset
-        - Normalizes payload keys
-        - Sets organisation_id, owner_id from current_user
-        - Adds safe defaults (only if model columns exist)
-        - Returns DB error clearly instead of crashing
-        """
-        try:
-            data = AssetService._normalize_asset_payload(asset_data)
- 
-            # required IDs
-            data["asset_id"] = data.get("asset_id") or AssetService.generate_asset_id()
- 
-            # org + owner from token
-            org_id = current_user.get("organisation_id")
-            user_id = current_user.get("sub")
- 
-            if user_id is None:
-                return False, {"success": False, "message": "Missing user id in token (sub)."}
- 
-            user_id = int(user_id)
- 
-            # If organisation_id missing in token, fallback to DB user lookup
-            if not org_id:
-                user = db.query(User).filter(User.id == user_id).first()
-                if not user or not getattr(user, "organisation_id", None):
-                    return False, {"success": False, "message": "User organisation_id missing. Set organisation_id for this user in DB."}
-                org_id = user.organisation_id
- 
-            data["organisation_id"] = org_id
-            data["owner_id"] = user_id
- 
-            # safe defaults (only if those columns exist)
-            AssetService._set_default_if_column_exists(data, "status", "active")
-            AssetService._set_default_if_column_exists(data, "asset_type", "vehicle")
-            AssetService._set_default_if_column_exists(data, "description", "")
-            AssetService._set_default_if_column_exists(data, "year", 2026)
-            AssetService._set_default_if_column_exists(data, "created_at", datetime.utcnow())
-            AssetService._set_default_if_column_exists(data, "updated_at", datetime.utcnow())
- 
-            asset = Asset(**data)
+            # ✅ enforce numeric-only asset_id
+            asset_id = self._digits_only(asset_data.get("asset_id"))
+
+            # ✅ enums
+            asset_type = self._to_asset_type(asset_data.get("asset_type"))
+            status = self._to_status(asset_data.get("status"))
+
+            # ✅ auto-generate name if missing/empty
+            incoming_name = asset_data.get("name")
+            name = incoming_name.strip() if isinstance(incoming_name, str) else incoming_name
+            if not name:
+                name = self._make_name(asset_type, asset_id)
+
+            asset = Asset(
+                asset_id=asset_id,
+                name=name,
+                description=asset_data.get("description"),
+                asset_type=asset_type,
+                status=status,
+                make=asset_data.get("make"),
+                model=asset_data.get("model"),
+                year=asset_data.get("year"),
+                license_plate=asset_data.get("license_plate"),
+                vin=asset_data.get("vin"),
+                color=asset_data.get("color"),
+                last_latitude=asset_data.get("last_latitude"),
+                last_longitude=asset_data.get("last_longitude"),
+                last_location_update=datetime.utcnow() if asset_data.get("last_latitude") is not None and asset_data.get("last_longitude") is not None else None,
+                organisation_id=current_user.get("organisation_id"),
+                owner_id=current_user.get("id"),
+            )
+
             db.add(asset)
             db.commit()
             db.refresh(asset)
- 
-            return True, {"success": True, "message": MSG_ASSET_CREATED, "asset": asset}
- 
+
+            return True, {
+                "success": True,
+                "asset": self._asset_to_dict(asset),
+                "message": "Asset created successfully"
+            }
+
         except IntegrityError as e:
             db.rollback()
-            logger.exception("Asset create IntegrityError")
-            return False, {"success": False, "message": f"DB IntegrityError: {str(e.orig)}"}
- 
-        except (DataError, ProgrammingError) as e:
+            return False, {"message": "Duplicate asset_id or license_plate already exists"}
+        except ValueError as e:
             db.rollback()
-            logger.exception("Asset create DB error")
-            # e.orig exists for many DB drivers; fallback to str(e)
-            msg = str(getattr(e, "orig", e))
-            return False, {"success": False, "message": f"DB Error: {msg}"}
- 
+            return False, {"message": str(e)}
         except Exception as e:
             db.rollback()
-            logger.exception("Asset create failed")
-            return False, {"success": False, "message": f"Unexpected error: {str(e)}"}
- 
-    # -------------------------
-    # Update / Delete / Location
-    # -------------------------
-    @staticmethod
-    def update_asset(db: Session, asset_id: int, asset_data: dict) -> Tuple[bool, dict]:
-        asset = AssetService.get_asset_by_id(db, asset_id)
-        if not asset:
-            return False, {"success": False, "message": "Asset not found"}
- 
+            return False, {"message": f"Unexpected error: {str(e)}"}
+
+    # -----------------------------
+    # Update
+    # -----------------------------
+    def update_asset(self, db: Session, asset_pk: int, asset_data: dict):
         try:
-            data = AssetService._normalize_asset_payload(asset_data)
- 
-            for key, value in data.items():
-                AssetService._set_attr_safely(asset, key, value)
- 
-            if hasattr(asset, "updated_at"):
-                asset.updated_at = datetime.utcnow()
- 
+            asset = db.query(Asset).filter(Asset.id == asset_pk, Asset.is_active == True).first()
+            if not asset:
+                return False, {"message": "Asset not found"}
+
+            # ✅ update asset_id only if provided (and must be digits)
+            if "asset_id" in asset_data and asset_data.get("asset_id") is not None:
+                asset.asset_id = self._digits_only(asset_data.get("asset_id"))
+
+            # ✅ update type/status if provided
+            if "asset_type" in asset_data and asset_data.get("asset_type") is not None:
+                asset.asset_type = self._to_asset_type(asset_data.get("asset_type"))
+
+            if "status" in asset_data and asset_data.get("status") is not None:
+                asset.status = self._to_status(asset_data.get("status"))
+
+            # ✅ normal fields
+            for field in [
+                "description", "make", "model", "year",
+                "license_plate", "vin", "color", "notes"
+            ]:
+                if field in asset_data:
+                    setattr(asset, field, asset_data.get(field))
+
+            # ✅ location
+            if "last_latitude" in asset_data:
+                asset.last_latitude = asset_data.get("last_latitude")
+            if "last_longitude" in asset_data:
+                asset.last_longitude = asset_data.get("last_longitude")
+            if ("last_latitude" in asset_data) or ("last_longitude" in asset_data):
+                if asset.last_latitude is not None and asset.last_longitude is not None:
+                    asset.last_location_update = datetime.utcnow()
+
+            # ✅ AUTO-GENERATE name if not provided/empty
+            incoming_name = asset_data.get("name")
+            name = incoming_name.strip() if isinstance(incoming_name, str) else incoming_name
+            if name:
+                asset.name = name
+            else:
+                asset.name = self._make_name(asset.asset_type, asset.asset_id)
+
             db.commit()
             db.refresh(asset)
- 
-            return True, {"success": True, "message": MSG_ASSET_UPDATED, "asset": asset}
- 
+
+            return True, {
+                "success": True,
+                "asset": self._asset_to_dict(asset),
+                "message": "Asset updated successfully"
+            }
+
+        except IntegrityError:
+            db.rollback()
+            return False, {"message": "Duplicate asset_id or license_plate already exists"}
+        except ValueError as e:
+            db.rollback()
+            return False, {"message": str(e)}
         except Exception as e:
             db.rollback()
-            logger.exception("Update asset failed")
-            return False, {"success": False, "message": f"Asset update failed: {str(e)}"}
- 
-    @staticmethod
-    def delete_asset(db: Session, asset_id: int) -> Tuple[bool, dict]:
-        asset = AssetService.get_asset_by_id(db, asset_id)
-        if not asset:
-            return False, {"success": False, "message": "Asset not found"}
- 
+            return False, {"message": f"Unexpected error: {str(e)}"}
+
+    # -----------------------------
+    # Delete (soft delete)
+    # -----------------------------
+    def delete_asset(self, db: Session, asset_pk: int):
         try:
-            db.delete(asset)
+            asset = db.query(Asset).filter(Asset.id == asset_pk, Asset.is_active == True).first()
+            if not asset:
+                return False, {"message": "Asset not found"}
+
+            asset.is_active = False
             db.commit()
-            return True, {"success": True, "message": MSG_ASSET_DELETED}
+
+            return True, {"success": True, "message": "Asset deleted successfully"}
+
         except Exception as e:
             db.rollback()
-            logger.exception("Delete asset failed")
-            return False, {"success": False, "message": f"Asset delete failed: {str(e)}"}
- 
-    @staticmethod
-    def update_asset_location(db: Session, asset_id: int, latitude: float, longitude: float) -> Tuple[bool, dict]:
-        asset = AssetService.get_asset_by_id(db, asset_id)
-        if not asset:
-            return False, {"success": False, "message": "Asset not found"}
- 
+            return False, {"message": f"Unexpected error: {str(e)}"}
+
+    # -----------------------------
+    # Location update
+    # -----------------------------
+    def update_asset_location(self, db: Session, asset_pk: int, latitude: float, longitude: float):
         try:
-            if hasattr(asset, "last_latitude"):
-                asset.last_latitude = latitude
-            if hasattr(asset, "last_longitude"):
-                asset.last_longitude = longitude
-            if hasattr(asset, "last_location_update"):
-                asset.last_location_update = datetime.utcnow()
- 
+            asset = db.query(Asset).filter(Asset.id == asset_pk, Asset.is_active == True).first()
+            if not asset:
+                return False, {"message": "Asset not found"}
+
+            asset.last_latitude = latitude
+            asset.last_longitude = longitude
+            asset.last_location_update = datetime.utcnow()
+
             db.commit()
-            return True, {"success": True, "message": "Location updated"}
+            db.refresh(asset)
+
+            return True, {
+                "success": True,
+                "asset": self._asset_to_dict(asset),
+                "message": "Location updated successfully"
+            }
+
         except Exception as e:
             db.rollback()
-            logger.exception("Update asset location failed")
-            return False, {"success": False, "message": f"Location update failed: {str(e)}"}
- 
- 
+            return False, {"message": f"Unexpected error: {str(e)}"}
+
+
+# ✅ singleton like your imports expect
 asset_service = AssetService()
- 
