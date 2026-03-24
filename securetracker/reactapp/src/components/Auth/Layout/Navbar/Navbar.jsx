@@ -47,10 +47,10 @@ const Navbar = ({ toggleSidebar }) => {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <button onClick={toggleSidebar} className="menu-toggle">☰</button>
+        {/* <button onClick={toggleSidebar} className="menu-toggle">☰</button> */}
 
         <Link to="/dashboard" className="navbar-brand">
-          🚗 SecureTracker
+          🚛 SecureTracker
         </Link>
 
         {hasPermission('assets:read') && (

@@ -41,7 +41,12 @@
   font-weight: 600;
   letter-spacing: 0.5px;
 }
-
+.form-actions {
+  display: flex;
+  gap: 16px;          /* ✅ creates space between buttons */
+  justify-content: flex-end;
+  margin-top: 24px;
+}
 /* Focus */
 .form-group input:focus,
 .form-group select:focus,
