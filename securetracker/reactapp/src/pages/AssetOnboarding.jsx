@@ -15,11 +15,9 @@ import "./AssetOnboarding.css";
 
 const safeLower = (v) => String(v ?? "").toLowerCase();
 
-/* -------------------------------
-   API → UI mapping
--------------------------------- */
+/* API → UI */
 const toUiAsset = (a) => ({
-  id: a.id, // DB primary key
+  id: a.id,
   assetId: a.asset_id,
   type: a.asset_type,
   status: a.status,
@@ -35,14 +33,8 @@ const toUiAsset = (a) => ({
   name: a.name ?? "",
 });
 
-/* -------------------------------
-   Error extraction
--------------------------------- */
-const extractBackendError = (err) => {
-  const detail = err?.response?.data?.detail;
-  if (typeof detail === "string") return detail;
-  return err?.message || "Save failed";
-};
+const extractBackendError = (err) =>
+  err?.response?.data?.detail || err?.message || "Action failed";
 
 const AssetOnboarding = () => {
   const { hasPermission } = useAuth();
@@ -65,17 +57,14 @@ const AssetOnboarding = () => {
 
   const toggleSidebar = () => setSidebarOpen((p) => !p);
 
-  /* -------------------------------
-     Load assets
-  -------------------------------- */
+  /* Load assets */
   const loadAssets = async () => {
     try {
       setPageError("");
       setLoading(true);
       const res = await assetService.getAllAssets();
       setAssets(res.map(toUiAsset));
-    } catch (e) {
-      console.error(e);
+    } catch {
       setPageError("Failed to load assets");
     } finally {
       setLoading(false);
@@ -86,50 +75,35 @@ const AssetOnboarding = () => {
     if (canRead) loadAssets();
   }, [canRead]);
 
-  /* -------------------------------
-     Filters
-  -------------------------------- */
+  /* Filters */
   const filteredAssets = useMemo(() => {
     let list = assets;
-
     if (selectedStatus) {
-      list = list.filter(
-        (a) => safeLower(a.status) === safeLower(selectedStatus)
-      );
+      list = list.filter((a) => safeLower(a.status) === safeLower(selectedStatus));
     } else if (selectedType) {
-      list = list.filter(
-        (a) => safeLower(a.type) === safeLower(selectedType)
-      );
+      list = list.filter((a) => safeLower(a.type) === safeLower(selectedType));
     }
-
     return list;
   }, [assets, selectedStatus, selectedType]);
 
-  /* -------------------------------
-     Actions
-  -------------------------------- */
+  /* Actions */
   const handleAddAsset = () => {
-    if (!canManage) return;
     setEditingAsset(null);
     setShowModal(true);
   };
 
   const handleEditAsset = (asset) => {
-    if (!canManage) return;
     setEditingAsset(asset);
     setShowModal(true);
   };
 
   const handleDeleteAsset = async (asset) => {
-    if (!canManage) return;
     if (!window.confirm(`Delete Asset ID "${asset.assetId}"?`)) return;
-
     try {
       setLoading(true);
       await assetService.deleteAsset(asset.id);
       setAssets((prev) => prev.filter((a) => a.id !== asset.id));
     } catch (e) {
-      console.error(e);
       setPageError(extractBackendError(e));
     } finally {
       setLoading(false);
@@ -140,34 +114,18 @@ const AssetOnboarding = () => {
     navigate(`/tracking?asset=${asset.assetId}`);
   };
 
-  /* -------------------------------
-     ✅ FIXED SUBMIT LOGIC
-  -------------------------------- */
   const handleSubmitAsset = async (formData) => {
-    if (!canManage) return;
-
     try {
       setPageError("");
       setLoading(true);
 
       if (!editingAsset) {
-        // ✅ CREATE → asset_id MUST be sent
-        if (!formData.asset_id) {
-          throw new Error("asset_id is required");
-        }
-
         const created = await assetService.createAsset(formData);
         setAssets((prev) => [toUiAsset(created), ...prev]);
       } else {
-        // ✅ UPDATE → NEVER send asset_id
-        const updatePayload = { ...formData };
-        delete updatePayload.asset_id;
-
-        const updated = await assetService.updateAsset(
-          editingAsset.id,
-          updatePayload
-        );
-
+        const payload = { ...formData };
+        delete payload.asset_id;
+        const updated = await assetService.updateAsset(editingAsset.id, payload);
         setAssets((prev) =>
           prev.map((a) => (a.id === editingAsset.id ? toUiAsset(updated) : a))
         );
@@ -176,85 +134,69 @@ const AssetOnboarding = () => {
       setShowModal(false);
       setEditingAsset(null);
     } catch (e) {
-      console.error(e);
       setPageError(extractBackendError(e));
     } finally {
       setLoading(false);
     }
   };
 
-  /* -------------------------------
-     Access denied
-  -------------------------------- */
   if (!canRead) {
     return (
       <div className="asset-onboarding-layout">
         <Navbar toggleSidebar={toggleSidebar} />
-        <div className="dashboard-container">
-          <Sidebar isOpen={sidebarOpen} />
-          <main className="dashboard-main">
-            <div className="access-denied">
-              <h2>Access Denied</h2>
-              <p>You don't have permission to view assets.</p>
-            </div>
-          </main>
-        </div>
+        <Sidebar isOpen={sidebarOpen} />
+        <main className="dashboard-main">
+          <h2>Access Denied</h2>
+        </main>
       </div>
     );
   }
 
-  /* -------------------------------
-     UI
-  -------------------------------- */
   return (
     <div className="asset-onboarding-layout">
       <Navbar toggleSidebar={toggleSidebar} />
-      <div className="dashboard-container">
-        <Sidebar isOpen={sidebarOpen} />
-        <main className="dashboard-main">
-          <div className="page-header">
-            <div>
-              <h1>Assets</h1>
-              <p>
-                {selectedStatus
-                  ? `Showing status: ${selectedStatus}`
-                  : selectedType
-                  ? `Showing type: ${selectedType}`
-                  : "All assets"}
-              </p>
-            </div>
+      <Sidebar isOpen={sidebarOpen} />
 
-            {canManage && (
-              <button className="add-asset-btn" onClick={handleAddAsset}>
-                ➕ Add New Asset
-              </button>
-            )}
+      <main className="dashboard-main asset-page">
+        {/* HEADER */}
+        <div className="asset-header">
+          <div>
+            <h1>Assets</h1>
+            <span>
+              {selectedStatus
+                ? `Status: ${selectedStatus}`
+                : selectedType
+                ? `Type: ${selectedType}`
+                : "All assets"}
+            </span>
           </div>
 
-          {pageError && (
-            <div className="error-message" style={{ marginBottom: 12 }}>
-              {pageError}
-            </div>
+          {canManage && (
+            <button className="primary-btn" onClick={handleAddAsset}>
+              + Add Asset
+            </button>
           )}
+        </div>
 
-          <AssetList
-            assets={filteredAssets}
-            loading={loading}
-            onEdit={canManage ? handleEditAsset : undefined}
-            onDelete={canManage ? handleDeleteAsset : undefined}
-            onTrack={handleTrackAsset}
-            canManage={canManage}
-          />
+        {pageError && <div className="error-message">{pageError}</div>}
 
-          <Footer />
-        </main>
-      </div>
+        <AssetList
+          assets={filteredAssets}
+          loading={loading}
+          onEdit={canManage ? handleEditAsset : undefined}
+          onDelete={canManage ? handleDeleteAsset : undefined}
+          onTrack={handleTrackAsset}
+          canManage={canManage}
+        />
+
+        <Footer />
+      </main>
 
       {canManage && (
         <Modal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
-          title={editingAsset ? "Edit Asset" : "Add New Asset"}
+          title={editingAsset ? "Edit Asset" : "Add Asset"}
           size="large"
         >
           <AssetForm
