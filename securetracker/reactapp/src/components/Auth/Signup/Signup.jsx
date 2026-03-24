@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './Signup.css';
-import assetImg from '../../../assets/loader.jpg';
+import assetImg from '../../../assets/loader.png';
 
 const Signup = () => {
   const [formData, setFormData] = useState({

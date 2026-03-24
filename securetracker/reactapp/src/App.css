@@ -1,5 +1,5 @@
 /* App.css - Role-based themes */
-
+ 
 /* ADMIN MODE - Bright Glass Premium */
 .admin-mode {
   --bg-primary: #f8fafc;
@@ -7,7 +7,7 @@
   --text-primary: #1e293b;
   --text-secondary: #475569;
 }
-
+ 
 /* VIEWER MODE - Original Neomorphic */
 .viewer-mode {
   --bg-primary: #e0e5ec;
@@ -22,39 +22,39 @@
   --warning: #d97706;
   --danger: #dc2626;
 }
-
+ 
 .app-container {
   min-height: 100vh;
   background: var(--bg-primary);
   color: var(--text-primary);
 }
-
+ 
 /* Admin glass overrides */
 .admin-mode .sidebar {
   background: rgba(255, 255, 255, 0.9) !important;
   backdrop-filter: blur(20px);
   border-right: 1px solid rgba(103, 126, 234, 0.3);
 }
-
+ 
 .admin-mode .navbar {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(25px);
 }
-
+ 
 .admin-mode .stat-card {
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(103, 126, 234, 0.2);
   color: var(--text-primary) !important;
 }
-
+ 
 .admin-mode .stat-info h3 {
   color: var(--text-primary) !important;
 }
-
+ 
 .admin-mode .stat-info p {
   color: var(--text-secondary) !important;
 }
-
+ 
 /* Role badges */
 .role-badge {
   padding: 4px 12px;
@@ -63,18 +63,21 @@
   font-weight: 600;
   text-transform: uppercase;
 }
-
+ 
 .admin-mode .role-badge {
   background: #667eea;
   color: white;
 }
-
+ 
 .viewer-mode .role-badge {
   background: #6b7280;
   color: white;
 }
-
+ 
 /* Viewer neomorphic preserved */
 .viewer-mode [class*="shadow"] {
   box-shadow: inherit;
+}
+.hover-opacity:hover {
+  opacity: 1 !important;
 }

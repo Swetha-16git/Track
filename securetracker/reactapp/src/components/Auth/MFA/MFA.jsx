@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OtpTimer from './OtpTimer';
 import './MFA.css';
-import assetImg from '../../../assets/loader.jpg';
+import assetImg from '../../../assets/loader.png';
 import { useAuth } from '../../../context/AuthContext'; // ✅ ADD THIS
 
 const MFA = () => {

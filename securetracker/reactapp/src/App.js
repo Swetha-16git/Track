@@ -1,29 +1,16 @@
-import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import AppRoutes from './routes/AppRoutes';
-import './App.css';
-
-const RoleLayout = ({ children }) => {
-  const { user } = useAuth();
-  const roleClass = user?.role?.toLowerCase() === 'admin' ? 'admin-mode' : 'viewer-mode';
-
-  return (
-    <div className={`app-container ${roleClass}`}>
-      {children}
-    </div>
-  );
-};
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import AppRoutes from "./routes/AppRoutes";
+import "./App.css";
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <AuthProvider>
-        <RoleLayout>
-          <AppRoutes />
-        </RoleLayout>
+        <AppRoutes />
       </AuthProvider>
-    </Router>
+    </BrowserRouter>
   );
 }
 
