@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
-import assetImg from '../../../assets/loader.jpg';
+import assetImg from '../../../assets/loader.png';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -41,7 +41,6 @@ const Login = () => {
 
       if (!res.ok) throw new Error(data?.detail || data?.message || 'Login failed');
 
-      // ✅ If backend supports real MFA flow (temp token)
       const mfaRequired = data?.mfa_required ?? data?.mfaRequired;
       const tempToken = data?.temp_token || data?.tempToken;
 
@@ -52,16 +51,13 @@ const Login = () => {
         return;
       }
 
-      // ⚠️ Backend bug case: returns access/refresh directly (MFA bypass)
       const access = data?.access_token || data?.accessToken;
       const refresh = data?.refresh_token || data?.refreshToken;
 
       if (access) {
-        // store as PENDING only, not real tokens
         localStorage.setItem('pending_access_token', access);
         if (refresh) localStorage.setItem('pending_refresh_token', refresh);
 
-        // ensure real tokens are not present
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
 
@@ -70,7 +66,6 @@ const Login = () => {
         return;
       }
 
-      // If response format is unexpected
       throw new Error('Login response missing MFA info and tokens');
     } catch (err) {
       setError(err?.message || 'Login failed');
@@ -82,7 +77,8 @@ const Login = () => {
   return (
     <div className="st-page">
       <div className="st-shell">
-        {/* LEFT */}
+
+        {/* LEFT (White full canvas content) */}
         <div className="st-left">
           <div className="st-brand">
             <span className="st-dot" />
@@ -92,56 +88,73 @@ const Login = () => {
             </div>
           </div>
 
-          <img src={assetImg} alt="Vehicle asset" className="st-asset-img" />
+          <div className="st-visual">
+            <img src={assetImg} alt="Vehicle asset" className="st-asset-img" />
+          </div>
 
-          <div className="st-chips">
-            <span className="st-chip">Real‑time tracking</span>
-            <span className="st-chip">Org access</span>
-            <span className="st-chip">MFA‑ready</span>
+          <div className="st-left-bottom">
+            <div className="st-chips">
+              <span className="st-chip">Real‑time tracking</span>
+              <span className="st-chip">Org access</span>
+              <span className="st-chip">MFA‑ready</span>
+            </div>
+
+            <div className="st-powered">
+              <span>powered by</span>
+              <strong>L&amp;T‑NxT</strong>
+            </div>
           </div>
         </div>
 
-        {/* RIGHT */}
+        {/* RIGHT (Grey panel sits inside white canvas) */}
         <div className="st-right">
-          <h2 className="st-title">Member Login</h2>
-          <p className="st-subtitle">
-            Sign in to access tracking, asset onboarding, and security controls.
-          </p>
+          <div className="st-right-card">
+            <h2 className="st-title">Member Login</h2>
+            <p className="st-subtitle">Enter employee credentials to login.</p>
 
-          {error && <div className="st-error">{error}</div>}
+            {error && <div className="st-error">{error}</div>}
 
-          <form onSubmit={handleSubmit} className="st-form">
-            <label className="st-label">Username / Email</label>
-            <input
-              className="st-input"
-              placeholder="Enter username or email"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              disabled={loading}
-            />
+            <form onSubmit={handleSubmit} className="st-form">
+              <label className="st-label">Username / Email</label>
+              <input
+                className="st-input"
+                placeholder="Enter username or email"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                disabled={loading}
+              />
 
-            <label className="st-label">Password</label>
-            <input
-              className="st-input"
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-            />
+              <label className="st-label">Password</label>
+              <input
+                className="st-input"
+                type="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+              />
 
-            <button className="st-btn" disabled={loading}>
-              {loading ? 'Signing in…' : 'Sign In'}
-            </button>
-          </form>
+              <button className="st-btn" disabled={loading}>
+                {loading ? 'Signing in…' : 'Sign In'}
+              </button>
 
-          <div className="st-footer">
-            <span>Don’t have an account?</span>
-            <Link to="/signup" className="st-link">Create Account</Link>
+              <div className="st-forgot">
+                <Link to="/forgot-password" className="st-forgot-link">
+                  Forgot Password
+                </Link>
+              </div>
+            </form>
+
+            <Link to="/signup" className="st-create-btn">
+              Create Account <span className="st-create-arrow">›</span>
+            </Link>
+
+            <div className="st-legal" />
           </div>
         </div>
+
       </div>
     </div>
   );

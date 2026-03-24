@@ -50,7 +50,7 @@ const AssetOnboarding = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingAsset, setEditingAsset] = useState(null);
-
+ 
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pageError, setPageError] = useState("");
@@ -78,11 +78,13 @@ const AssetOnboarding = () => {
   /* Filters */
   const filteredAssets = useMemo(() => {
     let list = assets;
+ 
     if (selectedStatus) {
       list = list.filter((a) => safeLower(a.status) === safeLower(selectedStatus));
     } else if (selectedType) {
       list = list.filter((a) => safeLower(a.type) === safeLower(selectedType));
     }
+ 
     return list;
   }, [assets, selectedStatus, selectedType]);
 
@@ -91,12 +93,12 @@ const AssetOnboarding = () => {
     setEditingAsset(null);
     setShowModal(true);
   };
-
+ 
   const handleEditAsset = (asset) => {
     setEditingAsset(asset);
     setShowModal(true);
   };
-
+ 
   const handleDeleteAsset = async (asset) => {
     if (!window.confirm(`Delete Asset ID "${asset.assetId}"?`)) return;
     try {
@@ -109,12 +111,14 @@ const AssetOnboarding = () => {
       setLoading(false);
     }
   };
-
+ 
   const handleTrackAsset = (asset) => {
     navigate(`/tracking?asset=${asset.assetId}`);
   };
 
   const handleSubmitAsset = async (formData) => {
+    if (!canManage) return;
+ 
     try {
       setPageError("");
       setLoading(true);
@@ -130,7 +134,7 @@ const AssetOnboarding = () => {
           prev.map((a) => (a.id === editingAsset.id ? toUiAsset(updated) : a))
         );
       }
-
+ 
       setShowModal(false);
       setEditingAsset(null);
     } catch (e) {
@@ -141,57 +145,49 @@ const AssetOnboarding = () => {
   };
 
   if (!canRead) {
-    return (
-      <div className="asset-onboarding-layout">
-        <Navbar toggleSidebar={toggleSidebar} />
-        <Sidebar isOpen={sidebarOpen} />
-        <main className="dashboard-main">
-          <h2>Access Denied</h2>
-        </main>
-      </div>
-    );
+    return <div>Access Denied</div>;
   }
 
   return (
     <div className="asset-onboarding-layout">
       <Navbar toggleSidebar={toggleSidebar} />
-      <Sidebar isOpen={sidebarOpen} />
-
-      <main className="dashboard-main asset-page">
-        {/* HEADER */}
-        <div className="asset-header">
-          <div>
-            <h1>Assets</h1>
-            <span>
-              {selectedStatus
-                ? `Status: ${selectedStatus}`
-                : selectedType
-                ? `Type: ${selectedType}`
-                : "All assets"}
-            </span>
+      <div className="dashboard-container">
+        <Sidebar isOpen={sidebarOpen} />
+        <main className="dashboard-main">
+          <div className="page-header">
+            <div>
+              <h1>Assets</h1>
+              <p>
+                {selectedStatus
+                  ? `Showing status: ${selectedStatus}`
+                  : selectedType
+                  ? `Showing type: ${selectedType}`
+                  : "All assets"}
+              </p>
+            </div>
+ 
+            {canManage && (
+              <button className="add-asset-btn" onClick={handleAddAsset}>
+                ➕ Add New Asset
+              </button>
+            )}
           </div>
 
-          {canManage && (
-            <button className="primary-btn" onClick={handleAddAsset}>
-              + Add Asset
-            </button>
-          )}
-        </div>
+          {pageError && <div className="error-message">{pageError}</div>}
 
-        {pageError && <div className="error-message">{pageError}</div>}
-
-        <AssetList
-          assets={filteredAssets}
-          loading={loading}
-          onEdit={canManage ? handleEditAsset : undefined}
-          onDelete={canManage ? handleDeleteAsset : undefined}
-          onTrack={handleTrackAsset}
-          canManage={canManage}
-        />
-
-        <Footer />
-      </main>
-
+          <AssetList
+            assets={filteredAssets}
+            loading={loading}
+            onEdit={canManage ? handleEditAsset : undefined}
+            onDelete={canManage ? handleDeleteAsset : undefined}
+            onTrack={handleTrackAsset}
+            canManage={canManage}
+          />
+ 
+          <Footer />
+        </main>
+      </div>
+ 
       {canManage && (
         <Modal
           isOpen={showModal}
@@ -209,5 +205,6 @@ const AssetOnboarding = () => {
     </div>
   );
 };
-
+ 
 export default AssetOnboarding;
+ 
