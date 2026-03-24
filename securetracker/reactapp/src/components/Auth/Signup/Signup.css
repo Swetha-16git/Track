@@ -1,57 +1,58 @@
 /* =================================================
-   SIGNUP OVERRIDES – FIT + POLISH (LOCKED)
+   SIGNUP OVERRIDES – FIXED PANEL (NO SCROLL)
 ================================================= */
 
-/* Keep signup in the same visible card */
+/* ===== SHELL ===== */
 .st-shell--signup {
-  height: calc(100vh - 48px);
-  max-height: 720px;
-
+  height: 100vh;
+  overflow: hidden;
   box-shadow:
     0 28px 60px rgba(15, 23, 42, 0.12),
     0 10px 24px rgba(15, 23, 42, 0.07);
 }
 
-/* Tight padding */
+/* ===== LEFT / RIGHT ===== */
 .st-shell--signup .st-left {
-  padding: 36px 50px;
+  padding: 36px 56px;
 }
 
 .st-shell--signup .st-right {
-  padding: 36px 50px;
+  padding: 32px 56px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   border-left: 1px solid rgba(15, 23, 42, 0.06);
+  overflow: hidden;
 }
 
-/* Image size control */
+/* =================================================
+   IMAGE
+================================================= */
 .st-shell--signup .st-asset-img {
-  max-height: 240px;
-  width: 520px;
+  max-height: 300px;
+  width: 640px;
   max-width: 100%;
   object-fit: contain;
-  margin: 10px 0;
+  margin: 16px 0 12px;
 }
 
 /* Chips */
 .st-shell--signup .st-chips {
   margin-top: auto;
+  display: flex;
   gap: 8px;
 }
 
 .st-shell--signup .st-chip {
-  padding: 7px 10px;
+  padding: 6px 10px;
   font-size: 11.5px;
   background: #f6f8fb;
   color: #003f72;
-
-  box-shadow:
-    inset 2px 2px 4px rgba(255,255,255,0.9),
-    inset -2px -2px 4px rgba(0,63,114,0.15);
+  border-radius: 10px;
 }
 
-/* Titles */
+/* =================================================
+   TITLES
+================================================= */
 .st-shell--signup .st-title {
   font-size: 18px;
   margin: 0 0 4px;
@@ -60,152 +61,100 @@
 }
 
 .st-shell--signup .st-subtitle {
-  margin: 6px 0 10px;
+  margin: 4px 0 10px;
   font-size: 12.5px;
   line-height: 1.4;
   color: #6b7280;
 }
 
-/* Error */
-.st-shell--signup .st-error {
-  margin-bottom: 10px;
-  padding: 10px 12px;
-  border-radius: 12px;
-}
-
 /* =================================================
-   FORM GRID (LABEL LEFT, INPUT RIGHT)
+   FORM GRID
 ================================================= */
 .st-shell--signup .st-form {
   display: grid;
-  grid-template-columns: 140px 1fr;
+  grid-template-columns: 150px 1fr;
   column-gap: 16px;
   row-gap: 10px;
   align-items: center;
 }
 
 .st-shell--signup .st-label {
-  margin: 0;
   font-size: 12px;
   font-weight: 800;
   color: #374151;
 }
 
+/* Inputs */
 .st-shell--signup .st-input {
-  height: 40px;
-  border-radius: 12px;
-  margin: 0;
+  height: 42px;
+  border-radius: 14px;
   font-size: 13px;
   padding: 0 14px;
-  border: none;
-  background: #f6f8fb;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
   color: #003f72;
-
   box-shadow:
-    inset 4px 4px 8px rgba(0,63,114,0.15),
-    inset -4px -4px 8px rgba(255,255,255,0.9);
-
-  transition: all 0.2s ease;
-}
-
-.st-shell--signup .st-input::placeholder {
-  color: #9ca3af;
-}
-
-.st-shell--signup .st-input:focus {
-  outline: none;
-  box-shadow:
-    inset 6px 6px 10px rgba(0,63,114,0.2),
-    inset -6px -6px 10px rgba(255,255,255,1),
-    0 0 0 2px rgba(255,194,56,0.4);
+    inset 0 2px 6px rgba(0, 0, 0, 0.06),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.8);
 }
 
 /* =================================================
-   ACTION BUTTONS – SAME SIZE (LOCKED)
+   ACTION BUTTONS – ✅ FINAL FIX
 ================================================= */
 .st-actions {
   grid-column: 1 / -1;
   display: flex;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 16px;
+  margin-top: 12px;
 }
 
+/* ✅ SINGLE SOURCE OF TRUTH */
 .st-actions button {
   flex: 1;
-  height: 44px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 800;
+  height: 42px;
+  border-radius: 14px;
+
+  /* ✅ TRUE CENTERING */
   display: flex;
   align-items: center;
   justify-content: center;
+
+  padding: 0;
+  margin: 0;
+  border: none;
+  box-sizing: border-box;
+
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
 }
 
 /* Cancel */
 .st-cancel {
   background: #f6f8fb;
-  border: none;
   color: #374151;
-  cursor: pointer;
-
   box-shadow:
-    inset 2px 2px 4px rgba(255,255,255,0.9),
-    inset -2px -2px 4px rgba(15,23,42,0.12);
-
-  transition: all 0.15s ease;
+    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(15, 23, 42, 0.06);
 }
 
-.st-cancel:hover:not(:disabled) {
-  box-shadow:
-    inset 4px 4px 8px rgba(15,23,42,0.15),
-    inset -4px -4px 8px rgba(255,255,255,0.9);
+/* Create Account */
+.st-btn {
+  background: linear-gradient(170deg, #004b88 0%, #003f72 100%);
+  color: #ffffff;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+
+.st-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 /* =================================================
-   CREATE ACCOUNT – PRIMARY CTA (MATCH LOGIN)
+   FOOTER
 ================================================= */
-.st-actions .st-btn {
-  border: none;
-  color: #ffffff;
-  cursor: pointer;
-  font-weight: 900;
-  letter-spacing: 0.3px;
-
-  background: linear-gradient(
-    180deg,
-    #004b88 0%,
-    #003f72 100%
-  );
-
-  box-shadow:
-    6px 6px 14px rgba(0,63,114,0.35),
-    -6px -6px 14px rgba(255,255,255,0.85),
-    0 0 0 0 rgba(255,194,56,0);
-
-  transition: all 0.18s ease;
-}
-
-.st-actions .st-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow:
-    4px 4px 10px rgba(0,63,114,0.4),
-    -4px -4px 10px rgba(255,255,255,0.8),
-    0 0 0 3px rgba(255,194,56,0.35);
-}
-
-.st-actions .st-btn:active:not(:disabled) {
-  box-shadow:
-    inset 4px 4px 8px rgba(0,63,114,0.45),
-    inset -4px -4px 8px rgba(255,255,255,0.9);
-}
-
-.st-actions button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* Footer */
 .st-shell--signup .st-footer {
   margin-top: 10px;
   font-size: 12px;
@@ -213,9 +162,11 @@
   color: #6b7280;
 }
 
-.st-shell--signup .st-link {
+.st-link {
+  margin-left: 6px;
   color: #003f72;
-  font-weight: 900;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 /* =================================================
@@ -224,7 +175,6 @@
 @media (max-width: 980px) {
   .st-shell--signup {
     height: auto;
-    max-height: none;
   }
 
   .st-shell--signup .st-left {
@@ -233,9 +183,5 @@
 
   .st-shell--signup .st-form {
     grid-template-columns: 1fr;
-  }
-
-  .st-shell--signup .st-label {
-    margin-top: 8px;
   }
 }

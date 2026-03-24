@@ -1,5 +1,6 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import ProtectedRoute from "../components/Auth/Common/ProtectedRoute";
 
 import LandingPage from "../pages/LandingPage.jsx";
@@ -11,65 +12,101 @@ import Dashboard from "../pages/Dashboard";
 import AssetOnboarding from "../pages/AssetOnboarding";
 import LiveTracking from "../pages/LiveTracking";
 
+/* ✅ Role-based container ONLY for protected pages */
+const RoleLayout = () => {
+  const { user } = useAuth();
+
+  const roleClass =
+    user?.role?.toLowerCase() === "admin" ? "admin-mode" : "viewer-mode";
+
+  return (
+    <div className={`app-container ${roleClass}`}>
+      <Outlet />
+    </div>
+  );
+};
+
+/* ✅ Smart fallback: if authenticated -> dashboard else login */
+const DefaultRedirect = () => {
+  const location = useLocation();
+
+  const accessToken =
+    localStorage.getItem("access_token") || localStorage.getItem("token");
+
+  const mfaVerified = localStorage.getItem("mfa_verified") === "true";
+
+  // If user is already verified, go dashboard
+  if (accessToken && mfaVerified) {
+    return <Navigate to="/dashboard" replace state={{ from: location }} />;
+  }
+
+  // If user is in MFA stage, go MFA
+  const tempToken =
+    localStorage.getItem("temp_token") ||
+    localStorage.getItem("pending_access_token");
+
+  if (tempToken && !mfaVerified) {
+    return <Navigate to="/mfa" replace state={{ from: location }} />;
+  }
+
+  // Otherwise login
+  return <Navigate to="/login" replace state={{ from: location }} />;
+};
+
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* ✅ Public Routes */}
+      {/* =========================
+          PUBLIC ROUTES
+      ========================= */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/mfa" element={<MFAPage />} />
 
-      {/* ✅ Protected Routes */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
+      {/* =========================
+          PROTECTED ROUTES (WITH CONTAINER)
+      ========================= */}
+      <Route element={<RoleLayout />}>
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* ✅ Assets List route (READ) */}
-      <Route
-        path="/assets"
-        element={
-          <ProtectedRoute requiredPermission="assets:read">
-            <AssetOnboarding />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/assets"
+          element={
+            <ProtectedRoute requiredPermission="assets:read">
+              <AssetOnboarding />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* ✅ Add/Edit/Delete route (WRITE) */}
-      <Route
-        path="/asset-onboarding"
-        element={
-          <ProtectedRoute requiredPermission="assets:write">
-            <AssetOnboarding />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/asset-onboarding"
+          element={
+            <ProtectedRoute requiredPermission="assets:write">
+              <AssetOnboarding />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/tracking"
-        element={
-          <ProtectedRoute requiredPermission="tracking:read">
-            <LiveTracking />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/tracking"
+          element={
+            <ProtectedRoute requiredPermission="tracking:read">
+              <LiveTracking />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
 
-      {/* ✅ Fallback */}
-      <Route path="/reports" element={
-          <ProtectedRoute requiredPermission="assets:read">
-            <div style={{padding: '2rem', textAlign: 'center'}}>
-              <h2>Reports</h2>
-              <p>Asset reports and analytics will be implemented here.</p>
-              <div style={{fontSize: '4rem', margin: '2rem 0'}}>📈</div>
-            </div>
-          </ProtectedRoute>
-        } />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* ✅ ONE wildcard only (important!) */}
+      <Route path="*" element={<DefaultRedirect />} />
     </Routes>
   );
 };

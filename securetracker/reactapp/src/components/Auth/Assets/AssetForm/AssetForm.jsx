@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./AssetForm.css";
-
+ 
 const AssetForm = ({ asset, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
     asset_id: "",
@@ -54,7 +54,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
         asset.location?.latitude ??
         asset.location?.lat ??
         "";
-
+ 
       const lon =
         asset.last_longitude ??
         asset.lastLongitude ??
@@ -65,7 +65,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
         asset.location?.lon ??
         asset.location?.lng ??
         "";
-
+ 
       setFormData({
         // ✅ numeric-only; strips any legacy formats
         asset_id: String(asset.asset_id ?? asset.assetId ?? "").replace(/\D/g, ""),
@@ -99,7 +99,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
     // ✅ IMPORTANT: update by field name
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+ 
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -118,7 +118,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
         formData.last_latitude === "" || formData.last_latitude === null
           ? null
           : Number(formData.last_latitude),
-
+ 
       last_longitude:
         formData.last_longitude === "" || formData.last_longitude === null
           ? null
@@ -151,7 +151,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
           />
         </div>
       </div>
-
+ 
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="asset_type">Vehicle Type *</label>
@@ -169,7 +169,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             ))}
           </select>
         </div>
-
+ 
         <div className="form-group">
           <label htmlFor="status">Status *</label>
           <select
@@ -187,7 +187,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
           </select>
         </div>
       </div>
-
+ 
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="make">Make</label>
@@ -200,7 +200,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             placeholder="e.g., CAT"
           />
         </div>
-
+ 
         <div className="form-group">
           <label htmlFor="model">Model</label>
           <input
@@ -213,7 +213,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
           />
         </div>
       </div>
-
+ 
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="year">Year</label>
@@ -228,7 +228,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             max={new Date().getFullYear() + 1}
           />
         </div>
-
+ 
         <div className="form-group">
           <label htmlFor="license_plate">License Plate</label>
           <input
@@ -241,7 +241,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
           />
         </div>
       </div>
-
+ 
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="vin">VIN</label>
@@ -255,7 +255,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             maxLength={50}
           />
         </div>
-
+ 
         <div className="form-group">
           <label htmlFor="color">Color</label>
           <input
@@ -282,7 +282,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
             step="any"
           />
         </div>
-
+ 
         <div className="form-group">
           <label htmlFor="last_longitude">Longitude</label>
           <input
@@ -296,7 +296,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
           />
         </div>
       </div>
-
+ 
       <div className="form-group">
         <label htmlFor="description">Description</label>
         <textarea
@@ -308,7 +308,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
           rows={3}
         />
       </div>
-
+ 
       <div className="form-actions">
         <button type="button" className="cancel-btn" onClick={onCancel}>
           Cancel

@@ -51,8 +51,7 @@ class AssetType(enum.Enum):
     other = ASSET_TYPE_OTHER
 
 
-class AssetStatus(enum.Enum):
-    """Asset status enumeration"""
+class AssetStatus(str, enum.Enum):
     active = ASSET_STATUS_ACTIVE
     inactive = ASSET_STATUS_INACTIVE
     maintenance = ASSET_STATUS_MAINTENANCE
@@ -141,9 +140,6 @@ class TrackingDevice(Base):
 
     organisation = relationship("Organisation", back_populates="tracking_devices")
     asset = relationship("Asset", back_populates="tracking_device", uselist=False)
-
-    def __repr__(self):
-        return f"<TrackingDevice(id={self.id}, device_id={self.device_id})>"
 
 
 AssetTypeEnum = AssetType
