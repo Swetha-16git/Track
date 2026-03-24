@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, E
 from sqlalchemy.orm import relationship, validates
 from datetime import datetime
 import enum
-
+ 
 from app.database.db_connection import Base
 from app.config.constants import (
     # ✅ Construction asset types
@@ -57,12 +57,12 @@ class AssetStatus(enum.Enum):
     inactive = ASSET_STATUS_INACTIVE
     maintenance = ASSET_STATUS_MAINTENANCE
     stolen = ASSET_STATUS_STOLEN
-
-
+ 
+ 
 class Asset(Base):
     """Asset model for construction equipment"""
     __tablename__ = "assets"
-
+ 
     id = Column(Integer, primary_key=True, index=True)
 
     # ✅ Your numeric asset id (stored as string so it can stay "0012" etc.)
@@ -117,12 +117,12 @@ class Asset(Base):
 
     def __repr__(self):
         return f"<Asset(id={self.id}, asset_id={self.asset_id}, name={self.name})>"
-
-
+ 
+ 
 class TrackingDevice(Base):
     """Tracking device model"""
     __tablename__ = "tracking_devices"
-
+ 
     id = Column(Integer, primary_key=True, index=True)
     device_id = Column(String(100), unique=True, index=True, nullable=False)
     device_name = Column(String(200), nullable=False)

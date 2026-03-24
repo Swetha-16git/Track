@@ -187,20 +187,7 @@ const AssetOnboarding = () => {
      Access denied
   -------------------------------- */
   if (!canRead) {
-    return (
-      <div className="asset-onboarding-layout">
-        <Navbar toggleSidebar={toggleSidebar} />
-        <div className="dashboard-container">
-          <Sidebar isOpen={sidebarOpen} />
-          <main className="dashboard-main">
-            <div className="access-denied">
-              <h2>Access Denied</h2>
-              <p>You don't have permission to view assets.</p>
-            </div>
-          </main>
-        </div>
-      </div>
-    );
+    return <div>Access Denied</div>;
   }
 
   /* -------------------------------
@@ -231,11 +218,7 @@ const AssetOnboarding = () => {
             )}
           </div>
 
-          {pageError && (
-            <div className="error-message" style={{ marginBottom: 12 }}>
-              {pageError}
-            </div>
-          )}
+          {pageError && <div className="error-message">{pageError}</div>}
 
           <AssetList
             assets={filteredAssets}

@@ -103,6 +103,12 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // ✅ final safety: asset_id must be digits only
+    if (!/^\d+$/.test(formData.asset_id)) {
+      alert("Asset ID must contain only numeric values");
+      return;
+    }
+
     const payload = {
       ...formData,
 
@@ -119,6 +125,7 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
           : Number(formData.last_longitude),
     };
 
+    // ✅ name is not present in payload at all
     onSubmit(payload);
   };
 
@@ -127,6 +134,8 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="asset_id">Asset ID *</label>
+
+          {/* ✅ text + inputMode keeps leading zeros & blocks e/E/+/- issues */}
           <input
             type="text"
             id="asset_id"
