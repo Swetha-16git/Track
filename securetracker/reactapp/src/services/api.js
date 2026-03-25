@@ -1,8 +1,15 @@
 import axios from "axios";
 
+/**
+ * ✅ Base API URL
+ * Always include /api/v1 here
+ */
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "http://localhost:8000";
+  process.env.REACT_APP_API_URL || "http://127.0.0.1:8000/api/v1";
 
+/**
+ * ✅ Axios instance
+ */
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -10,58 +17,89 @@ const api = axios.create({
   },
 });
 
-// Add token to requests
-api.interceptors.request.use((config) => {
- const token = localStorage.getItem("access_token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+/**
+ * ✅ Request interceptor
+ * Automatically attach JWT token
+ */
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("access_token");
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+/**
+ * ✅ Response interceptor
+ * Handle 401 globally (token expired / invalid)
+ */
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      console.warn("Unauthorized – redirecting to login");
+
+      // Clear invalid token
+      localStorage.removeItem("access_token");
+
+      // Optional: clear any user info
+      localStorage.removeItem("user");
+
+      // Redirect to login
+      window.location.href = "/login";
+    }
+
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
-// Asset Services
+/**
+ * ✅ Asset Services
+ */
 export const assetService = {
-  // ✅ Get all assets
-  // GET /api/v1/assets/
+  // GET /assets/
   getAllAssets: async () => {
-    const response = await api.get("/api/v1/assets/");
+    const response = await api.get("/assets/");
     return response.data;
   },
 
-  // ✅ Get asset by ID
-  // GET /api/v1/assets/{asset_id}
+  // GET /assets/{asset_id}
   getAssetById: async (assetId) => {
-    const response = await api.get(`/api/v1/assets/${assetId}`);
+    const response = await api.get(`/assets/${assetId}`);
     return response.data;
   },
 
-  // ✅ Create new asset (onboarding)
-  // POST /api/v1/assets/
+  // POST /assets/
   createAsset: async (assetData) => {
-    const response = await api.post("/api/v1/assets/", assetData);
+    const response = await api.post("/assets/", assetData);
     return response.data;
   },
 
-  // ✅ Update asset
-  // PUT /api/v1/assets/{asset_id}
+  // PUT /assets/{asset_id}
   updateAsset: async (assetId, assetData) => {
-    const response = await api.put(`/api/v1/assets/${assetId}`, assetData);
+    const response = await api.put(`/assets/${assetId}`, assetData);
     return response.data;
   },
 
-  // ✅ Delete asset
-  // DELETE /api/v1/assets/{asset_id}
+  // DELETE /assets/{asset_id}
   deleteAsset: async (assetId) => {
-    const response = await api.delete(`/api/v1/assets/${assetId}`);
+    const response = await api.delete(`/assets/${assetId}`);
     return response.data;
   },
 
-  // ✅ Update asset location (if your backend supports this endpoint)
-  // PUT /api/v1/assets/{asset_id}/location
+  // PUT /assets/{asset_id}/location
   updateAssetLocation: async (assetId, locationData) => {
-    const response = await api.put(`/api/v1/assets/${assetId}/location`, locationData);
+    const response = await api.put(
+      `/assets/${assetId}/location`,
+      locationData
+    );
     return response.data;
   },
 };
 
-export default assetService;
+export default api;

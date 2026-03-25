@@ -1,27 +1,71 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { useAuth } from '../../../../context/AuthContext';
-import './Sidebar.css';
+import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { useAuth } from "../../../../context/AuthContext";
+import "./Sidebar.css";
 
-const Sidebar = ({ isOpen }) => {
+const Sidebar = () => {
   const { hasPermission } = useAuth();
+  const [isOpen, setIsOpen] = useState(true);
+
+  const toggleSidebar = () => setIsOpen(prev => !prev);
 
   const menu = [
-    { path: '/dashboard', label: 'Asset Insight', icon: '📊', perm: 'assets:read' },
-    { path: '/asset-onboarding', label: 'Asset Onboarding', icon: '➕', perm: 'assets:write' },
-    { path: '/users', label: 'Users', icon: '👥', perm: 'manage_users' },
-    { path: '/reports', label: 'Reports', icon: '📈', perm: 'assets:read' },
+    {
+      path: "/dashboard",
+      label: "Dashboard",
+      icon: "🏠",
+      perm: "assets:read",
+    },
+    {
+      path: "/onboarding",
+      label: "Onboarding",
+      icon: "🧩",
+      perm: "assets:write",
+    },
+    {
+      path: "/assets",
+      label: "View Assets",
+      icon: "📊",
+      perm: "assets:read",
+    },
+    {
+      path: "/live-tracking",
+      label: "Live Tracking",
+      icon: "📍",
+      perm: "assets:read",
+    },
+    {
+      path: "/profile",
+      label: "Profile",
+      icon: "👤",
+      perm: "assets:read",
+    },
   ];
 
   return (
-    <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-      <ul>
+    <aside className={`sidebar ${isOpen ? "open" : "closed"}`}>
+      {/* Sidebar Header */}
+      <div className="sidebar-header">
+        {isOpen && <span className="sidebar-title">Asset Insight</span>}
+        <button className="sidebar-toggle" onClick={toggleSidebar}>
+          ☰
+        </button>
+      </div>
+
+      {/* Sidebar Menu */}
+      <ul className="sidebar-menu">
         {menu
-          .filter(m => hasPermission(m.perm))
-          .map(m => (
-            <li key={m.path}>
-              <NavLink to={m.path}>
-                {m.icon} {m.label}
+          .filter(item => hasPermission(item.perm))
+          .map(item => (
+            <li key={item.path}>
+              <NavLink
+                to={item.path}
+                className={({ isActive }) =>
+                  `sidebar-link ${isActive ? "active" : ""}`
+                }
+              >
+                <span className="icon">{item.icon}</span>
+                {isOpen && <span className="label">{item.label}</span>}
               </NavLink>
             </li>
           ))}

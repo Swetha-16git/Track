@@ -190,15 +190,20 @@ html, body{
 
 /* ✅ Vehicle/equipment icon style (NO box look) */
 .ai-tile__icon{
-  width:46px;
-  height:46px;
-  border-radius: 14px;
+  width:60px;
+  height:60px;
+  border-radius: 18px;
   display:grid;
   place-items:center;
-  background: #fff2da;                 /* warm like your sample */
+  background: #fff2da;
   border: 1px solid rgba(0,0,0,0.06);
   color: #d08b1d;
   margin-bottom: 10px;
+}
+.tile-icon-img {
+  width: 42px !important;
+  height: 42px !important;
+  object-fit: contain;
 }
 .ai-tile__icon i{ font-size: 22px; }
 .ai-tile__icon svg{ color: #d08b1d; }
