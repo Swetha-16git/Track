@@ -7,7 +7,6 @@ const Signup = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    organization: '',
     phoneNumber: '',
     password: '',
     confirmPassword: '',
@@ -19,10 +18,7 @@ const Signup = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((p) => ({ ...p, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -42,22 +38,20 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const baseUrl = process.env.REACT_APP_API_BASE_URL;
-
-      const payload = {
-        email: formData.email.trim(),
-        username: formData.username.trim(),
-        password: formData.password,
-        full_name: formData.username.trim(),
-        phone: formData.phoneNumber.trim(),
-        organisation_name: formData.organization.trim(),
-      };
-
-      const res = await fetch(`${baseUrl}/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/auth/signup`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.email.trim(),
+            username: formData.username.trim(),
+            password: formData.password,
+            full_name: formData.username.trim(),
+            phone: formData.phoneNumber.trim(),
+          }),
+        }
+      );
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.detail || 'Signup failed');
@@ -73,6 +67,7 @@ const Signup = () => {
   return (
     <div className="st-page">
       <div className="st-shell st-shell--signup">
+
         {/* LEFT */}
         <div className="st-left">
           <div className="st-brand">
@@ -85,108 +80,67 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* ✅ Image same as Login */}
-          <img
-            src={assetImg}
-            alt="SecureTracker vehicle asset"
-            className="st-asset-img"
-          />
+          <div className="st-visual">
+            <img src={assetImg} alt="Vehicle asset" className="st-asset-img" />
+          </div>
 
-          {/* ✅ Chips pinned bottom */}
-          <div className="st-chips">
-            <span className="st-chip">Create account</span>
-            <span className="st-chip">Org access</span>
-            <span className="st-chip">MFA‑ready</span>
+          <div className="st-left-bottom">
+            <div className="st-chips">
+              <span className="st-chip">Create account</span>
+              <span className="st-chip">Org access</span>
+              <span className="st-chip">MFA‑ready</span>
+            </div>
+            <div className="st-powered">
+              powered by <strong>L&amp;T‑NxT</strong>
+            </div>
           </div>
         </div>
 
         {/* RIGHT */}
         <div className="st-right">
-          <h2 className="st-title">Create Account</h2>
-          <p className="st-subtitle">
-            Create your SecureTracker account to onboard and manage vehicle assets.
-          </p>
+          <div className="st-right-card">
+            <h2 className="st-title">Create Account</h2>
+            <p className="st-subtitle">
+              Create your SecureTracker account to onboard and manage vehicle assets.
+            </p>
 
-          {error && <div className="st-error">{error}</div>}
+            {error && <div className="st-error">{error}</div>}
 
-          <form onSubmit={handleSubmit} className="st-form">
-            <label className="st-label">Username</label>
-            <input
-              className="st-input"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
+            <form onSubmit={handleSubmit} className="st-form st-form--stack">
+              <input className="st-input" name="username" placeholder="Username"
+                value={formData.username} onChange={handleChange} required />
 
-            <label className="st-label">Email Address</label>
-            <input
-              className="st-input"
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+              <input className="st-input" type="email" name="email" placeholder="Email address"
+                value={formData.email} onChange={handleChange} required />
 
-            <label className="st-label">Organization</label>
-            <input
-              className="st-input"
-              name="organization"
-              value={formData.organization}
-              onChange={handleChange}
-              required
-            />
+              <input className="st-input" type="tel" name="phoneNumber" placeholder="Mobile Number"
+                value={formData.phoneNumber} onChange={handleChange} required />
 
-            <label className="st-label">Mobile Number</label>
-            <input
-              className="st-input"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-            />
+              <input className="st-input" type="password" name="password" placeholder="Password"
+                value={formData.password} onChange={handleChange} required />
 
-            <label className="st-label">Password</label>
-            <input
-              className="st-input"
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+              <input className="st-input" type="password" name="confirmPassword" placeholder="Re‑type Password"
+                value={formData.confirmPassword} onChange={handleChange} required />
 
-            <label className="st-label">Re‑type Password</label>
-            <input
-              className="st-input"
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
+              <div className="st-actions">
+                <button type="button" className="st-cancel"
+                  onClick={() => navigate('/login')} disabled={loading}>
+                  Cancel
+                </button>
 
-            <div className="st-actions">
-              <button
-                type="button"
-                className="st-cancel"
-                onClick={() => navigate('/login')}
-              >
-                Cancel
-              </button>
+                <button type="submit" className="st-btn" disabled={loading}>
+                  {loading ? 'Signing up…' : 'Sign Up'}
+                </button>
+              </div>
+            </form>
 
-              <button type="submit" className="st-btn" disabled={loading}>
-                {loading ? 'Creating…' : 'Create Account'}
-              </button>
+            <div className="st-footer">
+              Already have an account?
+              <Link to="/login" className="st-link"> Sign in</Link>
             </div>
-          </form>
-
-          <div className="st-footer">
-            <span>Already have an account?</span>
-            <Link to="/login" className="st-link">Sign in</Link>
           </div>
         </div>
+
       </div>
     </div>
   );
