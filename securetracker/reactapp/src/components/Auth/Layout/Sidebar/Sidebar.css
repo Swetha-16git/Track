@@ -1,16 +1,23 @@
+/* ============================= */
+/* SIDEBAR BASE */
+/* ============================= */
+
 .sidebar {
   position: fixed;
-  top: 56px;
+  top: 56px; /* navbar height */
   left: 0;
+
   height: calc(100vh - 56px);
+  width: 220px;
+
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
-  transition: width 0.3s ease;
+
+  transition: width 0.25s ease;
   overflow: hidden;
   z-index: 100;
 }
 
-/* Open / Closed widths */
 .sidebar.open {
   width: 220px;
 }
@@ -19,32 +26,51 @@
   width: 64px;
 }
 
-/* ✅ Header section */
+/* ============================= */
+/* HEADER */
+/* ============================= */
+
 .sidebar-header {
   height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px;
+
+  padding: 0 12px;
   border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
 }
 
 .sidebar-title {
-  font-weight: 600;
-  color: #111827;
   font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
 }
 
-/* ✅ Hamburger inside header */
+/* ✅ CLEAN TOGGLE (NO BLACK BOX) */
 .sidebar-toggle {
-  background: none;
+  background: transparent;
   border: none;
+  outline: none;
+  box-shadow: none;
+
   font-size: 20px;
   cursor: pointer;
   color: #374151;
+
+  padding: 6px 8px;
+  border-radius: 6px;
 }
 
-/* Menu */
+.sidebar-toggle:hover {
+  background: #f1f5f9;
+}
+
+/* ============================= */
+/* MENU */
+/* ============================= */
+
 .sidebar-menu {
   list-style: none;
   padding: 12px 0;
@@ -54,46 +80,104 @@
 .sidebar-menu li {
   margin: 4px 0;
 }
+/* ✅ ACTIVE MENU ITEM – ONLY CLICKED ITEM */
+.sidebar-link.active {
+  background: #0b3a6f;   /* same blue as navbar buttons */
+  color: #ffffff;
+}
+
+/* Optional hover on active */
+.sidebar-link.active:hover {
+  background: #0b3a6f;
+}
+
+/* ============================= */
+/* LINK */
+/* ============================= */
 
 .sidebar-link {
+  position: relative;
+
   display: flex;
   align-items: center;
   gap: 12px;
+
   padding: 10px 14px;
   margin: 0 10px;
+
   border-radius: 8px;
   color: #374151;
   text-decoration: none;
   white-space: nowrap;
+
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .sidebar-link:hover {
   background: #f1f5f9;
 }
 
-.sidebar-link.active {
-  background: rgba(245, 158, 11, 0.2);
-  color: #1f2937;
-  font-weight: 600;
+/* ✅ ACTIVE (OPEN ONLY) */
+.sidebar.open .sidebar-link.active {
+  background: #0b3a6f;
+  color: #ffffff;
 }
 
-/* Icons */
+/* ============================= */
+/* ICON */
+/* ============================= */
+
 .sidebar .icon {
   font-size: 18px;
   min-width: 24px;
   text-align: center;
 }
 
-/* Labels */
+/* ============================= */
+/* LABEL */
+/* ============================= */
+
 .sidebar .label {
   font-size: 14px;
 }
 
-/* ✅ Collapsed state polish */
-.sidebar.closed .sidebar-title {
-  display: none;
-}
+/* ============================= */
+/* CLOSED STATE – ICONS ONLY */
+/* ============================= */
 
 .sidebar.closed .sidebar-link {
   justify-content: center;
+  padding: 10px 0;
+  margin: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+/* Hide labels */
+.sidebar.closed .label {
+  display: none;
+}
+
+/* Remove hover background */
+.sidebar.closed .sidebar-link:hover {
+  background: transparent;
+}
+
+/* ✅ ACTIVE INDICATOR (CLOSED) */
+.sidebar.closed .sidebar-link.active {
+  background: transparent;
+  color: #0b3a6f;
+}
+
+.sidebar.closed .sidebar-link.active::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0b3a6f;
 }

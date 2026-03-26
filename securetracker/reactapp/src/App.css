@@ -81,3 +81,44 @@
 .hover-opacity:hover {
   opacity: 1 !important;
 }
+html, body {
+  height: 100%;
+  overflow: hidden;   /* ✅ default: NO global scroll */
+}
+
+/* ✅ Landing page ONLY */
+body.landing-scroll {
+  overflow-y: auto;
+}
+
+/* ✅ Stop browser (global) scroll */
+.dashboard-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ✅ Dashboard wrapper */
+.dashboard-page {
+  height: 100vh;
+  overflow: hidden;   /* ✅ stop browser scroll */
+}
+
+/* ✅ ONLY scroll container */
+.dashboard-page .ai-main {
+  position: absolute;
+  top: 64px;          /* navbar height */
+  left: 220px;        /* sidebar open */
+  right: 0;
+  bottom: 0;
+
+  overflow-y: auto;   /* ✅ INTERNAL SCROLL */
+  overflow-x: hidden;
+
+  padding: 16px 22px;
+  background: #f3f5f7;
+}
+
+/* Sidebar collapsed */
+.dashboard-page .ai-sidebar-closed {
+  left: 64px;
+}

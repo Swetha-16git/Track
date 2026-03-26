@@ -6,6 +6,8 @@ import Sidebar from "../components/Auth/Layout/Sidebar/Sidebar";
 import Footer from "../components/Auth/Layout/Footer";
 import "./Dashboard.css";
 
+const NAVBAR_HEIGHT = 64; // keep same as your Navbar height (64px)
+
 const normalizeType = (t) =>
   String(t || "")
     .trim()
@@ -43,10 +45,18 @@ const Dashboard = () => {
   const [assets, setAssets] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // ✅ Filters (only these)
   const [onlyCritical, setOnlyCritical] = useState(false);
   const [assetTypeFilter, setAssetTypeFilter] = useState("All");
 
+  useEffect(() => {
+  document.body.classList.add("dashboard-scroll-lock");
+  return () => document.body.classList.remove("dashboard-scroll-lock");
+}, []);
+
+useEffect(() => {
+  document.body.classList.remove("landing-scroll");
+}, []);
+  /* Load assets */
   useEffect(() => {
     assetService.getAllAssets().then(setAssets).catch(console.error);
   }, []);
@@ -99,7 +109,6 @@ const Dashboard = () => {
     });
   }, [assets, assetTypeFilter, onlyCritical]);
 
-  // Right side panels
   const alerts = useMemo(() => {
     return filteredAssets
       .filter((a) => String(a.status || "").toLowerCase() === "maintenance")
@@ -130,12 +139,14 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="ai-layout ai-theme-light">
-      <Navbar toggleSidebar={() => setSidebarOpen((p) => !p)} />
-      <Sidebar isOpen={sidebarOpen} />
+    /* ✅ Wrapper for dashboard-only layout */
+    <div className="dashboard-page ai-layout ai-theme-light">
+  <Navbar toggleSidebar={() => setSidebarOpen(p => !p)} />
+  <Sidebar isOpen={sidebarOpen} />
 
-      <main className={`ai-main ${sidebarOpen ? "ai-sidebar-open" : "ai-sidebar-closed"}`}>
-        {/* TOP BAR */}
+  <main className={`ai-main ${sidebarOpen ? "" : "ai-sidebar-closed"}`}>
+    {/* page content */}
+ 
         <section className="ai-topbar">
           <div className="ai-topbar__left">
             {/* ✅ Asset InSight title ONLY (two boxes removed) */}
@@ -166,7 +177,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* RIGHT SIDE */}
           <div className="ai-topbar__right">
             <div className="ai-actions">
               <button className="ai-primarybtn" onClick={() => navigate("/assets")}>
@@ -213,22 +223,23 @@ const Dashboard = () => {
               </div>
 
               <div className="ai-tileGrid">
-                {(assetTypes.length ? assetTypes : []).slice(0, 10).map((t) => (
-                  <button
-                    key={t.name}
-                    className={`ai-tile ${assetTypeFilter === t.name ? "ai-tile--active" : ""}`}
-                    onClick={() => setAssetTypeFilter(t.name)}
-                    type="button"
-                  >
-                    <div className="ai-tile__icon">{getAssetTypeIcon(t.name)}</div>
-                    <div className="ai-tile__name">{String(t.name).toLowerCase()}</div>
-
-                    <div className="ai-tile__count">
-                      <span className="ai-tile__num">{t.count}</span>
-                      <span className="ai-muted">assets</span>
-                    </div>
-                  </button>
-                ))}
+                {(assetTypes.length ? assetTypes : [{ name: "Unknown", count: 0 }])
+                  .slice(0, 10)
+                  .map((t) => (
+                    <button
+                      key={t.name}
+                      className={`ai-tile ${assetTypeFilter === t.name ? "ai-tile--active" : ""}`}
+                      onClick={() => setAssetTypeFilter(t.name)}
+                      type="button"
+                    >
+                      <div className="ai-tile__icon">{getAssetTypeIcon(t.name)}</div>
+                      <div className="ai-tile__name">{String(t.name).toLowerCase()}</div>
+                      <div className="ai-tile__count">
+                        <span className="ai-tile__num">{t.count}</span>
+                        <span className="ai-muted">assets</span>
+                      </div>
+                    </button>
+                  ))}
               </div>
             </div>
 

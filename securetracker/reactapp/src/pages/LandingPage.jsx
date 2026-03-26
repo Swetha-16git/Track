@@ -5,12 +5,31 @@ import "./LandingPage.css";
 export default function LandingPage() {
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [theme, setTheme] = useState("light");
+  const toggleTheme = () => {
+  setTheme((prev) => (prev === "light" ? "dark" : "light"));
+};
 
- const heroImages = [
-  "https://images.unsplash.com/photo-1548345680-f5475ea5df84?w=1200&auto=format&fit=crop&q=70",
+const heroImages = [
+ "https://images.unsplash.com/photo-1548345680-f5475ea5df84?w=1200&auto=format&fit=crop&q=70",
   "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&auto=format&fit=crop&q=70",
   "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&auto=format&fit=crop&q=70",
 ];
+
+// useEffect(() => {
+//   document.body.classList.add("landing-scroll");
+//   return () => document.body.classList.remove("landing-scroll");
+// }, []);
+
+useEffect(() => {
+  // ✅ ENABLE GLOBAL SCROLL FOR LANDING PAGE
+  document.body.style.overflowY = "auto";
+
+  return () => {
+    // ✅ CLEANUP when leaving landing page
+    document.body.style.overflowY = "hidden";
+  };
+}, []);
 
 
   useEffect(() => {
@@ -21,6 +40,7 @@ export default function LandingPage() {
   }, []);
 
   return (
+    <div className="landing-page">
     <div className="lp-root">
       {/* ===== NAVBAR ===== */}
       <header className="lp-navbar">
@@ -159,6 +179,6 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
+    </div>
   );
 }
- 

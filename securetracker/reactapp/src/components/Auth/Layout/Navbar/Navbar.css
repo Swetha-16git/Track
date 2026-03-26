@@ -1,86 +1,245 @@
+/* ============================= */
+/* FORCE NAVBAR BLUE (OVERRIDE ALL) */
+/* ============================= */
+
 .navbar {
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  height: 56px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+  z-index: 9999;
+
+  height: 64px;
+  width: 100%;
+
+  /* ✅ FORCE BLUE BACKGROUND */
+  background-color: #0b3a6f !important;
+
+  color: #ffffff !important;
+
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  z-index: 1000;
+
+  padding: 0 16px 0 20px;
+
+  /* ✅ Yellow underline like your screenshot */
+  border-bottom: 3px solid #facc15 !important;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
+
+/* ============================= */
+/* LEFT SIDE */
+/* ============================= */
 
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 16px;
-}
-
-.menu-toggle {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #0b5ed7;
+  gap: 18px;
 }
 
 .navbar-brand {
-  font-weight: 700;
   font-size: 18px;
-  color: #0b5ed7;
+  font-weight: 800;
+  color: #ffffff !important;
   text-decoration: none;
 }
+
+/* Hamburger */
+.nav-hamburger {
+  background: none;
+  border: none;
+  color: #ffffff !important;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* ============================= */
+/* ASSETS DROPDOWN BUTTON */
+/* ============================= */
 
 .nav-item-dropdown {
   position: relative;
 }
 
-.nav-item-dropdown button {
-  background: #f1f5f9;
-  border: 1px solid #e5e7eb;
+.nav-button {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff !important;
+
   padding: 6px 14px;
-  border-radius: 20px;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
 }
 
+.nav-button:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* ============================= */
+/* ASSETS DROPDOWN MENU */
+/* ============================= */
+
 .nav-dropdown-menu {
   position: absolute;
-  top: 40px;
+  top: 52px;
   left: 0;
+
+  min-width: 220px;
   background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
-  min-width: 180px;
+  color: #0b3a6f;
+
+  border-radius: 10px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+
+  z-index: 99999;
+  overflow: hidden;
+
+  border-top: 4px solid #facc15;
 }
 
 .nav-dropdown-menu button {
   width: 100%;
-  padding: 10px 16px;
+  padding: 12px 16px;
+
+  background: #ffffff;
   border: none;
-  background: none;
   text-align: left;
+
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .nav-dropdown-menu button:hover {
-  background: #f4f7fb;
+  background: #f8fafc;
 }
 
+/* ============================= */
+/* RIGHT SIDE (PROFILE) */
+/* ============================= */
+
 .navbar-right {
+  margin-left: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Profile button */
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff !important;
+
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.profile-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* Initial circle */
+.profile-initial {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+
+  background: #facc15;
+  color: #0b3a6f;
+
+  font-weight: 900;
+  font-size: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ============================= */
+/* PROFILE DROPDOWN */
+/* ============================= */
+
+
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 70px; /* ✅ spaced from navbar */
+
+  width: 260px;
+  background: #ffffff;
+  color: #0b3a6f;
+
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+
+  overflow: hidden;
+  z-index: 99999;
+}
+
+/* Header card */
+.profile-card {
   display: flex;
   align-items: center;
   gap: 14px;
+
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
 }
 
-.navbar-right button {
-  background: #0b5ed7;
-  color: #ffffff;
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-fullname {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0b3a6f;
+}
+
+
+
+.profile-role {
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Dropdown buttons */
+.profile-dropdown button {
+  width: 100%;
+  padding: 12px 16px;
+
+  background: #ffffff;
   border: none;
-  padding: 6px 16px;
-  border-radius: 20px;
+  text-align: left;
+
+
+  
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
+}
+
+.profile-dropdown button:hover {
+  background: #f8fafc;
+}
+
+/* Logout */
+.logout-item {
+  color: #dc2626;
+  font-weight: 800;
 }
