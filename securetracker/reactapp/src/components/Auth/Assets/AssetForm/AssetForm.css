@@ -21,8 +21,20 @@
 
 .form-row {
   display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.oem-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.required-note {
+  font-size: 12px;
+  color: #ef4444;
 }
 
 @media (max-width: 768px) {

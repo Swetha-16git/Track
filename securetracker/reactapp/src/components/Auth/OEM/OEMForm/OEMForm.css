@@ -1,0 +1,150 @@
+/* =========================
+   OEM CONFIG SCREEN STYLE
+   (matches your screenshot)
+   ========================= */
+
+.oem-form.oem-config{
+  background: #ffffff;
+  padding: 18px 18px 22px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: none;
+  max-width: 100%;
+}
+
+/* Header (title left, required + close right) */
+.oem-config__header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding: 6px 6px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 14px;
+}
+
+.oem-config__title{
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.oem-config__meta{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+
+.oem-config__req{
+  font-size: 11px;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.oem-config__close{
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.oem-config__close:hover{
+  background:#f3f4f6;
+  color:#111827;
+}
+
+/* 2-column rows */
+.oem-form .form-row{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+/* Full width field */
+.oem-form .form-group.full{
+  grid-column: 1 / -1;
+}
+
+.oem-form .form-group{
+  display:flex;
+  flex-direction:column;
+}
+
+.oem-form label{
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+/* Inputs like screenshot: light grey, flat, long */
+.oem-form input,
+.oem-form select{
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+  font-size: 13px;
+  color: #111827;
+}
+
+/* Focus subtle blue */
+.oem-form input:focus,
+.oem-form select:focus{
+  outline:none;
+  background:#ffffff;
+  border-color:#93c5fd;
+  box-shadow: 0 0 0 2px rgba(147, 197, 253, 0.35);
+}
+
+/* Actions centered */
+.oem-form .form-actions.oem-config__actions{
+  display:flex;
+  justify-content:center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.oem-form .cancel-btn,
+.oem-form .submit-btn{
+  height: 34px;
+  padding: 0 24px;
+  border-radius: 4px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.oem-form .cancel-btn{
+  background:#e5e7eb;
+  color:#374151;
+}
+.oem-form .cancel-btn:hover{
+  background:#d1d5db;
+}
+
+.oem-form .submit-btn{
+  background:#fbbf24;
+  color:#111827;
+}
+.oem-form .submit-btn:hover{
+  background:#f59e0b;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .oem-form .form-row{
+    grid-template-columns: 1fr;
+  }
+  .oem-form .form-group.full{
+    grid-column:auto;
+  }
+}

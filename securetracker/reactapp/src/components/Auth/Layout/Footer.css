@@ -1,0 +1,127 @@
+.st-footer{
+  margin-top: 18px;
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.07);
+  box-shadow: 0 10px 22px rgba(17,24,39,0.08);
+  border-radius: 18px;
+  overflow: hidden;
+}
+ 
+.st-footer__inner{
+  padding: 18px 18px 10px 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+ 
+.st-footer__brand{
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 260px;
+}
+ 
+.st-footer__logo{
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(11,90,166,0.10);
+  color: #0b5aa6;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+ 
+.st-footer__logo svg{
+  width: 22px;
+  height: 22px;
+}
+ 
+.st-footer__title{
+  font-weight: 900;
+  font-size: 16px;
+  color: #1f2937;
+  line-height: 1.1;
+}
+ 
+.st-footer__sub{
+  font-size: 12.5px;
+  color: #6b7280;
+  margin-top: 3px;
+}
+ 
+.st-footer__cols{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(170px, 1fr));
+  gap: 18px;
+  flex: 1;
+}
+ 
+@media (max-width: 900px){
+  .st-footer__cols{
+    grid-template-columns: 1fr;
+  }
+}
+ 
+.st-footer__head{
+  font-weight: 900;
+  font-size: 13px;
+  color: #111827;
+  margin-bottom: 10px;
+}
+ 
+.st-footer__link{
+  display: block;
+  text-decoration: none;
+  color: #374151;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 0;
+}
+ 
+.st-footer__link:hover{
+  color: #0b5aa6;
+  text-decoration: underline;
+}
+ 
+.st-footer__note{
+  font-size: 12px;
+  color: #6b7280;
+  padding-top: 4px;
+}
+ 
+.st-footer__bottom{
+  border-top: 1px solid rgba(0,0,0,0.07);
+  background: #fbfcfd;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: #6b7280;
+}
+ 
+.st-footer__bottomLinks{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+ 
+.st-footer__bottomLinks a{
+  text-decoration: none;
+  color: #0b5aa6;
+  font-weight: 900;
+}
+ 
+.st-footer__bottomLinks a:hover{
+  text-decoration: underline;
+}
+ 
+.st-dot{
+  color: #9ca3af;
+}
+ 

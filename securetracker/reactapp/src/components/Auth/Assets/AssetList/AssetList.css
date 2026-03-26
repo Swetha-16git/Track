@@ -49,7 +49,7 @@
 }
 
 .search-input::placeholder {
-  color: #94a3b8;
+  color: rgba(107, 114, 128, 0.7);
   font-weight: 500;
 }
 
@@ -67,7 +67,7 @@
   border-radius: 999px;
   border: none;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #111827;
   background: #e0e5ec;
@@ -103,8 +103,8 @@
 .asset-count {
   margin: 12px 0 6px;             /* ✅ reduced */
   text-align: center;
-  font-size: 12.5px;
-  color: #64748b;
+  font-size: 14px;
+  color: #6b7280;
   font-weight: 600;
 }
 
@@ -121,5 +121,7 @@
 
   .asset-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 }
+
