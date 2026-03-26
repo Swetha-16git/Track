@@ -11,6 +11,7 @@ import MFAPage from "../pages/MFAPage";
 import Dashboard from "../pages/Dashboard";
 import AssetOnboarding from "../pages/AssetOnboarding";
 import LiveTracking from "../pages/LiveTracking";
+import Onboarding from "../pages/Onboarding";
 
 /* ✅ Role-based container ONLY for protected pages */
 const RoleLayout = () => {
@@ -77,6 +78,14 @@ const AppRoutes = () => {
           }
         />
 
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute requiredPermission="assets:write">
+              <Onboarding />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/assets"
           element={

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./AssetForm.css";
+
  
 const AssetForm = ({ asset, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -16,32 +17,14 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
     last_longitude: "",
   });
 
-  const assetTypes = [
-    "excavator",
-    "backhoe_loader",
-    "bulldozer",
-    "wheel_loader",
-    "dump_truck",
-    "concrete_mixer",
-    "tower_crane",
-    "mobile_crane",
-    "crawler_crane",
-    "forklift",
-    "grader",
-    "roller",
-    "paver",
-    "compactor",
-    "telehandler",
-    "other",
-  ];
+// Dynamic asset types to be fetched from /asset-types
 
   const statusOptions = ["active", "inactive", "maintenance", "stolen"];
 
-  const pretty = (s) =>
-    String(s || "")
-      .split("_")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" ");
+// pretty removed
+
+
+
 
   useEffect(() => {
     if (!asset) return;
@@ -116,168 +99,146 @@ const AssetForm = ({ asset, onSubmit, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="asset-form">
-      {/* Asset ID */}
-      <div className="form-group">
-        <label>Asset ID *</label>
-        <input
-          type="text"
-          name="asset_id"
-          value={formData.asset_id}
-          onChange={handleChange}
-          placeholder="Enter unique asset ID (e.g., 1001)"
-          required
-          disabled={!!asset}
-          inputMode="numeric"
-          maxLength={10}
-        />
-      </div>
+    <form onSubmit={handleSubmit} className="oem-form">
 
-      {/* Asset Type & Status */}
-      <div className="form-row">
-        <div className="form-group">
-          <label>Vehicle Type *</label>
-          <select
-            name="asset_type"
-            value={formData.asset_type}
-            onChange={handleChange}
-            required
-          >
-            {assetTypes.map((t) => (
-              <option key={t} value={t}>
-                {pretty(t)}
-              </option>
-            ))}
-          </select>
-        </div>
- 
-        <div className="form-group">
-          <label>Status *</label>
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            required
-          >
-            {statusOptions.map((s) => (
-              <option key={s} value={s}>
-                {s.charAt(0).toUpperCase() + s.slice(1)}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+  {/* Header */}
+  <div className="oem-header">
+    <h2>Asset Onboarding Configuration</h2>
+    <span className="required-note">* Required Fields</span>
+  </div>
 
-      {/* Make & Model */}
-      <div className="form-row">
-        <div className="form-group">
-          <label>Make</label>
-          <input
-            name="make"
-            value={formData.make}
-            onChange={handleChange}
-            placeholder="Manufacturer (e.g., CAT, JCB)"
-          />
-        </div>
- 
-        <div className="form-group">
-          <label>Model</label>
-          <input
-            name="model"
-            value={formData.model}
-            onChange={handleChange}
-            placeholder="Model number (e.g., 320D)"
-          />
-        </div>
-      </div>
+  {/* ROW 1 */}
+  <div className="oem-row">
+    <div className="oem-field">
+      <label>Asset ID *</label>
+      <input
+        name="asset_id"
+        value={formData.asset_id}
+        onChange={handleChange}
+        disabled={!!asset}
+        required
+      />
+    </div>
 
-      {/* Year & License Plate */}
-      <div className="form-row">
-        <div className="form-group">
-          <label>Year</label>
-          <input
-            type="number"
-            name="year"
-            value={formData.year}
-            onChange={handleChange}
-            placeholder="Manufacturing year (e.g., 2023)"
-            min="1900"
-            max={new Date().getFullYear() + 1}
-          />
-        </div>
- 
-        <div className="form-group">
-          <label>License Plate</label>
-          <input
-            type="text"
-            name="license_plate"
-            value={formData.license_plate}
-            onChange={handleChange}
-            placeholder="Vehicle number (e.g., TN-09-AB-1234)"
-          />
-        </div>
-      </div>
+    <div className="oem-field">
+      <label>Asset Type *</label>
+      <select
+        name="asset_type"
+        value={formData.asset_type}
+        onChange={handleChange}
+        required
+      >
+        <option value="excavator">Excavator</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+  </div>
 
-      {/* Color */}
-      <div className="form-group">
-        <label>Color</label>
-        <input
-          name="color"
-          value={formData.color}
-          onChange={handleChange}
-          placeholder="Asset color (e.g., Yellow)"
-        />
-      </div>
+  {/* ROW 2 */}
+  <div className="oem-row">
+    <div className="oem-field">
+      <label>Status *</label>
+      <select
+        name="status"
+        value={formData.status}
+        onChange={handleChange}
+        required
+      >
+        {statusOptions.map(s => (
+          <option key={s} value={s}>{s}</option>
+        ))}
+      </select>
+    </div>
 
-      {/* Location */}
-      <div className="form-row">
-        <div className="form-group">
-          <label>Latitude</label>
-          <input
-            type="number"
-            name="last_latitude"
-            value={formData.last_latitude}
-            onChange={handleChange}
-            placeholder="Latitude (e.g., 13.0827)"
-            step="any"
-          />
-        </div>
- 
-        <div className="form-group">
-          <label>Longitude</label>
-          <input
-            type="number"
-            name="last_longitude"
-            value={formData.last_longitude}
-            onChange={handleChange}
-            placeholder="Longitude (e.g., 80.2707)"
-            step="any"
-          />
-        </div>
-      </div>
+    <div className="oem-field">
+      <label>Make</label>
+      <input name="make" value={formData.make} onChange={handleChange} />
+    </div>
+  </div>
 
-      {/* Description */}
-      <div className="form-group">
-        <label>Description</label>
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          placeholder="Add any additional details about this asset"
-          rows={3}
-        />
-      </div>
+  {/* ROW 3 */}
+  <div className="oem-row">
+    <div className="oem-field">
+      <label>Model</label>
+      <input name="model" value={formData.model} onChange={handleChange} />
+    </div>
 
-      {/* Actions */}
-      <div className="form-actions">
-        <button type="button" className="cancel-btn" onClick={onCancel}>
-          Cancel
-        </button>
-        <button type="submit" className="submit-btn">
-          {asset ? "Update Asset" : "Add Asset"}
-        </button>
-      </div>
-    </form>
+    <div className="oem-field">
+      <label>Year</label>
+      <input
+        type="number"
+        name="year"
+        value={formData.year}
+        onChange={handleChange}
+      />
+    </div>
+  </div>
+
+  {/* ROW 4 */}
+  <div className="oem-row">
+    <div className="oem-field">
+      <label>License Plate</label>
+      <input
+        name="license_plate"
+        value={formData.license_plate}
+        onChange={handleChange}
+      />
+    </div>
+
+    <div className="oem-field">
+      <label>Color</label>
+      <input name="color" value={formData.color} onChange={handleChange} />
+    </div>
+  </div>
+
+  {/* ROW 5 */}
+  <div className="oem-row">
+    <div className="oem-field">
+      <label>Latitude</label>
+      <input
+        type="number"
+        step="any"
+        name="last_latitude"
+        value={formData.last_latitude}
+        onChange={handleChange}
+      />
+    </div>
+
+    <div className="oem-field">
+      <label>Longitude</label>
+      <input
+        type="number"
+        step="any"
+        name="last_longitude"
+        value={formData.last_longitude}
+        onChange={handleChange}
+      />
+    </div>
+  </div>
+
+  {/* ROW 6 */}
+  <div className="oem-row">
+    <div className="oem-field full">
+      <label>Description</label>
+      <input
+        name="description"
+        value={formData.description}
+        onChange={handleChange}
+      />
+    </div>
+  </div>
+
+  {/* Actions */}
+  <div className="oem-actions">
+    <button type="submit" className="save-btn">
+      {asset ? "Update" : "Save"}
+    </button>
+    <button type="button" onClick={onCancel} className="cancel-btn">
+      Cancel
+    </button>
+  </div>
+
+</form>
   );
 };
 

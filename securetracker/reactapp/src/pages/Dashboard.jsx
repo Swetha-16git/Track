@@ -43,7 +43,7 @@ const Dashboard = () => {
   const [assets, setAssets] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // ✅ Keep only useful filters
+  // ✅ Filters (only these)
   const [onlyCritical, setOnlyCritical] = useState(false);
   const [assetTypeFilter, setAssetTypeFilter] = useState("All");
 
@@ -62,8 +62,7 @@ const Dashboard = () => {
   );
 
   const maintenanceAssets = useMemo(
-    () =>
-      assets.filter((a) => String(a.status || "").toLowerCase() === "maintenance").length,
+    () => assets.filter((a) => String(a.status || "").toLowerCase() === "maintenance").length,
     [assets]
   );
 
@@ -72,16 +71,18 @@ const Dashboard = () => {
     [assets]
   );
 
-  // Types list for tiles
+  // Types list for tiles (filters blank so no empty tiles)
   const assetTypes = useMemo(() => {
     const counts = assets.reduce((acc, a) => {
-      const t = String(getType(a));
+      const raw = String(getType(a) ?? "").trim();
+      const t = raw.length ? raw : "Unknown";
       acc[t] = (acc[t] || 0) + 1;
       return acc;
     }, {});
     return Object.entries(counts)
-      .sort((x, y) => y[1] - x[1])
-      .map(([name, count]) => ({ name, count }));
+      .map(([name, count]) => ({ name, count }))
+      .filter((x) => String(x.name || "").trim().length > 0 && x.count > 0)
+      .sort((x, y) => y.count - x.count);
   }, [assets]);
 
   // Filtered assets
@@ -90,7 +91,6 @@ const Dashboard = () => {
       const typeOk =
         assetTypeFilter === "All" ? true : String(getType(a)) === assetTypeFilter;
 
-      // Only Critical -> maintenance treated as critical
       const criticalOk = onlyCritical
         ? String(a.status || "").toLowerCase() === "maintenance"
         : true;
@@ -138,10 +138,8 @@ const Dashboard = () => {
         {/* TOP BAR */}
         <section className="ai-topbar">
           <div className="ai-topbar__left">
-            <div className="ai-brand">
-              <div className="ai-brand__logo" aria-hidden="true">
-                <i className="bi bi-geo-alt-fill" />
-              </div>
+            {/* ✅ Asset InSight title ONLY (two boxes removed) */}
+            <div className="ai-brand ai-brand--noBoxes">
               <div>
                 <div className="ai-brand__title">Asset InSight</div>
                 <div className="ai-brand__sub">Quick view by equipment category</div>
@@ -168,7 +166,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* ✅ Removed extra top-right icons: locations/alerts/analytics/search */}
+          {/* RIGHT SIDE */}
           <div className="ai-topbar__right">
             <div className="ai-actions">
               <button className="ai-primarybtn" onClick={() => navigate("/assets")}>
@@ -212,30 +210,25 @@ const Dashboard = () => {
                   <div className="ai-h">Asset Types</div>
                   <div className="ai-muted">Quick view by equipment category</div>
                 </div>
-
-                {/* ✅ Removed grid/chart view toggle buttons */}
               </div>
 
               <div className="ai-tileGrid">
-                {(assetTypes.length ? assetTypes : [{ name: "Unknown", count: 0 }])
-                  .slice(0, 10)
-                  .map((t) => (
-                    <button
-                      key={t.name}
-                      className={`ai-tile ${assetTypeFilter === t.name ? "ai-tile--active" : ""}`}
-                      onClick={() => setAssetTypeFilter(t.name)}
-                      type="button"
-                    >
-                      <div className="ai-tile__icon">{getAssetTypeIcon(t.name)}</div>
+                {(assetTypes.length ? assetTypes : []).slice(0, 10).map((t) => (
+                  <button
+                    key={t.name}
+                    className={`ai-tile ${assetTypeFilter === t.name ? "ai-tile--active" : ""}`}
+                    onClick={() => setAssetTypeFilter(t.name)}
+                    type="button"
+                  >
+                    <div className="ai-tile__icon">{getAssetTypeIcon(t.name)}</div>
+                    <div className="ai-tile__name">{String(t.name).toLowerCase()}</div>
 
-                      <div className="ai-tile__name">{String(t.name).toLowerCase()}</div>
-
-                      <div className="ai-tile__count">
-                        <span className="ai-tile__num">{t.count}</span>
-                        <span className="ai-muted">assets</span>
-                      </div>
-                    </button>
-                  ))}
+                    <div className="ai-tile__count">
+                      <span className="ai-tile__num">{t.count}</span>
+                      <span className="ai-muted">assets</span>
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -299,13 +292,10 @@ const Dashboard = () => {
           {/* RIGHT */}
           <aside className="ai-right">
             <div className="ai-card ai-panel">
-              <div className="ai-panel__tabs">
-                <button className="ai-tab ai-tab--active">
-                  Alerts <span className="ai-pill">{alerts.length}</span>
-                </button>
-                <button className="ai-tab">
-                  Notifications <span className="ai-pill">{Math.min(filteredAssets.length, 4)}</span>
-                </button>
+              {/* ✅ Alerts only */}
+              <div className="ai-panel__head">
+                <div className="ai-h">Alerts</div>
+                <span className="ai-pill">{alerts.length}</span>
               </div>
 
               <div className="ai-panel__body">
@@ -317,14 +307,6 @@ const Dashboard = () => {
                         <div className="ai-muted ai-small">
                           Status: <b>{a.status || "maintenance"}</b>
                         </div>
-                      </div>
-                      <div className="ai-alertBtns">
-                        <button className="ai-iconbtn ai-iconbtn--soft" title="Open">
-                          <i className="bi bi-box-arrow-up-right" />
-                        </button>
-                        <button className="ai-iconbtn ai-iconbtn--soft" title="Ack">
-                          <i className="bi bi-check2" />
-                        </button>
                       </div>
                     </div>
                   ))
@@ -348,7 +330,10 @@ const Dashboard = () => {
                         <div className="ai-watchTitle">{a.name || a.asset_id || "Asset"}</div>
                         <div className="ai-muted ai-small">Not reporting GPS</div>
                       </div>
-                      <span className="ai-badge ai-badge--warn">Needs check</span>
+
+                      <button className="ai-chip" onClick={() => navigate("/assets")}>
+                        Needs check
+                      </button>
                     </div>
                   ))
                 ) : (
