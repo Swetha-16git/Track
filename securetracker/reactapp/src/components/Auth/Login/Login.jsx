@@ -1,74 +1,106 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import './Login.css';
-import assetImg from '../../../assets/loader.png';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import "./Login.css";
+import assetImg from "../../../assets/loader.png";
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const clearAuth = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('pending_access_token');
-    localStorage.removeItem('pending_refresh_token');
-    localStorage.removeItem('temp_token');
-    localStorage.setItem('mfa_verified', 'false');
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("token");
+    localStorage.removeItem("refresh_token");
+
+    // ✅ remove old buggy flow keys
+    localStorage.removeItem("pending_access_token");
+    localStorage.removeItem("pending_refresh_token");
+
+    // ✅ MFA token
+    localStorage.removeItem("temp_token");
+
+    localStorage.removeItem("user");
+    localStorage.setItem("mfa_verified", "false");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const baseUrl = process.env.REACT_APP_API_BASE_URL;
-      if (!baseUrl) throw new Error('Missing REACT_APP_API_BASE_URL in .env');
+      if (!baseUrl) throw new Error("Missing REACT_APP_API_BASE_URL in .env");
 
+      // ✅ Always start clean
       clearAuth();
 
       const res = await fetch(`${baseUrl}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: username.trim(), password }),
       });
 
       let data = {};
-      try { data = await res.json(); } catch (_) {}
+      try {
+        data = await res.json();
+      } catch (_) {}
 
-      if (!res.ok) throw new Error(data?.detail || data?.message || 'Login failed');
+      if (!res.ok) {
+        throw new Error(data?.detail || data?.message || "Login failed");
+      }
 
-      const mfaRequired = data?.mfa_required ?? data?.mfaRequired;
-      const tempToken = data?.temp_token || data?.tempToken;
+      /**
+       * ✅ BACKEND RETURNS:
+       * requires_mfa (NOT mfa_required)
+       * temp_token
+       */
+      const requiresMfa = data?.requires_mfa === true;
+      const tempToken = data?.temp_token;
 
-      if (mfaRequired && tempToken) {
-        localStorage.setItem('temp_token', tempToken);
-        localStorage.setItem('mfa_verified', 'false');
-        navigate('/mfa');
+      // ✅ MFA flow
+      if (requiresMfa && tempToken) {
+        // Store ONLY temp token (this is what /mfa/email/send expects)
+        localStorage.setItem("temp_token", tempToken);
+        localStorage.setItem("mfa_verified", "false");
+
+        // Clean up any old keys so ProtectedRoute won't misbehave
+        localStorage.removeItem("pending_access_token");
+        localStorage.removeItem("pending_refresh_token");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("token");
+        localStorage.removeItem("refresh_token");
+
+        window.dispatchEvent(new Event("auth-refresh"));
+        navigate("/mfa", { replace: true });
         return;
       }
 
-      const access = data?.access_token || data?.accessToken;
-      const refresh = data?.refresh_token || data?.refreshToken;
+      /**
+       * ✅ Normal login (no MFA required)
+       */
+      const access = data?.access_token;
+      const refresh = data?.refresh_token;
 
-      if (access) {
-        localStorage.setItem('pending_access_token', access);
-        if (refresh) localStorage.setItem('pending_refresh_token', refresh);
-
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-
-        localStorage.setItem('mfa_verified', 'false');
-        navigate('/mfa');
-        return;
+      if (!access) {
+        throw new Error("Login response missing access_token");
       }
 
-      throw new Error('Login response missing MFA info and tokens');
+      localStorage.setItem("access_token", access);
+      localStorage.setItem("token", access);
+      if (refresh) localStorage.setItem("refresh_token", refresh);
+
+      // ✅ No MFA required => mark verified true
+      localStorage.setItem("mfa_verified", "true");
+      localStorage.removeItem("temp_token");
+
+      window.dispatchEvent(new Event("auth-refresh"));
+      navigate("/dashboard", { replace: true });
     } catch (err) {
-      setError(err?.message || 'Login failed');
+      setError(err?.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -77,8 +109,7 @@ const Login = () => {
   return (
     <div className="st-page">
       <div className="st-shell">
-
-        {/* LEFT (White full canvas content) */}
+        {/* LEFT */}
         <div className="st-left">
           <div className="st-brand">
             <span className="st-dot" />
@@ -106,7 +137,7 @@ const Login = () => {
           </div>
         </div>
 
-        {/* RIGHT (Grey panel sits inside white canvas) */}
+        {/* RIGHT */}
         <div className="st-right">
           <div className="st-right-card">
             <h2 className="st-title">Member Login</h2>
@@ -137,7 +168,7 @@ const Login = () => {
               />
 
               <button className="st-btn" disabled={loading}>
-                {loading ? 'Signing in…' : 'Sign In'}
+                {loading ? "Signing in…" : "Sign In"}
               </button>
 
               <div className="st-forgot">
@@ -154,7 +185,6 @@ const Login = () => {
             <div className="st-legal" />
           </div>
         </div>
-
       </div>
     </div>
   );
