@@ -28,16 +28,26 @@ html, body{
 }
 
 /* ✅ MAIN: remove navbar gap (NO margin-top) */
-.ai-main{
-  margin-top: 0 !important;
-  padding: 14px 22px 22px 22px;    /* small padding only */
-  min-height: calc(100vh - 56px);
-  background: var(--bg);
-  transition: margin-left .25s ease;
+.ai-main {
+  position: fixed;
+  top: 56px;      /* navbar height */
+  left: 220px;    /* sidebar open */
+  right: 0;
+  bottom: 0;
+
+  overflow-y: auto;   /* ✅ SCROLL HERE */
+  overflow-x: hidden;
 }
 
-.ai-sidebar-open{ margin-left: 220px; }
-.ai-sidebar-closed{ margin-left: 64px; }
+
+.ai-sidebar-open {
+  left: 220px;
+}
+
+.ai-sidebar-closed {
+  left: 64px;
+}
+
 
 @media (max-width: 992px){
   .ai-main{ padding: 12px 14px 18px 14px; }
@@ -50,6 +60,7 @@ html, body{
   border: 1px solid var(--line);
 }
 
+
 .ai-muted{ color: var(--muted); }
 .ai-small{ font-size: 12.5px; }
 .ai-h{ font-size: 16px; font-weight: 700; }
@@ -60,7 +71,7 @@ html, body{
   align-items:flex-start;
   justify-content:space-between;
   gap:16px;
-  padding:14px 16px;
+  padding:10px 16px;
   border-radius: var(--r-lg);
   background: var(--card);
   box-shadow: var(--shadow);
@@ -114,7 +125,42 @@ html, body{
   box-shadow: var(--shadow2);
   cursor:pointer;
 }
+/* ✅ Dashboard wrapper (no global scroll) */
+/* ============================= */
+/* DASHBOARD SCROLL FIX */
+/* ============================= */
 
+/* Disable browser scroll for dashboard pages */
+body.dashboard-scroll-lock {
+  overflow: hidden;
+}
+
+/* Dashboard wrapper */
+.ai-layout {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ✅ ONLY this element scrolls */
+.ai-main {
+  position: absolute;
+  top: 64px;        /* navbar height */
+  left: 220px;      /* sidebar open */
+  right: 0;
+  bottom: 0;
+
+  overflow-y: auto; /* ✅ INTERNAL SCROLL */
+  overflow-x: hidden;
+
+  background: #f3f5f7;
+  padding: 16px 22px;
+}
+
+/* Sidebar collapsed */
+.ai-sidebar-closed {
+  left: 64px;
+}
 .ai-filterRow{
   display:flex;
   gap:10px;

@@ -21,7 +21,6 @@ const AssetList = ({ assets, loading, onEdit, onDelete, onTrack }) => {
     const status = (pick(asset, ["status"], "") || "").toLowerCase();
     const matchesFilter = filter === "all" || status === filter;
 
-    // ✅ Name removed; search by ID/type/make/model/plate/vin/color/status
     const haystack = [
       pick(asset, ["asset_id", "assetId"], ""),
       pick(asset, ["license_plate", "licensePlate"], ""),
@@ -49,6 +48,7 @@ const AssetList = ({ assets, loading, onEdit, onDelete, onTrack }) => {
 
   return (
     <div className="asset-list-container">
+      {/* ✅ STICKY SEARCH + FILTER HEADER */}
       <div className="asset-list-header">
         <div className="search-filter">
           <input
@@ -94,28 +94,31 @@ const AssetList = ({ assets, loading, onEdit, onDelete, onTrack }) => {
         </div>
       </div>
 
-      {filteredAssets?.length === 0 ? (
-        <div className="empty-state">
-          <span className="empty-icon">🏗️</span>
-          <h3>No assets found</h3>
-          <p>Try adjusting your search or filter criteria</p>
-        </div>
-      ) : (
-        <div className="asset-grid">
-          {filteredAssets?.map((asset) => (
-            <AssetCard
-              key={asset.id || asset.asset_id || asset.assetId}
-              asset={asset}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              onTrack={onTrack}
-            />
-          ))}
-        </div>
-      )}
+      {/* ✅ SCROLLABLE CONTENT */}
+      <div className="asset-list-body">
+        {filteredAssets?.length === 0 ? (
+          <div className="empty-state">
+            <span className="empty-icon">🏗️</span>
+            <h3>No assets found</h3>
+            <p>Try adjusting your search or filter criteria</p>
+          </div>
+        ) : (
+          <div className="asset-grid">
+            {filteredAssets.map((asset) => (
+              <AssetCard
+                key={asset.id || asset.asset_id || asset.assetId}
+                asset={asset}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onTrack={onTrack}
+              />
+            ))}
+          </div>
+        )}
 
-      <div className="asset-count">
-        Showing {filteredAssets?.length || 0} of {assets?.length || 0} assets
+        <div className="asset-count">
+          Showing {filteredAssets?.length || 0} of {assets?.length || 0} assets
+        </div>
       </div>
     </div>
   );

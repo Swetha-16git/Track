@@ -50,7 +50,7 @@ const AssetOnboarding = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingAsset, setEditingAsset] = useState(null);
- 
+
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pageError, setPageError] = useState("");
@@ -78,13 +78,17 @@ const AssetOnboarding = () => {
   /* Filters */
   const filteredAssets = useMemo(() => {
     let list = assets;
- 
+
     if (selectedStatus) {
-      list = list.filter((a) => safeLower(a.status) === safeLower(selectedStatus));
+      list = list.filter(
+        (a) => safeLower(a.status) === safeLower(selectedStatus)
+      );
     } else if (selectedType) {
-      list = list.filter((a) => safeLower(a.type) === safeLower(selectedType));
+      list = list.filter(
+        (a) => safeLower(a.type) === safeLower(selectedType)
+      );
     }
- 
+
     return list;
   }, [assets, selectedStatus, selectedType]);
 
@@ -93,12 +97,12 @@ const AssetOnboarding = () => {
     setEditingAsset(null);
     setShowModal(true);
   };
- 
+
   const handleEditAsset = (asset) => {
     setEditingAsset(asset);
     setShowModal(true);
   };
- 
+
   const handleDeleteAsset = async (asset) => {
     if (!window.confirm(`Delete Asset ID "${asset.assetId}"?`)) return;
     try {
@@ -111,14 +115,14 @@ const AssetOnboarding = () => {
       setLoading(false);
     }
   };
- 
+
   const handleTrackAsset = (asset) => {
     navigate(`/tracking?asset=${asset.assetId}`);
   };
 
   const handleSubmitAsset = async (formData) => {
     if (!canManage) return;
- 
+
     try {
       setPageError("");
       setLoading(true);
@@ -129,12 +133,17 @@ const AssetOnboarding = () => {
       } else {
         const payload = { ...formData };
         delete payload.asset_id;
-        const updated = await assetService.updateAsset(editingAsset.id, payload);
+        const updated = await assetService.updateAsset(
+          editingAsset.id,
+          payload
+        );
         setAssets((prev) =>
-          prev.map((a) => (a.id === editingAsset.id ? toUiAsset(updated) : a))
+          prev.map((a) =>
+            a.id === editingAsset.id ? toUiAsset(updated) : a
+          )
         );
       }
- 
+
       setShowModal(false);
       setEditingAsset(null);
     } catch (e) {
@@ -149,45 +158,28 @@ const AssetOnboarding = () => {
   }
 
   return (
-    <div className="asset-onboarding-layout">
+    /* ✅ CHANGED: use SAME wrapper as Dashboard */
+    <div className="dashboard-page ai-layout ai-theme-light">
       <Navbar toggleSidebar={toggleSidebar} />
-      <div className="dashboard-container">
-        <Sidebar isOpen={sidebarOpen} />
-        <main className="dashboard-main">
-          <div className="page-header">
-            <div>
-              <h1>Assets</h1>
-              <p>
-                {selectedStatus
-                  ? `Showing status: ${selectedStatus}`
-                  : selectedType
-                  ? `Showing type: ${selectedType}`
-                  : "All assets"}
-              </p>
-            </div>
- 
-            {canManage && (
-              <button className="add-asset-btn" onClick={handleAddAsset}>
-                ➕ Add New Asset
-              </button>
-            )}
-          </div>
 
-          {pageError && <div className="error-message">{pageError}</div>}
+      <Sidebar isOpen={sidebarOpen} />
 
-          <AssetList
-            assets={filteredAssets}
-            loading={loading}
-            onEdit={canManage ? handleEditAsset : undefined}
-            onDelete={canManage ? handleDeleteAsset : undefined}
-            onTrack={handleTrackAsset}
-            canManage={canManage}
-          />
- 
-          <Footer />
-        </main>
-      </div>
- 
+      {/* ✅ CHANGED: THIS is now the internal scroll container */}
+      <main className={`ai-main ${sidebarOpen ? "" : "ai-sidebar-closed"}`}>
+        {pageError && <div className="error-message">{pageError}</div>}
+
+        <AssetList
+          assets={filteredAssets}
+          loading={loading}
+          onEdit={canManage ? handleEditAsset : undefined}
+          onDelete={canManage ? handleDeleteAsset : undefined}
+          onTrack={handleTrackAsset}
+          canManage={canManage}
+        />
+
+        <Footer />
+      </main>
+
       {canManage && (
         <Modal
           isOpen={showModal}
@@ -205,6 +197,5 @@ const AssetOnboarding = () => {
     </div>
   );
 };
- 
+
 export default AssetOnboarding;
- 

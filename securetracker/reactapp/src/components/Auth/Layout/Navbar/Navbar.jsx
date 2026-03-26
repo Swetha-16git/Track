@@ -1,84 +1,130 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../../context/AuthContext';
-import { assetService } from '../../../../services/assetService';
 import './Navbar.css';
 
 const Navbar = ({ toggleSidebar }) => {
   const { user, logout, hasPermission } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [assetsDropdownOpen, setAssetsDropdownOpen] = useState(false);
-  const [assetStatuses, setAssetStatuses] = useState([]);
+  const [profileOpen, setProfileOpen] = useState(false);
+
   const assetsDropdownRef = useRef(null);
+  const profileRef = useRef(null);
 
-  // ✅ Load assets and derive statuses
-  useEffect(() => {
-    if (!hasPermission('assets:read')) return;
+  // ✅ First letter avatar
+  const userInitial = user?.username?.charAt(0)?.toUpperCase() || 'U';
 
-    const loadStatuses = async () => {
-      try {
-        const assets = await assetService.getAllAssets();
+  // ✅ Fixed status options (as per your requirement)
+  const statusOptions = useMemo(
+    () => [
+      { key: 'active', label: 'Active' },
+      { key: 'inactive', label: 'Inactive' },
+      { key: 'maintenance', label: 'Maintenance' },
+      { key: 'stolen', label: 'Stolen' },
+    ],
+    []
+  );
 
-        const uniqueStatuses = [
-          ...new Set(assets.map(a => a.status).filter(Boolean)),
-        ];
+  // ✅ Current selected status from URL: /assets?status=active
+  const currentStatus = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return (params.get('status') || '').toLowerCase();
+  }, [location.search]);
 
-        setAssetStatuses(uniqueStatuses);
-      } catch (e) {
-        console.error('Failed to load asset statuses', e);
-      }
-    };
-
-    loadStatuses();
+  // ✅ Show assets dropdown for any reasonable "can view assets" permission
+  // (UI only; backend must still enforce authorization)
+  const canSeeAssetsDropdown = useMemo(() => {
+    const hp = hasPermission?.bind(null);
+    return (
+      (hp && hp('assets:read')) ||
+      (hp && hp('read')) ||
+      (hp && hp('manage_assets')) ||
+      (hp && hp('assets:manage'))
+    );
   }, [hasPermission]);
 
-  // ✅ Close dropdown on outside click
+  // ✅ Close dropdowns on outside click
   useEffect(() => {
     const handler = (e) => {
       if (assetsDropdownRef.current && !assetsDropdownRef.current.contains(e.target)) {
         setAssetsDropdownOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
       }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  // ✅ Close dropdowns when route changes (prevents stuck open)
+  useEffect(() => {
+    setAssetsDropdownOpen(false);
+    setProfileOpen(false);
+  }, [location.pathname, location.search]);
+
+  const onLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const goAssetsAll = () => {
+    setAssetsDropdownOpen(false);
+    navigate('/assets');
+  };
+
+  const goAssetsStatus = (status) => {
+    setAssetsDropdownOpen(false);
+    navigate(`/assets?status=${encodeURIComponent(status)}`);
+  };
+
   return (
     <nav className="navbar">
+      {/* LEFT */}
       <div className="navbar-left">
-        {/* <button onClick={toggleSidebar} className="menu-toggle">☰</button> */}
+       
 
         <Link to="/dashboard" className="navbar-brand">
           🚛 SecureTracker
         </Link>
 
-        {hasPermission('assets:read') && (
+        {/* ✅ Assets dropdown */}
+        {canSeeAssetsDropdown && (
           <div className="nav-item-dropdown" ref={assetsDropdownRef}>
-            <button onClick={() => setAssetsDropdownOpen(p => !p)}>
-              Assets ▼
+            <button
+              className="nav-button"
+              type="button"
+              onClick={() => setAssetsDropdownOpen((p) => !p)}
+              aria-expanded={assetsDropdownOpen}
+            >
+              Assets <span className="nav-caret">▼</span>
             </button>
 
             {assetsDropdownOpen && (
-              <div className="nav-dropdown-menu">
+              <div className="nav-dropdown-menu" role="menu">
                 <button
-                  onClick={() => {
-                    setAssetsDropdownOpen(false);
-                    navigate('/assets');
-                  }}
+                  type="button"
+                  className={`nav-dd-item ${location.pathname === '/assets' && !currentStatus ? 'is-active' : ''}`}
+                  onClick={goAssetsAll}
                 >
-                  📦 All Assets
+                  <span className="status-dot status-all" />
+                  All Assets
                 </button>
 
-                {assetStatuses.map(status => (
+                <div className="nav-dd-sep" />
+
+                {statusOptions.map((opt) => (
                   <button
-                    key={status}
-                    onClick={() => {
-                      setAssetsDropdownOpen(false);
-                      navigate(`/assets?status=${status}`);
-                    }}
+                    type="button"
+                    key={opt.key}
+                    className={`nav-dd-item ${currentStatus === opt.key ? 'is-active' : ''}`}
+                    onClick={() => goAssetsStatus(opt.key)}
                   >
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                    <span className={`status-dot status-${opt.key}`} />
+                    {opt.label}
                   </button>
                 ))}
               </div>
@@ -87,9 +133,47 @@ const Navbar = ({ toggleSidebar }) => {
         )}
       </div>
 
-      <div className="navbar-right">
-        <span>{user?.username}</span>
-        <button onClick={logout}>Logout</button>
+      {/* RIGHT – PROFILE */}
+      <div className="navbar-right" ref={profileRef}>
+        <button
+          className="profile-btn"
+          type="button"
+          onClick={() => setProfileOpen((p) => !p)}
+          aria-expanded={profileOpen}
+        >
+          <div className="profile-initial">{userInitial}</div>
+          <span className="profile-name">{user?.username || 'User'}</span>
+          <span className="profile-caret">▼</span>
+        </button>
+
+        {profileOpen && (
+  <div className="profile-dropdown">
+    <div className="profile-card">
+      <div className="profile-avatar-wrapper">
+        <div className="profile-initial profile-initial-lg">
+          {userInitial}
+        </div>
+      </div>
+
+      <div className="profile-info">
+        <div className="profile-fullname">
+          {user?.username}
+        </div>
+        <div className="profile-role">
+          {user?.role || 'User'}
+        </div>
+      </div>
+    </div>
+
+    <button onClick={() => navigate('/profile')}>
+      My Profile
+    </button>
+    <button className="logout-item" onClick={onLogout}>
+      Logout
+    </button>
+  </div>
+)}
+
       </div>
     </nav>
   );
