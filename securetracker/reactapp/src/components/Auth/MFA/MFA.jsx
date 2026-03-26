@@ -1,332 +1,230 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import OtpTimer from './OtpTimer';
-import './MFA.css';
-import assetImg from '../../../assets/loader.png';
-import { useAuth } from '../../../context/AuthContext'; // ✅ ADD THIS
+import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import OtpTimer from "./OtpTimer";
+import "./MFA.css";
+import assetImg from "../../../assets/loader.png";
+import { useAuth } from "../../../context/AuthContext";
 
 const MFA = () => {
-  const [selectedMethod, setSelectedMethod] = useState('sms');
-  const [otp, setOtp] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [error, setError] = useState('');
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
 
   const navigate = useNavigate();
-  const { refreshAuth } = useAuth(); // ✅ ADD THIS
+  const { refreshAuth } = useAuth();
 
-  const mfaMethods = [
-    { id: 'sms', name: 'SMS OTP', icon: '📱', description: 'Receive a one-time password via SMS' },
-    { id: 'email', name: 'Email OTP', icon: '📧', description: 'Receive a one-time password via email' },
-    { id: 'faceid', name: 'Face ID', icon: '👤', description: 'Authenticate using facial recognition' },
-    { id: 'fingerprint', name: 'Fingerprint', icon: '👆', description: 'Authenticate using fingerprint' },
-    { id: 'ad', name: 'Active Directory', icon: '🏢', description: 'Authenticate via Active Directory' },
-  ];
+  const API_BASE = useMemo(() => {
+    return process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000/api/v1";
+  }, []);
 
-  const handleMethodSelect = (methodId) => {
-    setSelectedMethod(methodId);
-    setError('');
-    setOtp('');
-    setOtpSent(false);
-  };
+  const getTempToken = () => localStorage.getItem("temp_token");
 
-  /**
-   * ✅ Promote pending tokens after MFA is completed
-   * IMPORTANT FIX:
-   * - store token in BOTH keys: token + access_token
-   * - ensure user exists in localStorage
-   * - dispatch auth-refresh so AuthContext updates immediately
-   */
-  const promotePendingTokens = () => {
-    const pendingAccess =
-      localStorage.getItem('pending_access_token') ||
-      localStorage.getItem('access_token') ||
-      localStorage.getItem('temp_token');
-
-    const pendingRefresh = localStorage.getItem('pending_refresh_token');
-
-    if (!pendingAccess) {
-      throw new Error('Session expired. Please login again.');
+  const safeJson = async (res) => {
+    try {
+      return await res.json();
+    } catch {
+      return null;
     }
-
-    // ✅ Store in standardized keys
-    localStorage.setItem('access_token', pendingAccess);
-    localStorage.setItem('token', pendingAccess);
-
-    if (pendingRefresh) localStorage.setItem('refresh_token', pendingRefresh);
-
-    // User derived from JWT decode in AuthContext; no localStorage 'user' needed
-
-    // cleanup
-    localStorage.removeItem('pending_access_token');
-    localStorage.removeItem('pending_refresh_token');
-    localStorage.removeItem('temp_token');
-
-    localStorage.setItem('mfa_verified', 'true');
-
-    // ✅ notify AuthContext + same tab
-    window.dispatchEvent(new Event('auth-refresh'));
-    refreshAuth();
   };
 
-  // Simulate sending OTP (until backend OTP APIs are integrated)
+  // ✅ Send Email OTP
   const handleSendOtp = async () => {
-    setError('');
+    setError("");
 
-    if (selectedMethod === 'sms' && !phoneNumber.trim()) {
-      setError('Please enter your phone number');
+    const tempToken = getTempToken();
+    if (!tempToken) {
+      setError("Session expired. Please login again.");
+      navigate("/login", { replace: true });
       return;
     }
 
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setOtpSent(true);
-    }, 800);
-  };
-
-  const handleVerify = async () => {
-    setError('');
-    setLoading(true);
-
     try {
-      // ✅ Require 6 digits
-      if ((selectedMethod === 'sms' || selectedMethod === 'email') && otp.length !== 6) {
-        throw new Error('Please enter a valid 6-digit OTP');
-      }
+      const res = await fetch(`${API_BASE}/auth/mfa/email/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ temp_token: tempToken }),
+      });
 
-      // ✅ DEMO OTP (fixed)
-      if (selectedMethod === 'sms' || selectedMethod === 'email') {
-        if (otp !== '123456') {
-          throw new Error('Invalid OTP. Use 123456');
+      const data = await safeJson(res);
+
+      if (!res.ok) {
+        const msg = data?.detail || data?.message || "Failed to send OTP";
+        if (String(msg).toLowerCase().includes("expired")) {
+          localStorage.removeItem("temp_token");
+          localStorage.setItem("mfa_verified", "false");
+          throw new Error("MFA session expired. Please login again.");
         }
+        throw new Error(msg);
       }
 
-      promotePendingTokens();
-
-      // ✅ Use replace so ProtectedRoute doesn't push you back
-      navigate('/dashboard', { replace: true });
+      setOtpSent(true);
     } catch (err) {
-      setError(err.message || 'Verification failed. Please try again.');
+      setError(err?.message || "Failed to send OTP");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleBiometricAuth = async () => {
-    setLoading(true);
-    setError('');
+  // ✅ Verify OTP
+  const handleVerify = async () => {
+    setError("");
 
-    try {
-      promotePendingTokens();
-      navigate('/dashboard', { replace: true });
-    } catch (err) {
-      setError(err.message || 'Biometric verification failed.');
-    } finally {
-      setLoading(false);
+    if (otp.length !== 6) {
+      setError("Please enter a valid 6‑digit OTP");
+      return;
     }
-  };
 
-  const handleAdAuth = async () => {
-    setLoading(true);
-    setError('');
-
-    try {
-      promotePendingTokens();
-      navigate('/dashboard', { replace: true });
-    } catch (err) {
-      setError(err.message || 'Active Directory authentication failed.');
-    } finally {
-      setLoading(false);
+    const tempToken = getTempToken();
+    if (!tempToken) {
+      setError("Session expired. Please login again.");
+      navigate("/login", { replace: true });
+      return;
     }
+
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/auth/verify-mfa`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          temp_token: tempToken,
+          code: otp,
+          method: "email",
+        }),
+      });
+
+      const data = await safeJson(res);
+
+      if (!res.ok) {
+        throw new Error(data?.detail || data?.message || "OTP verification failed");
+      }
+
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("token", data.access_token);
+      if (data.refresh_token) {
+        localStorage.setItem("refresh_token", data.refresh_token);
+      }
+
+      localStorage.setItem("mfa_verified", "true");
+      localStorage.removeItem("temp_token");
+
+      window.dispatchEvent(new Event("auth-refresh"));
+      refreshAuth();
+
+      navigate("/dashboard", { replace: true });
+    } 
+catch (err) {
+  const msg = err?.message || "";
+
+  if (
+    msg.toLowerCase().includes("mfa") ||
+    msg.toLowerCase().includes("verification")
+  ) {
+    setError("Incorrect or expired OTP. Please try again.");
+  } else {
+    setError(msg || "OTP verification failed");
+  }
+} finally {
+  setLoading(false);
+}
+
   };
 
   const handleBackToLogin = () => {
-    // ✅ Clear EVERYTHING auth-related so login starts fresh
-    localStorage.removeItem('token');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('pending_access_token');
-    localStorage.removeItem('pending_refresh_token');
-    localStorage.removeItem('temp_token');
-    localStorage.removeItem('user');
-    localStorage.setItem('mfa_verified', 'false');
+    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("temp_token");
+    localStorage.removeItem("user");
+    localStorage.setItem("mfa_verified", "false");
 
-    window.dispatchEvent(new Event('auth-refresh'));
+    window.dispatchEvent(new Event("auth-refresh"));
     refreshAuth();
-
-    navigate('/login', { replace: true });
+    navigate("/login", { replace: true });
   };
 
   return (
     <div className="st-page">
       <div className="st-shell st-shell--mfa">
-        {/* LEFT */}
+        {/* LEFT PANEL */}
         <div className="st-left">
           <div className="st-brand">
             <span className="st-dot" />
             <div>
               <h1 className="st-app">SecureTracker</h1>
-              <p className="st-app-sub">Complete verification to securely access your dashboard</p>
+              <p className="st-app-sub">
+                Secure verification required to protect your account
+              </p>
             </div>
           </div>
 
           <img src={assetImg} alt="SecureTracker" className="st-asset-img" />
 
           <div className="st-chips">
-            <span className="st-chip">Secure login</span>
-            <span className="st-chip">MFA enabled</span>
-            <span className="st-chip">Org access</span>
+            <span className="st-chip">Identity protected</span>
+            <span className="st-chip">Email verification</span>
+            <span className="st-chip">Enterprise security</span>
           </div>
         </div>
 
-        {/* RIGHT */}
+        {/* RIGHT PANEL */}
         <div className="st-right">
           <div className="mfa-panel">
             <div className="mfa-header">
-              <h1>Multi‑Factor Authentication</h1>
-              <p>Enter OTP 123456 to continue</p>
-            </div>
-
-            <div className="mfa-methods">
-              {mfaMethods.map((method) => (
-                <button
-                  key={method.id}
-                  className={`mfa-method-btn ${selectedMethod === method.id ? 'selected' : ''}`}
-                  onClick={() => handleMethodSelect(method.id)}
-                  type="button"
-                >
-                  <span className="method-icon">{method.icon}</span>
-                  <span className="method-name">{method.name}</span>
-                </button>
-              ))}
+              <h1>Verify your identity</h1>
+              <p>
+                For security reasons, we require an additional verification step.
+                A one‑time password will be sent to your registered email address.
+              </p>
             </div>
 
             <div className="mfa-content">
-              {/* SMS OTP */}
-              {selectedMethod === 'sms' && (
-                <div className="mfa-form">
-                  {!otpSent ? (
-                    <>
-                      <p className="mfa-description">Enter your phone number to receive OTP</p>
-
-                      <div className="form-group">
-                        <label htmlFor="phone">Phone Number</label>
-                        <input
-                          type="tel"
-                          id="phone"
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                          placeholder="+1 234 567 8900"
-                          disabled={loading}
-                        />
-                      </div>
-
-                      <button className="mfa-action-btn" onClick={handleSendOtp} disabled={loading} type="button">
-                        {loading ? 'Sending…' : 'Send OTP'}
-                      </button>
-                    </>
-                  ) : (
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        handleVerify();
-                      }}
-                    >
-                      <p className="mfa-description">Enter OTP (123456)</p>
-                      <OtpTimer onResend={handleSendOtp} />
-
-                      <div className="form-group">
-                        <label htmlFor="otp">Enter OTP</label>
-                        <input
-                          type="text"
-                          id="otp"
-                          value={otp}
-                          onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                          placeholder="123456"
-                          maxLength={6}
-                          required
-                          disabled={loading}
-                        />
-                      </div>
-
-                      <button type="submit" className="mfa-action-btn" disabled={loading || otp.length !== 6}>
-                        {loading ? 'Verifying…' : 'Verify OTP'}
-                      </button>
-                    </form>
-                  )}
-                </div>
-              )}
-
-              {/* EMAIL OTP */}
-              {selectedMethod === 'email' && (
-                <div className="mfa-form">
-                  {!otpSent ? (
-                    <>
-                      <p className="mfa-description">Click below to receive OTP in your email</p>
-                      <button className="mfa-action-btn" onClick={handleSendOtp} disabled={loading} type="button">
-                        {loading ? 'Sending…' : 'Send OTP'}
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <p className="mfa-description">Enter OTP (123456)</p>
-                      <OtpTimer onResend={handleSendOtp} />
-
-                      <div className="form-group">
-                        <label htmlFor="email-otp">Enter OTP</label>
-                        <input
-                          type="text"
-                          id="email-otp"
-                          value={otp}
-                          onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                          placeholder="123456"
-                          maxLength={6}
-                          required
-                          disabled={loading}
-                        />
-                      </div>
-
-                      <button className="mfa-action-btn" type="button" onClick={handleVerify} disabled={loading || otp.length !== 6}>
-                        {loading ? 'Verifying…' : 'Verify OTP'}
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
-
-              {/* Face ID */}
-              {selectedMethod === 'faceid' && (
-                <div className="mfa-form biometric-form">
-                  <div className="biometric-icon">👤</div>
-                  <p className="mfa-description">Use Face ID to authenticate</p>
-                  <button className="mfa-action-btn" onClick={handleBiometricAuth} disabled={loading} type="button">
-                    {loading ? 'Authenticating…' : 'Scan Face'}
+              {!otpSent ? (
+                <>
+                  <button
+                    className="mfa-action-btn"
+                    onClick={handleSendOtp}
+                    disabled={loading}
+                    type="button"
+                  >
+                    {loading ? "Sending OTP…" : "Send verification code"}
                   </button>
-                </div>
-              )}
+                </>
+              ) : (
+                <>
+                  <p className="mfa-description">
+                    Enter the 6‑digit code sent to your email
+                  </p>
 
-              {/* Fingerprint */}
-              {selectedMethod === 'fingerprint' && (
-                <div className="mfa-form biometric-form">
-                  <div className="biometric-icon">👆</div>
-                  <p className="mfa-description">Use Fingerprint to authenticate</p>
-                  <button className="mfa-action-btn" onClick={handleBiometricAuth} disabled={loading} type="button">
-                    {loading ? 'Authenticating…' : 'Scan Fingerprint'}
-                  </button>
-                </div>
-              )}
+                  <OtpTimer onResend={handleSendOtp} />
 
-              {/* Active Directory */}
-              {selectedMethod === 'ad' && (
-                <div className="mfa-form biometric-form">
-                  <div className="biometric-icon">🏢</div>
-                  <p className="mfa-description">Authenticate via Active Directory</p>
-                  <button className="mfa-action-btn" onClick={handleAdAuth} disabled={loading} type="button">
-                    {loading ? 'Authenticating…' : 'Login with AD'}
+                  <div className="form-group">
+                    <label htmlFor="email-otp">Verification code</label>
+                    <input
+                      type="text"
+                      id="email-otp"
+                      value={otp}
+                      onChange={(e) =>
+                        setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                      }
+                      placeholder="123456"
+                      maxLength={6}
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+
+                  <button
+                    className="mfa-action-btn"
+                    type="button"
+                    onClick={handleVerify}
+                    disabled={loading || otp.length !== 6}
+                  >
+                    {loading ? "Verifying…" : "Verify and continue"}
                   </button>
-                </div>
+                </>
               )}
             </div>
 
@@ -334,7 +232,7 @@ const MFA = () => {
 
             <div className="mfa-footer">
               <button className="back-btn" onClick={handleBackToLogin} type="button">
-                ← Back to Login
+                Cancel sign‑in
               </button>
             </div>
           </div>

@@ -1,6 +1,8 @@
 /* App.css - Role-based themes */
  
 /* ADMIN MODE - Bright Glass Premium */
+
+
 .admin-mode {
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
