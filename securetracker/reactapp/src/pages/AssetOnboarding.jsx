@@ -50,6 +50,7 @@ const AssetOnboarding = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingAsset, setEditingAsset] = useState(null);
+
  
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -89,10 +90,6 @@ const AssetOnboarding = () => {
   }, [assets, selectedStatus, selectedType]);
 
   /* Actions */
-  const handleAddAsset = () => {
-    setEditingAsset(null);
-    setShowModal(true);
-  };
  
   const handleEditAsset = (asset) => {
     setEditingAsset(asset);
@@ -156,7 +153,7 @@ const AssetOnboarding = () => {
         <main className="dashboard-main">
           <div className="page-header">
             <div>
-              <h1>Assets</h1>
+              <h1>View Assets</h1>
               <p>
                 {selectedStatus
                   ? `Showing status: ${selectedStatus}`
@@ -165,12 +162,6 @@ const AssetOnboarding = () => {
                   : "All assets"}
               </p>
             </div>
- 
-            {canManage && (
-              <button className="add-asset-btn" onClick={handleAddAsset}>
-                ➕ Add New Asset
-              </button>
-            )}
           </div>
 
           {pageError && <div className="error-message">{pageError}</div>}

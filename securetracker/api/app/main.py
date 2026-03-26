@@ -17,8 +17,11 @@ from app.routers import (
     auth_router,
     user_router,
     asset_router,
+    asset_type_router,
+    oem_router,
     tracking_router,
     role_router,
+
 )
 from app.utils.logger import setup_logger
  
@@ -118,6 +121,9 @@ app.include_router(user_router.router, prefix=f"{API_PREFIX}/users", tags=["User
 app.include_router(asset_router.router, prefix=f"{API_PREFIX}/assets", tags=["Assets"])
 app.include_router(tracking_router.router, prefix=f"{API_PREFIX}/tracking", tags=["Tracking"])
 app.include_router(role_router.router, prefix=f"{API_PREFIX}/roles", tags=["Roles"])
+app.include_router(asset_type_router.router, prefix=f"{API_PREFIX}/asset-types", tags=["Asset Types"])
+app.include_router(oem_router.router, prefix=f"{API_PREFIX}/oems", tags=["OEMs"])
+
  
  
 # ✅ LOCAL RUN

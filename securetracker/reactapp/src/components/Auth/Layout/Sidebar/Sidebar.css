@@ -72,8 +72,9 @@
 }
 
 .sidebar-link.active {
-  background: #0b5ed7;
-  color: #ffffff;
+  background: rgba(245, 158, 11, 0.2);
+  color: #1f2937;
+  font-weight: 600;
 }
 
 /* Icons */
