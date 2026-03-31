@@ -1,15 +1,13 @@
 /* App.css - Role-based themes */
- 
+
 /* ADMIN MODE - Bright Glass Premium */
-
-
 .admin-mode {
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --text-primary: #1e293b;
   --text-secondary: #475569;
 }
- 
+
 /* VIEWER MODE - Original Neomorphic */
 .viewer-mode {
   --bg-primary: #e0e5ec;
@@ -24,39 +22,40 @@
   --warning: #d97706;
   --danger: #dc2626;
 }
- 
+
+/* ✅ Base container */
 .app-container {
   min-height: 100vh;
   background: var(--bg-primary);
   color: var(--text-primary);
 }
- 
+
 /* Admin glass overrides */
 .admin-mode .sidebar {
   background: rgba(255, 255, 255, 0.9) !important;
   backdrop-filter: blur(20px);
   border-right: 1px solid rgba(103, 126, 234, 0.3);
 }
- 
+
 .admin-mode .navbar {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(25px);
 }
- 
+
 .admin-mode .stat-card {
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(103, 126, 234, 0.2);
   color: var(--text-primary) !important;
 }
- 
+
 .admin-mode .stat-info h3 {
   color: var(--text-primary) !important;
 }
- 
+
 .admin-mode .stat-info p {
   color: var(--text-secondary) !important;
 }
- 
+
 /* Role badges */
 .role-badge {
   padding: 4px 12px;
@@ -65,62 +64,102 @@
   font-weight: 600;
   text-transform: uppercase;
 }
- 
+
 .admin-mode .role-badge {
   background: #667eea;
   color: white;
 }
- 
+
 .viewer-mode .role-badge {
   background: #6b7280;
   color: white;
 }
- 
-/* Viewer neomorphic preserved */
+
 .viewer-mode [class*="shadow"] {
   box-shadow: inherit;
 }
+
 .hover-opacity:hover {
   opacity: 1 !important;
 }
+
+/* ============================= */
+/* ✅ GLOBAL SCROLL CONTROL */
+/* ============================= */
 html, body {
   height: 100%;
-  overflow: hidden;   /* ✅ default: NO global scroll */
+  overflow: hidden; /* ✅ keep no global scroll */
 }
 
-/* ✅ Landing page ONLY */
+/* Landing page ONLY */
 body.landing-scroll {
   overflow-y: auto;
 }
 
-/* ✅ Stop browser (global) scroll */
+/* ============================= */
+/* ✅ LAYOUT FIX (SIDEBAR + NAVBAR) */
+/* This is the IMPORTANT part */
+/* ============================= */
+
+:root{
+  --nav-h: 56px;
+  --sb-open: 220px;
+  --sb-closed: 64px;
+}
+
+/* Root wrapper */
+.layout-root{
+  height: 100vh;
+  width: 100%;
+  background: var(--bg-primary);
+}
+
+/* ✅ Main area must shift right (because sidebar is fixed) */
+.layout-main{
+  margin-left: var(--sb-open);
+  width: calc(100% - var(--sb-open));
+  height: 100vh;
+  transition: margin-left .25s ease, width .25s ease;
+}
+
+/* ✅ When sidebar collapses, shift accordingly */
+.sidebar.closed ~ .layout-main{
+  margin-left: var(--sb-closed);
+  width: calc(100% - var(--sb-closed));
+}
+
+/* ✅ Page content must start below navbar */
+.layout-content {
+  height: 100%;
+  overflow-y: auto;
+  padding: 16px 22px;
+  background: var(--bg-primary);
+}
+
+/* ============================= */
+/* (Optional legacy styles you had)
+   Keeping them so nothing breaks,
+   but layout-content above will override for dashboards.
+============================= */
 .dashboard-page {
   height: 100vh;
   overflow: hidden;
 }
 
-/* ✅ Dashboard wrapper */
-.dashboard-page {
-  height: 100vh;
-  overflow: hidden;   /* ✅ stop browser scroll */
-}
-
-/* ✅ ONLY scroll container */
 .dashboard-page .ai-main {
   position: absolute;
-  top: 64px;          /* navbar height */
-  left: 220px;        /* sidebar open */
+  top: 64px;
+  left: 220px;
   right: 0;
   bottom: 0;
 
-  overflow-y: auto;   /* ✅ INTERNAL SCROLL */
+  overflow-y: auto;
   overflow-x: hidden;
 
   padding: 16px 22px;
   background: #f3f5f7;
 }
 
-/* Sidebar collapsed */
 .dashboard-page .ai-sidebar-closed {
   left: 64px;
 }

@@ -4,26 +4,29 @@
 
 .sidebar {
   position: fixed;
-  top: 56px; /* navbar height */
+  top: 64px; /* navbar height */
   left: 0;
 
-  height: calc(100vh - 56px);
+  height: calc(100vh - 64px);
   width: 220px;
+  min-width: 220px; /* ✅ added */
 
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
 
   transition: width 0.25s ease;
   overflow: hidden;
-  z-index: 100;
+  z-index: 120; /* ✅ slightly higher */
 }
 
 .sidebar.open {
   width: 220px;
+  min-width: 220px; /* ✅ added */
 }
 
 .sidebar.closed {
   width: 64px;
+  min-width: 64px; /* ✅ added */
 }
 
 /* ============================= */
@@ -36,7 +39,7 @@
   align-items: center;
   justify-content: space-between;
 
-  padding: 0 12px;
+   padding: 12px 14px;
   border-bottom: 1px solid #e5e7eb;
   background: #ffffff;
 }
@@ -80,13 +83,13 @@
 .sidebar-menu li {
   margin: 4px 0;
 }
+
 /* ✅ ACTIVE MENU ITEM – ONLY CLICKED ITEM */
 .sidebar-link.active {
-  background: #0b3a6f;   /* same blue as navbar buttons */
+  background: #0b3a6f;
   color: #ffffff;
 }
 
-/* Optional hover on active */
 .sidebar-link.active:hover {
   background: #0b3a6f;
 }
@@ -153,12 +156,10 @@
   background: transparent;
 }
 
-/* Hide labels */
 .sidebar.closed .label {
   display: none;
 }
 
-/* Remove hover background */
 .sidebar.closed .sidebar-link:hover {
   background: transparent;
 }

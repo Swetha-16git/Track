@@ -3,9 +3,10 @@
 /* ============================= */
 
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
   z-index: 9999;
+  left:0;
 
   height: 64px;
   width: 100%;
@@ -18,12 +19,14 @@
   display: flex;
   align-items: center;
 
-  padding: 0 16px 0 20px;
+  padding: 0 20px 0 14px;
 
   /* ✅ Yellow underline like your screenshot */
   border-bottom: 3px solid #facc15 !important;
 
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  /* margin-left: -220px; */
+  padding-left: 14px;
 }
 
 /* ============================= */
@@ -34,6 +37,8 @@
   display: flex;
   align-items: center;
   gap: 18px;
+  margin-left: 0;
+
 }
 
 .navbar-brand {

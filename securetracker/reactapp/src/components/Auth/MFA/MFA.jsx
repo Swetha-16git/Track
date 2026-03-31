@@ -28,6 +28,34 @@ const MFA = () => {
     }
   };
 
+  // ✅ Decode role from JWT safely (works even before AuthContext refresh)
+  const getRoleFromJwt = (jwt) => {
+    try {
+      if (!jwt) return null;
+      const payload = jwt.split(".")[1];
+      const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+      const json = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      );
+      const obj = JSON.parse(json);
+
+      // common keys (depends on backend)
+      return (
+        obj.role ||
+        obj.user_role ||
+        obj.userRole ||
+        obj.roles?.[0] ||
+        obj["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ||
+        null
+      );
+    } catch {
+      return null;
+    }
+  };
+
   // ✅ Send Email OTP
   const handleSendOtp = async () => {
     setError("");
@@ -101,35 +129,48 @@ const MFA = () => {
         throw new Error(data?.detail || data?.message || "OTP verification failed");
       }
 
+      // ✅ Store tokens
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("token", data.access_token);
+
       if (data.refresh_token) {
         localStorage.setItem("refresh_token", data.refresh_token);
       }
 
-      localStorage.setItem("mfa_verified", "true");
+      // ✅ IMPORTANT: mark MFA complete & clear temp token
+      localStorage.setItem("mfa_verified", "true"); // MUST be "true"
       localStorage.removeItem("temp_token");
 
+      // ✅ clean any older keys (your screenshot showed inconsistent token key names)
+      localStorage.removeItem("assets_token");
+      localStorage.removeItem("pending_access_token");
+
+      // ✅ Refresh auth context (role/permissions)
       window.dispatchEvent(new Event("auth-refresh"));
-      refreshAuth();
+      refreshAuth?.();
 
-      navigate("/dashboard", { replace: true });
-    } 
-catch (err) {
-  const msg = err?.message || "";
+      // ✅ Redirect ADMIN to /admin/dashboard, others to /dashboard
+      const role = getRoleFromJwt(data.access_token);
+      if (String(role).toLowerCase() === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
+    } catch (err) {
+      const msg = err?.message || "";
 
-  if (
-    msg.toLowerCase().includes("mfa") ||
-    msg.toLowerCase().includes("verification")
-  ) {
-    setError("Incorrect or expired OTP. Please try again.");
-  } else {
-    setError(msg || "OTP verification failed");
-  }
-} finally {
-  setLoading(false);
-}
-
+      if (
+        msg.toLowerCase().includes("mfa") ||
+        msg.toLowerCase().includes("verification") ||
+        msg.toLowerCase().includes("otp")
+      ) {
+        setError("Incorrect or expired OTP. Please try again.");
+      } else {
+        setError(msg || "OTP verification failed");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleBackToLogin = () => {
@@ -137,11 +178,13 @@ catch (err) {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("temp_token");
+    localStorage.removeItem("pending_access_token");
+    localStorage.removeItem("assets_token");
     localStorage.removeItem("user");
     localStorage.setItem("mfa_verified", "false");
 
     window.dispatchEvent(new Event("auth-refresh"));
-    refreshAuth();
+    refreshAuth?.();
     navigate("/login", { replace: true });
   };
 
