@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import organisationService from "../../services/organisationService";
+import "./AdminDashboard.css"; // uses shared modal styles
 
 export default function CustomerOnboarding() {
   const [form, setForm] = useState({
@@ -51,45 +52,50 @@ export default function CustomerOnboarding() {
   };
 
   return (
-    <div style={{ maxWidth: 420 }}>
-      <h2>Customer Onboarding</h2>
+    <div className="onboard-modal">
+      <h2 className="onboard-title">Customer Onboarding</h2>
 
-      <input
-        name="client_code"
-        placeholder="Client Code (e.g. LT)"
-        value={form.client_code}
-        onChange={handleChange}
-      />
-      <br />
-      <br />
+      <div className="onboard-field">
+        <label>Client Code</label>
+        <input
+          name="client_code"
+          placeholder="e.g. LT"
+          value={form.client_code}
+          onChange={handleChange}
+        />
+      </div>
 
-      <input
-        name="client_name"
-        placeholder="Client Name (e.g. L&T)"
-        value={form.client_name}
-        onChange={handleChange}
-      />
-      <br />
-      <br />
+      <div className="onboard-field">
+        <label>Client Name</label>
+        <input
+          name="client_name"
+          placeholder="e.g. L&T"
+          value={form.client_name}
+          onChange={handleChange}
+        />
+      </div>
 
-      <input
-        name="contact_email"
-        placeholder="Contact Email"
-        value={form.contact_email}
-        onChange={handleChange}
-      />
-      <br />
-      <br />
+      <div className="onboard-field">
+        <label>Contact Email</label>
+        <input
+          name="contact_email"
+          placeholder="admin@client.com"
+          value={form.contact_email}
+          onChange={handleChange}
+        />
+      </div>
 
-      <button onClick={handleCreateCustomer} disabled={loading}>
-        {loading ? "Creating..." : "Create Customer"}
-      </button>
+      {message && <p className="onboard-msg">{message}</p>}
 
-      {message && (
-        <p style={{ marginTop: 12 }}>
-          {message}
-        </p>
-      )}
+      <div className="onboard-actions">
+        <button
+          className="btn-primary"
+          onClick={handleCreateCustomer}
+          disabled={loading}
+        >
+          {loading ? "Creating..." : "Create Customer"}
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,1 @@
+drop DATABASE securetracker_tpl
