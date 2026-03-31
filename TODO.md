@@ -1,1 +1,21 @@
-# Landing Page Implementation Complete&#10;&#10;## Steps:&#10;- [x] Step 1: Create `securetracker/reactapp/src/pages/LandingPage.css` ✓&#10;- [x] Step 2: Create `securetracker/reactapp/src/pages/LandingPage.jsx` ✓&#10;- [x] Step 3: Test via `npm start` in reactapp/ (view localhost:3000) ✓&#10;- [x] Step 4: Complete.&#10;&#10;✅ Professional blue-themed landing page created with hero, features, signup/login CTAs. Responsive, matches project style. Ignore VSCode linter warnings (valid CSS/JSX).&#10;&#10;Run `cd securetracker/reactapp &amp;&amp; npm start` to view.
+# Client Onboarding Implementation TODO
+
+## Backend (securetracker/api/app/)
+- [x] 1. Create `services/organisation_service.py` - CRUD methods for Organisation, admin-only, optional raw SQL setup on create
+- [x] 2. Create `routers/organisation_router.py` - /api/organisations endpoints (GET, POST, etc.)
+- [ ] 3. Edit `main.py` - include_router organisation_router
+
+## Frontend Services (securetracker/reactapp/src/services/)
+- [x] 4. Create `organisationService.js` - getOrganisations(), createOrganisation()
+
+## Frontend UI (securetracker/reactapp/src/)
+- [ ] 5. Edit `components/Auth/Layout/Sidebar/Sidebar.jsx` - Add admin menu: Dashboard, Client Onboarding
+- [ ] 6. Edit `pages/Admin/AdminDashboard.jsx` - Fetch/display real org stats (users/assets count)
+- [ ] 7. Edit `pages/Admin/Customers.jsx` - Real org list table
+- [ ] 8. Edit `pages/Admin/CustomerOnboarding.jsx` - Full form, submit to API, success feedback
+
+## Final
+- [ ] Test: Backend restart, frontend npm start, admin login → nav → create org → check DB
+- [ ] attempt_completion
+
+Updated as steps complete.

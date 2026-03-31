@@ -16,6 +16,8 @@ export const useAuth = () => {
   return ctx;
 };
 
+/* ================= UTILITIES ================= */
+
 const getStoredToken = () =>
   localStorage.getItem("access_token") ||
   localStorage.getItem("token") ||
@@ -33,6 +35,48 @@ const safeDecode = (t) => {
   }
 };
 
+/**
+ * ✅ Normalize role from JWT payload.
+ * Supports:
+ * - decoded.role = "admin" / "viewer"
+ * - decoded.role = "ADMIN" / "VIEWER"
+ * - decoded.role_display = "ADMIN" / "VIEWER"
+ */
+const normalizeRole = (decoded) => {
+  const raw =
+    decoded?.role ??
+    decoded?.role_name ??
+    decoded?.role_display ??
+    decoded?.user_role ??
+    decoded?.userRole ??
+    "";
+
+  const s = String(raw).trim();
+  if (!s) return "viewer";
+
+  const lower = s.toLowerCase();
+
+  // accept multiple shapes
+  if (lower === "admin" || lower === "role_admin" || s === "ADMIN") return "admin";
+  if (lower === "viewer" || lower === "role_viewer" || s === "VIEWER") return "viewer";
+
+  // fallback
+  return "viewer";
+};
+
+/**
+ * ✅ Normalize permissions list from JWT payload.
+ * Supports:
+ * - decoded.permissions = [...]
+ * - decoded.perms = [...]
+ */
+const normalizePermissions = (decoded) => {
+  const perms = decoded?.permissions || decoded?.perms || [];
+  return Array.isArray(perms) ? perms : [];
+};
+
+/* ================= PROVIDER ================= */
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(getStoredToken());
@@ -42,6 +86,8 @@ export const AuthProvider = ({ children }) => {
   const [mfaRequired, setMfaRequired] = useState(false);
   const [mfaToken, setMfaToken] = useState(getTempToken());
 
+  /* ================= AUTH REFRESH ================= */
+
   const refreshAuth = useCallback(() => {
     const storedToken = getStoredToken();
     const temp = getTempToken();
@@ -50,7 +96,7 @@ export const AuthProvider = ({ children }) => {
     setMfaToken(temp);
     setMfaRequired(!!temp && !mfaOk);
 
-    // ✅ If MFA not verified => treat as not authenticated
+    // ❌ MFA not verified → unauthenticated
     if (!storedToken || !mfaOk) {
       setToken(null);
       setUser(null);
@@ -70,18 +116,29 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
+    // ✅ derive role + permissions from token correctly
+    const role = normalizeRole(decoded);
+    const permissions = normalizePermissions(decoded);
+
     const derivedUser = {
       id: decoded.sub,
       username: decoded.username,
       email: decoded.email,
-      role: decoded.role,
-      organisation_id: decoded.organisation_id,
+      role,                  // ✅ "admin" or "viewer"
+      permissions,           // ✅ permission array
+      organisation_id:
+        decoded.organisation_id ??
+        decoded.organization_id ??
+        decoded.org_id ??
+        null,
     };
 
     setToken(storedToken);
     setUser(derivedUser);
     localStorage.setItem("user", JSON.stringify(derivedUser));
   }, []);
+
+  /* ================= EFFECTS ================= */
 
   useEffect(() => {
     refreshAuth();
@@ -110,9 +167,13 @@ export const AuthProvider = ({ children }) => {
     return () => window.removeEventListener("storage", onStorage);
   }, [refreshAuth]);
 
+  /* ================= DERIVED STATE ================= */
+
   const isAuthenticated = useMemo(() => {
     return !!token && getMfaVerified() === true;
   }, [token]);
+
+  /* ================= LOGOUT ================= */
 
   const logout = () => {
     setUser(null);
@@ -131,24 +192,17 @@ export const AuthProvider = ({ children }) => {
     window.dispatchEvent(new Event("auth-refresh"));
   };
 
-  const hasPermission = (permission) => {
-    const role = String(user?.role || "").toLowerCase();
-    if (!role) return false;
+  /* ================= PERMISSIONS ================= */
 
-    const rolePermissions = {
-      admin: [
-        "users:read", "users:write", "users:delete",
-        "assets:read", "assets:write", "assets:delete",
-        "tracking:read", "tracking:write",
-        "roles:read", "roles:write",
-        "organisations:read", "organisations:write",
-        "settings:read", "settings:write",
-      ],
-      viewer: ["assets:read", "tracking:read"],
-    };
+  const hasPermission = (perm) => {
+    // ✅ Admin has access to everything
+    if (user?.role?.toLowerCase() === "admin") return true;
 
-    return rolePermissions[role]?.includes(permission) || false;
+    const perms = user?.permissions || [];
+    return perms.includes(perm);
   };
+
+  /* ================= CONTEXT VALUE ================= */
 
   const value = {
     user,
