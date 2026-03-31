@@ -1,24 +1,32 @@
 """
 Database Connection and Session Management - PostgreSQL
 """
+ 
 from sqlalchemy import create_engine, event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import QueuePool
+from sqlalchemy.engine.url import make_url
 from typing import Generator
 import logging
-
+import os
+ 
 from app.config.settings import settings
-
+ 
 logger = logging.getLogger(__name__)
-
-
+ 
+# ✅ Base for models
+Base = declarative_base()
+ 
+ 
+# =========================
+# DEFAULT APPLICATION ENGINE
+# =========================
 def get_engine():
     """
-    Create database engine based on database type
+    Create main application DB engine (master DB)
     """
     if "postgresql" in settings.DATABASE_URL:
-        # PostgreSQL engine with connection pooling
         return create_engine(
             settings.DATABASE_URL,
             poolclass=QueuePool,
@@ -28,61 +36,80 @@ def get_engine():
             pool_pre_ping=True,
             echo=settings.DB_ECHO,
         )
-    elif "sqlite" in settings.DATABASE_URL:
-        # SQLite engine (for development/testing)
-        return create_engine(
-            settings.DATABASE_URL,
-            connect_args={"check_same_thread": False},
-            echo=settings.DB_ECHO,
-            pool_pre_ping=True,
-        )
     else:
-        # Default engine
         return create_engine(
             settings.DATABASE_URL,
-            echo=settings.DB_ECHO,
             pool_pre_ping=True,
+            echo=settings.DB_ECHO,
         )
-
-
-# Create engine
+ 
+ 
 engine = get_engine()
-
-# Create session factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Create base class for models
-Base = declarative_base()
-
-
+ 
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine,
+)
+ 
+ 
 def get_db() -> Generator[Session, None, None]:
-    """
-    Database session dependency for FastAPI
-    """
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
-
-
+ 
+ 
+# =========================
+# ADMIN ENGINE (CREATE DATABASE)
+# =========================
+def get_admin_engine(**kwargs):
+    """
+    Engine with AUTOCOMMIT for CREATE DATABASE
+    """
+    admin_url = (
+        f"postgresql+psycopg2://"
+        f"{os.getenv('MASTER_DB_ADMIN')}:"
+        f"{os.getenv('MASTER_DB_PASSWORD')}@"
+        f"{os.getenv('MASTER_DB_HOST')}:"
+        f"{os.getenv('MASTER_DB_PORT')}/"
+        f"{os.getenv('MASTER_DB_POSTGRES_DB', 'postgres')}"
+    )
+ 
+    return create_engine(
+        admin_url,
+        isolation_level=kwargs.get("isolation_level", "AUTOCOMMIT"),
+        pool_pre_ping=True,
+        echo=False,
+    )
+ 
+ 
+# =========================
+# TENANT ENGINE (PER CLIENT DB)
+# =========================
+def get_tenant_engine(db_name: str):
+    """
+    Create engine for a tenant/client database
+    """
+    base_url = make_url(settings.DATABASE_URL)
+    tenant_url = base_url.set(database=db_name)
+ 
+    return create_engine(
+        tenant_url,
+        pool_pre_ping=True,
+        echo=settings.DB_ECHO,
+    )
+ 
+ 
+# =========================
+# INIT DB (MASTER)
+# =========================
 def init_db():
-    """
-    Initialize database - create all tables
-    """
     try:
         Base.metadata.create_all(bind=engine)
         logger.info("Database initialized successfully")
     except Exception as e:
         logger.error(f"Failed to initialize database: {e}")
         raise
-
-
-# SQLite foreign keys enable (only for SQLite)
-if "sqlite" in settings.DATABASE_URL:
-    @event.listens_for(engine, "connect")
-    def set_sqlite_pragma(dbapi_conn, connection_record):
-        cursor = dbapi_conn.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
-
+ 

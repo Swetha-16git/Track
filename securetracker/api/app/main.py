@@ -13,16 +13,14 @@ from datetime import datetime
 from app.config.settings import settings
 from app.config.constants import APP_NAME, APP_VERSION, API_PREFIX
 from app.database.db_connection import engine, Base
-from app.routers import (
-    auth_router,
-    user_router,
-    asset_router,
-    asset_type_router,
-    oem_router,
-    tracking_router,
-    role_router,
-
-)
+from app.routers import auth_router
+from app.routers import user_router
+from app.routers import asset_router
+from app.routers import asset_type_router
+from app.routers import oem_router
+from app.routers import tracking_router
+from app.routers import role_router
+from app.routers import client_router   # ✅ NEW
 from app.utils.logger import setup_logger
  
 logger = setup_logger(__name__)
@@ -56,7 +54,6 @@ app = FastAPI(
 )
  
 # ✅ CORS
- 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -67,9 +64,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
- 
- 
- 
  
 # ✅ REQUEST LOGGING
 @app.middleware("http")
@@ -123,7 +117,13 @@ app.include_router(tracking_router.router, prefix=f"{API_PREFIX}/tracking", tags
 app.include_router(role_router.router, prefix=f"{API_PREFIX}/roles", tags=["Roles"])
 app.include_router(asset_type_router.router, prefix=f"{API_PREFIX}/asset-types", tags=["Asset Types"])
 app.include_router(oem_router.router, prefix=f"{API_PREFIX}/oems", tags=["OEMs"])
-
+ 
+# ✅ ADDED: Client Provisioning (Admin)
+app.include_router(
+    client_router.router,
+    prefix=f"{API_PREFIX}/admin/clients",
+    tags=["Client Provisioning"]
+)
  
  
 # ✅ LOCAL RUN
@@ -137,4 +137,5 @@ if __name__ == "__main__":
         reload=settings.DEBUG,
         log_level=settings.LOG_LEVEL.lower(),
     )
+ 
  

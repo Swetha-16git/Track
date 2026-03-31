@@ -1,17 +1,52 @@
 """
-User Service (FIXED)
+User Service (FIXED - Enum Role Compatible)
 """
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 from sqlalchemy.orm import Session
 from datetime import datetime
 import logging
  
-from app.models.user_model import User
+from app.models.user_model import User, UserRole
 from app.security.jwt_handler import get_password_hash
 from app.config.constants import MSG_USER_CREATED, MSG_USER_UPDATED, MSG_USER_DELETED
-from app.services.auth_service import _set_role_safely
+ 
  
 logger = logging.getLogger(__name__)
+ 
+ 
+def _parse_role(role_value) -> Optional[UserRole]:
+    """
+    Convert incoming role values safely to Enum.
+    Accepts: "admin", "viewer", "ADMIN", "VIEWER", UserRole.admin, UserRole.viewer.
+    Returns: UserRole or None if invalid/empty.
+    """
+    if role_value is None:
+        return None
+ 
+    # already enum
+    if isinstance(role_value, UserRole):
+        return role_value
+ 
+    # string conversions
+    s = str(role_value).strip()
+    if not s:
+        return None
+ 
+    # allow both enum NAME (admin/viewer) and enum VALUE (ROLE_ADMIN/ROLE_VIEWER)
+    s_lower = s.lower()
+ 
+    if s_lower in ("admin", "role_admin"):
+        return UserRole.admin
+    if s_lower in ("viewer", "role_viewer"):
+        return UserRole.viewer
+ 
+    # also handle common DB/value formats like "ADMIN" / "VIEWER"
+    if s.upper() == "ADMIN":
+        return UserRole.admin
+    if s.upper() == "VIEWER":
+        return UserRole.viewer
+ 
+    return None
  
  
 class UserService:
@@ -39,8 +74,18 @@ class UserService:
             return False, {"message": "User already exists"}
  
         try:
-            if "password" in user_data:
+            # ✅ Hash password if provided
+            if "password" in user_data and user_data.get("password"):
                 user_data["hashed_password"] = get_password_hash(user_data.pop("password"))
+ 
+            # ✅ Convert role to Enum if provided
+            if "role" in user_data:
+                parsed = _parse_role(user_data.get("role"))
+                if parsed is not None:
+                    user_data["role"] = parsed
+                else:
+                    # if invalid role passed, default to viewer
+                    user_data["role"] = UserRole.viewer
  
             user = User(**user_data)
             db.add(user)
@@ -62,17 +107,20 @@ class UserService:
  
         try:
             # ✅ Safe field updates
-            if "email" in user_data:
+            if "email" in user_data and user_data["email"] is not None:
                 user.email = user_data["email"]
  
-            if "username" in user_data:
+            if "username" in user_data and user_data["username"] is not None:
                 user.username = user_data["username"]
  
-            if "password" in user_data:
+            if "password" in user_data and user_data["password"]:
                 user.hashed_password = get_password_hash(user_data["password"])
  
+            # ✅ FIX: Role update using Enum
             if "role" in user_data:
-                _set_role_safely(user, user_data["role"])
+                parsed = _parse_role(user_data.get("role"))
+                if parsed is not None:
+                    user.role = parsed
  
             if "organisation_id" in user_data:
                 user.organisation_id = user_data["organisation_id"]

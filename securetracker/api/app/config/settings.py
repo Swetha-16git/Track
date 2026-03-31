@@ -4,7 +4,7 @@ Application Settings and Configuration
  
 from typing import List
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from dotenv import load_dotenv
  
 # Explicitly load .env file (important for Windows & enterprise setups)
@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     # Database (PostgreSQL)
     # ========================
     DATABASE_URL: str = Field(
-        default="postgresql://postgres:postgres@localhost:5432/securetracker"
+        default="postgresql+psycopg2://postgres:postgres@localhost:5432/securetracker"
     )
     DB_ECHO: bool = False
  
@@ -94,17 +94,21 @@ class Settings(BaseSettings):
         default="dev-jwt-secret-change-in-production"
     )
  
-# ========================
+    # ========================
     # Roles
     # ========================
     ADMIN_ROLE: str = "admin"
     VIEWER_ROLE: str = "viewer"
  
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    # ✅ ✅ ✅ IMPORTANT FIX (Pydantic v2)
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="allow"   # ✅ allows MASTER_DB_* vars
+    )
  
  
-# Singleton settings instance
+# ✅ Singleton settings instance
 settings = Settings()
+ 
  
