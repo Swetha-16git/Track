@@ -1,10 +1,9 @@
 /* ============================= */
-/* PAGE BACKGROUND */
+/* PAGE */
 /* ============================= */
 
 .admin-dashboard {
   background: #f5f8fc;
-  min-height: 100%;
   padding-bottom: 24px;
 }
 
@@ -12,8 +11,7 @@
 /* HEADER */
 /* ============================= */
 
-.admin-topbar,
-.admin-header {
+.admin-topbar {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -22,7 +20,7 @@
 
 .admin-title {
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 900;
   color: #0b3a6f;
 }
 
@@ -32,81 +30,124 @@
 }
 
 /* ============================= */
-/* KPI CARDS (TOP SUMMARY) */
+/* ADD CLIENT BUTTON */
+/* ============================= */
+
+.add-client-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  background: #ffffff;
+  color: #0b3a6f;
+  border: 2px solid #0b3a6f;
+
+  padding: 8px 18px;
+  font-weight: 800;
+  border-radius: 8px;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.add-client-btn:hover {
+  background: #0b3a6f;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(11, 58, 111, 0.25);
+}
+
+.add-icon {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+/* ============================= */
+/* KPI */
 /* ============================= */
 
 .admin-kpis {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 18px;
+  gap: 14px;
+  margin-bottom: 16px;
 }
 
 .kpi {
-  background: linear-gradient(
-    135deg,
-    #0b3a6f 0%,
-    #134e8f 100%
-  );
-  color: #ffffff;
-  border-radius: 16px;
-  padding: 14px 16px;
-  box-shadow: 0 10px 24px rgba(11, 58, 111, 0.25);
-  position: relative;
-}
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 12px 14px;
 
-.kpi::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 4px;
-  width: 100%;
-  background: #facc15; /* yellow accent */
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
+  border-bottom: 3px solid #facc15;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
 }
 
 .kpi-label {
-  font-size: 12px;
-  opacity: 0.9;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
 }
 
 .kpi-value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 900;
-  margin-top: 6px;
+  color: #0b3a6f;
 }
 
 /* ============================= */
-/* SEARCH + FILTER */
+/* SEARCH + FILTER (OLD STYLE – FIXED) */
 /* ============================= */
 
 .admin-filters {
   display: flex;
+  align-items: center;
   gap: 12px;
   margin-bottom: 18px;
 }
 
-.admin-search,
-.admin-select {
-  border-radius: 12px;
-  border: 1px solid #dbe3f0;
-  padding: 10px 12px;
-  background: #ffffff;
-}
-
 .admin-search {
   flex: 1;
+  height: 38px;
+  padding: 6px 12px;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+
+  background: #ffffff;
+  border: 2px solid #111827;
+  border-radius: 8px;
+
+  box-shadow: none;
+  outline: none;
+}
+
+.admin-search::placeholder {
+  color: #6b7280;
+  font-weight: 500;
 }
 
 .admin-select {
-  font-weight: 600;
+  height: 38px;
+  padding: 6px 12px;
+
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+
+  background: #ffffff;
+  border: 2px solid #111827;
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.admin-search:focus,
+.admin-select:focus {
+  border-color: #0b3a6f;
 }
 
 /* ============================= */
-/* CLIENT CARDS */
+/* CLIENT GRID */
 /* ============================= */
 
 .admin-client-grid {
@@ -117,24 +158,25 @@
 
 .admin-client-card {
   background: #ffffff;
-  border-radius: 18px;
   padding: 16px;
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
-  border-left: 6px solid #0b3a6f; /* blue identity */
-  position: relative;
+  border-radius: 12px;
+
+  border-left: 6px solid #0b3a6f;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
 }
 
-.admin-client-card.clickable:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.15);
+.admin-client-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.2);
 }
 
 .client-card-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
 }
 
 .admin-client-card h3 {
@@ -144,19 +186,15 @@
   color: #0b3a6f;
 }
 
-/* ============================= */
-/* CLIENT STATS */
-/* ============================= */
-
 .admin-client-stats {
-  display: grid;
-  gap: 8px;
+  margin-top: 10px;
   font-size: 14px;
-  color: #111827;
+  display: grid;
+  gap: 6px;
 }
 
 /* ============================= */
-/* STATUS PILL (YELLOW + GREEN) */
+/* STATUS */
 /* ============================= */
 
 .status-pill {
@@ -164,236 +202,132 @@
   border-radius: 999px;
   font-size: 12px;
   font-weight: 800;
-  border: 1px solid transparent;
 }
 
 .status-pill.active {
   background: #ecfdf3;
   color: #15803d;
-  border-color: #86efac;
-}
-
-.status-pill.inactive {
-  background: #fef2f2;
-  color: #b91c1c;
-  border-color: #fecaca;
 }
 
 /* ============================= */
-/* CARD FOOTER */
+/* MODAL – CENTERED & INDUSTRIAL */
 /* ============================= */
 
-.client-card-footer {
-  margin-top: 14px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.hint {
-  font-size: 13px;
-  font-weight: 800;
-  color: #0b3a6f;
-}
-
-.hint::after {
-  content: " →";
-  color: #facc15;
-}
-
-/* ============================= */
-/* ACTIVITY BOX */
-/* ============================= */
-
-.admin-activity {
-  margin-top: 24px;
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 16px;
-  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
-  border-top: 4px solid #facc15;
-}
-
-.admin-activity h3 {
-  margin: 0 0 10px;
-  color: #0b3a6f;
-  font-weight: 900;
-}
-/* ============================= */
-/* KPI CARDS – WHITE + YELLOW (INDUSTRIAL) */
-/* ============================= */
-
-/* ============================= */
-/* KPI CARDS – COMPACT + THIN YELLOW LINE */
-/* ============================= */
-
-.admin-kpis {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;                 /* ✅ slightly tighter gap */
-  margin: 14px 0;
-}
-
-.kpi {
-  background: #ffffff;
-  color: #0b3a6f;
-
-  border-radius: 10px;        /* ✅ less rounded (industrial) */
-  padding: 10px 14px;        /* ✅ reduced height */
-
-  border: 1px solid #d6e0ee;
-  border-bottom: 0px solid #facc15; /* ✅ THIN yellow line */
-
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
-}
-
-/* KPI label */
-.kpi-label {
-  font-size: 11px;           /* ✅ slightly smaller */
-  font-weight: 700;
-  color: #475569;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-/* KPI value */
-.kpi-value {
-  font-size: 22px;           /* ✅ reduced number size */
-  font-weight: 900;
-  margin-top: 4px;
-  color: #0b3a6f;
-}
-/* ============================= */
-/* KPI ICONS – NO IMAGE FILES */
-/* ============================= */
-
-.kpi {
-  position: relative;
-  padding-left: 56px; /* space for icon */
-}
-
-/* Common icon style */
-.kpi::before {
-  content: "";
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-
-  width: 28px;
-  height: 28px;
-
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 999;
+}
 
+.modal-card {
+  background: #ffffff;
+  width: 460px;
+  max-width: 92vw;
+
+  padding: 28px;
+  border-radius: 14px;
+
+  border-top: 4px solid #facc15;
+  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.35);
+}
+
+/* ============================= */
+/* CUSTOMER ONBOARDING */
+/* ============================= */
+
+.onboard-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.onboard-title {
   font-size: 22px;
   font-weight: 900;
-
-  color: #0b3a6f; /* industrial blue */
-  opacity: 0.9;
-}
-
-/* ============================= */
-/* ICON PER CARD (ORDER BASED) */
-/* ============================= */
-
-/* 1️⃣ Clients */
-.admin-kpis .kpi:nth-child(1)::before {
-  content: "🏢"; /* organization / client */
-}
-
-/* 2️⃣ Sites */
-.admin-kpis .kpi:nth-child(2)::before {
-  content: "🏭"; /* plant / site */
-}
-
-/* 3️⃣ Assets */
-.admin-kpis .kpi:nth-child(3)::before {
-  content: "🚛"; /* heavy asset */
-}
-/* ============================= */
-/* INDUSTRIAL HOVER FEEDBACK */
-/* ============================= */
-
-.admin-client-card {
-  position: relative;
-}
-
-.admin-client-card::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 0;
-  width: 100%;
-  background: #facc15;
-  transition: height 0.15s ease;
-}
-
-.admin-client-card:hover::after {
-  height: 3px;
-}
-
-/* ============================= */
-/* CONTROL PANEL INPUTS */
-/* ============================= */
-
-.admin-search,
-.admin-select {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
-  font-weight: 600;
-}
-
-.admin-search::placeholder {
-  color: #94a3b8;
-}
-
-/* 4️⃣ Connections */
-.admin-kpis .kpi:nth-child(4)::before {
-  content: "📡"; /* connectivity */
-}
-/* ============================= */
-/* CLIENT CARDS – INDUSTRIAL */
-/* ============================= */
-
-.admin-client-card {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 16px;
-
-  border-left: 6px solid #0b3a6f;  /* strong identity */
-  border-top: 1px solid #d6e0ee;
-  border-right: 1px solid #d6e0ee;
-  border-bottom: 1px solid #d6e0ee;
-
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
-
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-/* Hover = drill-down affordance */
-.admin-client-card.clickable:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.2);
-}
-
-/* Client name */
-.admin-client-card h3 {
-  font-size: 20px;
-  font-weight: 900;
   color: #0b3a6f;
-  letter-spacing: 0.3px;
-}
-/* ============================= */
-/* GRID DISCIPLINE */
-/* ============================= */
-
-.admin-client-grid {
-  gap: 20px;   /* slightly more air */
 }
 
-.admin-kpis {
-  gap: 16px;
+.onboard-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.onboard-field label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.onboard-field input {
+  height: 40px;
+  padding: 8px 12px;
+
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+
+  font-size: 14px;
+  font-weight: 600;
+  background: #ffffff;
+}
+
+.onboard-field input:focus {
+  outline: none;
+  border-color: #0b3a6f;
+  box-shadow: 0 0 0 2px rgba(11, 58, 111, 0.15);
+}
+
+.onboard-msg {
+  font-size: 13px;
+  font-weight: 600;
+  color: #15803d;
+}
+
+/* ============================= */
+/* ACTION BUTTONS */
+/* ============================= */
+
+.onboard-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0b3a6f, #134e8f);
+  color: #ffffff;
+
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 8px 18px rgba(11, 58, 111, 0.35);
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: #0b3a6f;
+
+  border: 1.5px solid #cbd5e1;
+  padding: 8px 16px;
+  border-radius: 8px;
+
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: #f8fafc;
+  border-color: #0b3a6f;
 }
