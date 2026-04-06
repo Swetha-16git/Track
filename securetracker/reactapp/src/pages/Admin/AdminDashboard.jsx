@@ -369,6 +369,10 @@ export default function AdminDashboard() {
   const token =
     localStorage.getItem("access_token") || localStorage.getItem("token");
 
+  // ✅ Demo rule: every client has 3 sites (matches ClientHome map)
+  // Later replace this with real API count per client.
+  const getSitesCountForClient = () => 3;
+
   const fetchClients = async () => {
     setLoading(true);
     setErrorMsg("");
@@ -385,21 +389,18 @@ export default function AdminDashboard() {
       // Map into UI-friendly structure (do NOT force mock numbers)
       const mapped = (Array.isArray(data) ? data : [])
         .map((c) => ({
-          code: c.client_code ?? "",
-          name: c.client_name ?? "Unnamed Client",
-          status: (c.status ?? "INACTIVE").toUpperCase(),
-          sites: Number(c.sites ?? 0),
-          assets: Number(c.assets ?? 0),
-          connections: Number(c.connections ?? 0),
-        }))
-        // Default: show ACTIVE first, but keep others available by filter
-        .sort((a, b) => (b.status === "ACTIVE") - (a.status === "ACTIVE"));
+          code: c.client_code,
+          name: c.client_name,
+          status: c.status,
+          sites: getSitesCountForClient(c.client_code),
+          assets: 0,
+          connections: 0,
+        }));
 
       setClients(mapped);
-    } catch (e) {
-      // No fake data — show professional offline badge + empty state
+    } catch {
+      setErrorMsg("Using fallback data");
       setClients([]);
-      setErrorMsg("Offline mode: API unavailable");
     } finally {
       setLastUpdated(new Date());
       setLoading(false);
@@ -447,40 +448,38 @@ export default function AdminDashboard() {
     });
   };
 
-  const getStatusPillClass = (status) => {
-    const s = (status || "").toUpperCase();
-    if (s === "ACTIVE") return "active";
-    if (s === "INACTIVE") return "inactive";
-    return "pending";
-  };
-
   return (
-    <div className="admin-dashboard">
-      <div className="admin-shell">
+    // ✅ OUTER WRAPPER: full width, no padding/margin (prevents right-gap layout)
+    <div
+      className="admin-dashboard"
+      style={{
+        width: "100%",
+        margin: 0,
+        padding: 0,
+      }}
+    >
+      {/* ✅ INNER WRAPPER: keep your design spacing here */}
+      <div
+        className="admin-dashboard-inner"
+        style={{
+          maxWidth: "1400px",
+          margin: "0 auto",
+          padding: "20px",
+        }}
+      >
         {/* HEADER */}
         <div className="admin-topbar">
           <div>
             <h2 className="admin-title">Operational Overview</h2>
-
             <p className="admin-subtitle">
               Last updated on <b>{formattedLastUpdated}</b>
-              {errorMsg && (
-                <span className="admin-badge warn">
-                  <Icon name="warning" className="ico-sm" /> {errorMsg}
-                </span>
-              )}
+              {errorMsg && <span className="admin-badge warn"> {errorMsg}</span>}
             </p>
           </div>
 
           <div className="admin-actions">
-            <button
-              className="add-client-btn"
-              onClick={() => setShowOnboard(true)}
-              aria-label="Add Client"
-            >
-              <span className="add-icon">
-                <Icon name="plus" className="ico-md" />
-              </span>
+            <button className="add-client-btn" onClick={() => setShowOnboard(true)}>
+              <span className="add-icon">+</span>
               Add Client
             </button>
           </div>
@@ -489,44 +488,31 @@ export default function AdminDashboard() {
         {/* KPI */}
         <div className="admin-kpis">
           <div className="kpi">
-            <div className="kpi-label">
-              <Icon name="users" className="ico-md kpi-ico" /> Clients
-            </div>
+            <div className="kpi-label">Clients</div>
             <div className="kpi-value">{totals.totalClients}</div>
           </div>
           <div className="kpi">
-            <div className="kpi-label">
-              <Icon name="building" className="ico-md kpi-ico" /> Sites
-            </div>
+            <div className="kpi-label">Sites</div>
             <div className="kpi-value">{totals.totalSites}</div>
           </div>
           <div className="kpi">
-            <div className="kpi-label">
-              <Icon name="truck" className="ico-md kpi-ico" /> Assets
-            </div>
+            <div className="kpi-label">Assets</div>
             <div className="kpi-value">{totals.totalAssets}</div>
           </div>
           <div className="kpi">
-            <div className="kpi-label">
-              <Icon name="antenna" className="ico-md kpi-ico" /> Connections
-            </div>
+            <div className="kpi-label">Connections</div>
             <div className="kpi-value">{totals.totalConnections}</div>
           </div>
         </div>
 
         {/* FILTERS */}
         <div className="admin-filters">
-          <div className="admin-searchwrap">
-            <span className="admin-searchicon">
-              <Icon name="search" className="ico-sm" />
-            </span>
-            <input
-              className="admin-search"
-              placeholder="Search client (name or code)..."
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-            />
-          </div>
+          <input
+            className="admin-search"
+            placeholder="Search client (name or code)..."
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
 
           <select
             className="admin-select"
@@ -536,118 +522,47 @@ export default function AdminDashboard() {
             <option value="all">All status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
-            <option value="pending">Pending</option>
           </select>
         </div>
 
-        {/* CONTENT */}
-        <div className="admin-section-head">
-          <div className="admin-section-title">
-            <Icon name="doc" className="ico-md section-ico" /> Clients
-          </div>
-          
-        </div>
-
-        {/* LOADING */}
-        {loading && (
-          <div className="admin-client-grid">
-            {Array.from({ length: 6 }).map((_, idx) => (
-              <div key={idx} className="admin-client-card skeleton">
-                <div className="sk-line w60" />
-                <div className="sk-line w30" />
-                <div className="sk-line w80" />
-                <div className="sk-line w70" />
-                <div className="sk-line w55" />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* EMPTY */}
-        {!loading && filteredClients.length === 0 && (
-          <div className="admin-empty">
-            <div className="admin-empty-emoji">
-              <Icon name="empty" className="ico-xl empty-ico" />
-            </div>
-            <div className="admin-empty-title">No clients found</div>
-            <div className="admin-empty-sub">
-              Try adjusting search/filter or click <b>Refresh</b>.
-            </div>
-          </div>
-        )}
-
         {/* CLIENT GRID */}
-        {!loading && filteredClients.length > 0 && (
-          <div className="admin-client-grid">
-            {filteredClients.map((c) => (
+        <div className="admin-client-grid">
+          {loading ? (
+            <div style={{ padding: 12, color: "#64748b" }}>Loading...</div>
+          ) : filteredClients.length === 0 ? (
+            <div style={{ padding: 12, color: "#64748b" }}>No clients found</div>
+          ) : (
+            filteredClients.map((c) => (
               <div
                 className="admin-client-card clickable"
-                key={c.code || c.name}
+                key={c.code}
                 onClick={() => openClientDashboard(c)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === "Enter" && openClientDashboard(c)}
               >
                 <div className="client-card-head">
-                  <div className="client-left">
-                    <h3 className="client-name">{c.name}</h3>
-                    <div className="client-code">
-                      <Icon name="tag" className="ico-sm inline-ico" />{" "}
-                      {c.code || "—"}
-                    </div>
-                  </div>
-
-                  <span className={`status-pill ${getStatusPillClass(c.status)}`}>
+                  <h3>{c.name}</h3>
+                  <span className={`status-pill ${c.status.toLowerCase()}`}>
                     {c.status}
                   </span>
                 </div>
 
                 <div className="admin-client-stats">
-                  <div>
-                    <Icon name="building" className="ico-sm inline-ico" /> Sites:{" "}
-                    <b>{c.sites}</b>
-                  </div>
-                  <div>
-                    <Icon name="truck" className="ico-sm inline-ico" /> Assets:{" "}
-                    <b>{c.assets}</b>
-                  </div>
-                  <div>
-                    <Icon name="antenna" className="ico-sm inline-ico" /> Connections:{" "}
-                    <b>{c.connections}</b>
-                  </div>
-                </div>
-
-                <div className="client-footer">
-                 
+                  <div>🏢 Sites: <b>{c.sites}</b></div>
+                  <div>🚜 Assets: <b>{c.assets}</b></div>
+                  <div>📡 Connections: <b>{c.connections}</b></div>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
 
         {/* MODAL */}
         {showOnboard && (
-          <div
-            className="modal-overlay"
-            onClick={() => setShowOnboard(false)}
-            role="presentation"
-          >
-            <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-head">
-                <div className="modal-title">
-                  <Icon name="plus" className="ico-md section-ico" /> Add New Client
-                </div>
-                <button
-                  className="modal-x"
-                  onClick={() => setShowOnboard(false)}
-                  aria-label="Close modal"
-                >
-                  <Icon name="close" className="ico-sm" />
-                </button>
-              </div>
-
+          <div className="modal-overlay">
+            <div className="modal-card">
               <CustomerOnboarding />
-
               <div className="modal-actions">
                 <button
                   className="btn-secondary"
