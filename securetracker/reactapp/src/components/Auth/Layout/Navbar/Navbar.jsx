@@ -72,7 +72,7 @@ const Navbar = () => {
               </div>
             </div>
 
-            <button onClick={() => navigate("/profile")}>My Profile</button>
+            {/* <button onClick={() => navigate("/profile")}>My Profile</button> */}
             <button className="logout-item" onClick={onLogout}>
               Logout
             </button>
